@@ -1,0 +1,72 @@
+package io.github.droidkaigi.confsched.app
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
+import androidx.compose.runtime.Composable
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.scene.SinglePaneSceneStrategy
+import androidx.navigation3.ui.NavDisplay
+import io.github.droidkaigi.confsched.core.common.NavigatorEffect
+import io.github.droidkaigi.confsched.core.common.rememberRootSceneStrategy
+import io.github.droidkaigi.confsched.core.common.rememberSafeClickInvokerNavEntryDecorator
+import io.github.droidkaigi.confsched.core.common.rememberSnackbarNavEntryDecorator
+import io.github.droidkaigi.confsched.core.common.retainNavEntryDecorator
+import io.github.droidkaigi.confsched.core.designsystem.KaigiTheme
+import io.github.droidkaigi.confsched.core.ui.SetupRemoteImageLoader
+import io.github.droidkaigi.confsched.core.ui.SoilDataBoundary
+import soil.query.compose.SwrClientProvider
+import soil.query.compose.rememberSubscription
+
+context(appGraph: AppGraph)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
+@Composable
+fun KaigiApp(backStack: NavBackStack<NavKey>) {
+    SetupRemoteImageLoader()
+
+    SwrClientProvider(client = appGraph.swrClient) {
+        SoilDataBoundary(
+            state = rememberSubscription(appGraph.themeColorSchemeSubscriptionKey),
+        ) { colorScheme ->
+            KaigiTheme(colorScheme = colorScheme) {
+                NavigatorEffect(
+                    navigator = appGraph.appNavigator,
+                    backStack = backStack,
+                    logger = appGraph.logger,
+                )
+
+                // A themed backdrop behind the transition: while entries cross-fade, both are
+                // translucent and the bare window (white) would show through as a flash.
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    NavDisplay(
+                        backStack = backStack,
+                        onBack = appGraph.appNavigator::back,
+                        entryDecorators = listOf(
+                            rememberSaveableStateHolderNavEntryDecorator(),
+                            retainNavEntryDecorator(),
+                            rememberSnackbarNavEntryDecorator(),
+                            rememberSafeClickInvokerNavEntryDecorator(),
+                        ),
+                        sceneStrategies = listOf(
+                            rememberRootSceneStrategy(),
+                            rememberListDetailSceneStrategy(),
+                            SinglePaneSceneStrategy()
+                        ),
+                        sceneDecoratorStrategies = listOf(
+                            rememberRootTabSceneDecorator(
+                                currentKey = backStack::lastOrNull,
+                                onSelectTab = { tab -> appGraph.appNavigator.moveToTop(tab.key) },
+                            )
+                        ),
+                        entryProvider = appGraph.appEntryProvider.entryProvider,
+                    )
+                }
+
+                appGraph.soilErrorMonitor.Overlay()
+            }
+        }
+    }
+}

@@ -1,0 +1,24 @@
+package io.github.droidkaigi.confsched.enforcement
+
+import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
+
+class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
+    override fun ExtensionRegistrarContext.configurePlugin() {
+        +::EnforcementCheckersExtension
+        registerDiagnosticContainers(
+            NoDirectMutateErrors,
+            RoleContextErrors,
+            NavigatorErrors,
+            MutationKeyErrors,
+            PersistedKeyErrors,
+            SafeClickErrors,
+            NoForwardOnlyActionErrors,
+            SoilReadConfinementErrors,
+            PreviewRequiresWrapperErrors,
+            CallableReferenceErrors,
+            MutationEffectResetErrors,
+            PlatformOnlyErrors,
+            ThemeSensitiveErrors,
+        )
+    }
+}

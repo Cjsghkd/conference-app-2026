@@ -1,0 +1,152 @@
+/*
+ * Mermaid node-label clipping fix.
+ *
+ * VitePress' `.vp-doc` body line-height (~1.6) leaks into mermaid's HTML labels
+ * (rendered as <p>/<span> inside a <foreignObject>). Mermaid sizes each node box
+ * from the label height it measures in a temporary, off-container element, so the
+ * taller inherited line-height then pushes the last line of a multi-line label
+ * past the box and it gets clipped.
+ *
+ * The selectors are deliberately NOT scoped under `.mermaid`: mermaid measures the
+ * labels before they are inside the rendered `.mermaid` container, so a scoped rule
+ * would miss that measurement pass and leave the box sized for the larger inherited
+ * line-height (which shows up as excess vertical padding). Targeting the label
+ * classes globally makes the measurement and the render agree, so boxes fit.
+ */
+.nodeLabel,
+.edgeLabel,
+.cluster-label,
+.nodeLabel p,
+.edgeLabel p,
+.cluster-label p,
+foreignObject div,
+foreignObject span,
+foreignObject p {
+  line-height: normal !important;
+}
+
+.nodeLabel p,
+.edgeLabel p,
+.cluster-label p,
+foreignObject p {
+  margin: 0 !important;
+}
+
+/* ---- Navbar title ------------------------------------------------------------ *
+ * The site title is wider than the sidebar column it is laid out in, so it runs
+ * under the search box. Ellipsize it within the available width instead.           */
+.VPNavBarTitle {
+  min-width: 0;
+}
+
+.VPNavBarTitle .title {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.VPNavBarTitle .title > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Sidebar scrollbar ------------------------------------------------------ *
+ * The sidebar scrolls its own box; overlay scrollbars (macOS) paint on top of the
+ * content, cutting into the title/section labels. Reserve a stable gutter and keep
+ * the bar thin so it never overlaps text.                                          */
+.VPSidebar {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+/* ---- Mermaid diagram zoom --------------------------------------------------- *
+ * The inline SVG is untouched; the button opens an overlay that pans/zooms a clone
+ * of the diagram, so none of this affects the diagram as rendered in the page.     */
+.mermaid {
+  position: relative;
+}
+
+.mermaid-zoom-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.mermaid:hover .mermaid-zoom-btn,
+.mermaid-zoom-btn:focus-visible {
+  opacity: 1;
+}
+
+.mermaid-zoom-btn:hover {
+  color: var(--vp-c-brand-1);
+  border-color: var(--vp-c-brand-1);
+}
+
+.mermaid-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3vh 3vw;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.mermaid-zoom-stage {
+  width: 100%;
+  height: 94vh;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mermaid-zoom-stage svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mermaid-zoom-controls {
+  position: fixed;
+  top: calc(3vh + 12px);
+  right: calc(3vw + 12px);
+  z-index: 101;
+  display: flex;
+  gap: 6px;
+}
+
+.mermaid-zoom-ctrl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  font-size: 17px;
+  line-height: 1;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.mermaid-zoom-ctrl:hover {
+  background: var(--vp-c-default-soft);
+  border-color: var(--vp-c-brand-1);
+}

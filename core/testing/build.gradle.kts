@@ -1,0 +1,36 @@
+plugins {
+    alias(libs.plugins.droidkaigiPrimitiveKmp)
+    alias(libs.plugins.droidkaigiPrimitiveKmpCompose)
+}
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            api(project(":core:common"))
+            api(libs.molecule)
+            api(libs.turbine)
+            api(libs.kotlinxCoroutinesTest)
+        }
+        commonMain.dependencies {
+            api(libs.composeUiTest)
+            implementation(project(":core:preview:api"))
+            implementation(project(":core:preview:impl"))
+            implementation(project(":core:preview:wrapper"))
+        }
+        jvmMain.dependencies {
+            api(compose.desktop.currentOs)
+            api(libs.roborazziComposeDesktop)
+        }
+        iosMain.dependencies {
+            api(libs.roborazziComposeIos)
+        }
+        androidMain.dependencies {
+            api(libs.roborazzi)
+            api(libs.roborazziCompose)
+            api(libs.roborazziPreviewScannerSupport)
+            api(libs.composeUiTestJunit4)
+            api(libs.androidxTestExtJunit)
+            api(libs.composablePreviewScannerCommon)
+        }
+    }
+}

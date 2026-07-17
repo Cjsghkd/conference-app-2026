@@ -1,0 +1,32 @@
+# --- macOS ---
+.DS_Store
+
+# --- Gradle / JVM ---
+.gradle/
+build/
+**/build/
+local.properties
+*.log
+
+# --- Kotlin ---
+.kotlin/
+
+# --- IDE ---
+**/.idea/*
+!**/.idea/dictionaries
+**/.idea/dictionaries/*
+!**/.idea/dictionaries/dictionary.xml
+*.iml
+.vscode/
+
+# --- Xcode ---
+**/xcuserdata/
+*.xcuserstate
+
+# --- Screenshot outputs (Roborazzi goldens; a CI golden store is a separate decision) ---
+screenshots/
+
+# --- VitePress docs site ---
+docs-site/node_modules/
+docs/.vitepress/cache/
+docs/.vitepress/dist/

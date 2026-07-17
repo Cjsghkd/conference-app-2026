@@ -1,0 +1,43 @@
+name: KaigiApp
+options:
+  bundleIdPrefix: io.github.droidkaigi.confsched
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1"
+targets:
+  KaigiApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: Sources
+    info:
+      path: KaigiApp-Info.plist
+      properties:
+        CFBundleDisplayName: DroidKaigi 2026
+        # Required by Compose Multiplatform's PlistSanityCheck (it throws on launch otherwise).
+        CADisableMinimumFrameDurationOnPhone: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+    preBuildScripts:
+      - name: Embed Kotlin Framework
+        script: cd "$SRCROOT/.." && ./gradlew :app-shared:embedAndSignAppleFrameworkForXcode
+        basedOnDependencyAnalysis: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.droidkaigi.confsched.kaigiapp
+        GENERATE_INFOPLIST_FILE: NO
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../app-shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -framework
+          - AppShared
+        # The embedAndSign Gradle task writes into the build products; sandboxing breaks it.
+        ENABLE_USER_SCRIPT_SANDBOXING: NO

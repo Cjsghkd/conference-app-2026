@@ -1,0 +1,73 @@
+package io.github.droidkaigi.confsched.core.ui
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
+
+sealed interface SoilFallback {
+    val suspenseFallback: @Composable context(SoilSuspenseContext) BoxScope.() -> Unit
+    val errorFallback: @Composable context(SoilErrorContext) BoxScope.() -> Unit
+}
+
+object SoilFallbackDefaults {
+    fun default(): SoilFallback = Default
+
+    fun custom(
+        suspenseFallback: @Composable context(SoilSuspenseContext) BoxScope.() -> Unit,
+        errorFallback: @Composable context(SoilErrorContext) BoxScope.() -> Unit,
+    ): SoilFallback = Custom(suspenseFallback, errorFallback)
+}
+
+private object Default : SoilFallback {
+    override val suspenseFallback: @Composable context(SoilSuspenseContext) BoxScope.() -> Unit
+        get() = { DefaultSuspenseFallbackContent() }
+    override val errorFallback: @Composable context(SoilErrorContext) BoxScope.() -> Unit
+        get() = { DefaultErrorFallbackContent() }
+}
+
+private class Custom(
+    override val suspenseFallback: @Composable context(SoilSuspenseContext) BoxScope.() -> Unit,
+    override val errorFallback: @Composable context(SoilErrorContext) BoxScope.() -> Unit,
+) : SoilFallback
+
+const val DefaultSuspenseFallbackContentTestTag = "DefaultSuspenseFallbackContentTestTag"
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+context(_: SoilSuspenseContext)
+fun DefaultSuspenseFallbackContent(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize().testTag(DefaultSuspenseFallbackContentTestTag),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularWavyProgressIndicator()
+    }
+}
+
+@Composable
+context(errorContext: SoilErrorContext)
+fun DefaultErrorFallbackContent(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text("Failed to load")
+            Text(
+                errorContext.errorBoundaryContext.err.message ?: "",
+                modifier = Modifier.padding(16.dp),
+            )
+        }
+    }
+}

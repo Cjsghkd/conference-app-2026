@@ -1,0 +1,9 @@
+# Testing overview
+
+Three layers, each covering a different slice:
+
+- [Presenter unit tests (Molecule)](./testing-presenter.md) — a presenter is a `@Composable` that turns events plus data into a `UiState`, so it is tested as pure logic with Molecule (no UI, fast).
+- [Preview screenshot tests](./testing-preview-screenshot.md) — every `@Preview` is rendered and compared to a golden image with Roborazzi.
+- [Robot pattern tests (scenario-based)](./testing-robot.md) — end-to-end screen behaviour via a BDD (behavior-driven development) style DSL over Compose UI test.
+
+All three are designed to reuse the same sample data and fakes through Metro test graphs, so a screen can be described once and exercised at three levels.

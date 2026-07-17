@@ -1,0 +1,2 @@
+[{**/*.kts,**/*.kt}]
+max_line_length = off

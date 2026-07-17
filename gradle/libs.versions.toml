@@ -1,0 +1,131 @@
+# Version catalog — the single source of truth for dependency + plugin versions across all modules.
+# Aliases follow the 2025 app convention: flat camelCase (one accessor segment under `libs.`).
+[versions]
+kotlin = "2.4.0"
+jetbrainsCompose = "1.12.0-beta02"
+metro = "1.2.1"
+coroutines = "1.11.0"
+kotlinxSerialization = "1.11.0"
+kotlinxCollectionsImmutable = "0.5.0"
+kotlinxBrowser = "0.5.0"
+soil = "1.0.0-alpha15"
+molecule = "2.2.0"
+androidxDatastore = "1.3.0-alpha09"
+okio = "3.16.4"
+turbine = "1.2.1"
+composeRuntimeRetain = "1.12.0-alpha03"
+androidxNavigation3 = "1.1.1"
+# Material3 adaptive list-detail SceneStrategy for Navigation3 (regular Maven Central release).
+composeMaterial3AdaptiveNavigation3 = "1.3.0-beta02"
+agp = "9.2.1"
+androidxActivityCompose = "1.10.1"
+# KSP 2.3.x is decoupled from the Kotlin compiler version (KSP2 standalone Analysis-API backend), so a
+# single 2.3.x release runs against Kotlin 2.4.0.
+ksp = "2.3.9"
+kotlinPoet = "2.3.0"
+buildkonfig = "0.22.0"
+# Coil 3's network fetcher artifact (coil-network-ktor3) is only published at 3.2.0 in this stack, so
+# pin every Coil module to 3.2.0 to keep coil-core consistent across compose + network artifacts.
+coil = "3.2.0"
+# Ktor 3.2.1 is the single version whose cio/okhttp/js/darwin engines are all resolvable here.
+ktor = "3.2.1"
+# Single source of truth for the app version; flows to common Kotlin via the generated BuildKonfig.
+droidkaigiApp = "0.1.0"
+# KMP logger with platform-native writers (Logcat / os_log / SLF4J / console), wasmJs-capable.
+kermit = "2.1.0"
+# Retrofit-style declarative HTTP clients over Ktor (KSP-generated implementations).
+ktorfit = "2.7.5"
+# Preview screenshot-test stack (Android host tests only — see docs/testing-preview-screenshot.md).
+# Roborazzi renders @Preview composables headlessly via Robolectric; ComposablePreviewScanner
+# discovers them (its :common artifact scans org.jetbrains.compose's @Preview / @PreviewParameter).
+roborazzi = "1.67.0"
+robolectric = "4.16.1"
+composablePreviewScanner = "0.9.1"
+junit = "4.13.2"
+
+[libraries]
+composeRuntimeRetain = { module = "androidx.compose.runtime:runtime-retain", version.ref = "composeRuntimeRetain" }
+navigation3Runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "androidxNavigation3" }
+navigation3Ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "androidxNavigation3" }
+composeMaterial3AdaptiveNavigation3 = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "composeMaterial3AdaptiveNavigation3" }
+kotlinxCoroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinxCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinxCollectionsImmutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
+kotlinxBrowser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinxBrowser" }
+soilQueryCore = { module = "com.soil-kt.soil:query-core", version.ref = "soil" }
+soilQueryCompose = { module = "com.soil-kt.soil:query-compose", version.ref = "soil" }
+soilReacty = { module = "com.soil-kt.soil:reacty", version.ref = "soil" }
+molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
+# Compose Multiplatform UI test — provides the multiplatform runComposeUiTest/ComposeUiTest. The
+# desktop(JVM) actual ships in this same artifact, so the Robot layer needs no ui-test-junit4. Same
+# coordinate the `compose.uiTest` DSL accessor resolves to; pinned to the Compose MPP version.
+composeUiTest = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "jetbrainsCompose" }
+composeRuntime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetbrainsCompose" }
+composeFoundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetbrainsCompose" }
+composeUi = { module = "org.jetbrains.compose.ui:ui", version.ref = "jetbrainsCompose" }
+composeComponentsResources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "jetbrainsCompose" }
+composeUiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "jetbrainsCompose" }
+composeUiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "jetbrainsCompose" }
+# Material3 and material-icons-extended are versioned independently of the Compose Multiplatform release.
+composeMaterial3 = { module = "org.jetbrains.compose.material3:material3", version = "1.12.0-alpha03" }
+composeMaterialIconsExtended = { module = "org.jetbrains.compose.material:material-icons-extended", version = "1.7.3" }
+androidxDatastoreCore = { module = "androidx.datastore:datastore-core", version.ref = "androidxDatastore" }
+androidxDatastorePreferencesCore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "androidxDatastore" }
+androidxDatastoreCoreOkio = { module = "androidx.datastore:datastore-core-okio", version.ref = "androidxDatastore" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+androidxActivityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+kotlinCompilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+kspSymbolProcessingApi = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+kotlinPoetKsp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinPoet" }
+coilCompose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coilNetworkKtor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+ktorClientCore = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktorClientCio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktorClientOkhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktorClientJs = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
+ktorClientDarwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktorClientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktorSerializationKotlinxJson = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktorfitLib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
+ktorfitKsp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+firebaseCrashlytics = { module = "com.google.firebase:firebase-crashlytics", version = "20.1.0" }
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazziCompose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
+roborazziJunitRule = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
+roborazziPreviewScannerSupport = { module = "io.github.takahirom.roborazzi:roborazzi-compose-preview-scanner-support", version.ref = "roborazzi" }
+roborazziComposeDesktop = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop", version.ref = "roborazzi" }
+roborazziComposeIos = { module = "io.github.takahirom.roborazzi:roborazzi-compose-ios", version.ref = "roborazzi" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+# The :common artifact scans org.jetbrains.compose.ui.tooling.preview.Preview (Compose Multiplatform
+# previews), which is what :tools:ksp-processor generates. It's deprecated upstream but the only
+# artifact that matches the JetBrains @Preview annotation this project uses.
+composablePreviewScannerCommon = { module = "io.github.sergio-sastre.ComposablePreviewScanner:common", version.ref = "composablePreviewScanner" }
+composablePreviewScannerAndroid = { module = "io.github.sergio-sastre.ComposablePreviewScanner:android", version.ref = "composablePreviewScanner" }
+junit = { module = "junit:junit", version.ref = "junit" }
+composeUiTestJunit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "jetbrainsCompose" }
+androidxTestExtJunit = { module = "androidx.test.ext:junit", version = "1.2.1" }
+
+[plugins]
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "jetbrainsCompose" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
+ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+# Local convention plugins (gradle-conventions included build); the version is never resolved —
+# includeBuild substitution wins — but the catalog schema requires one.
+droidkaigiPrimitiveKmp = { id = "droidkaigi.primitive.kmp", version = "unspecified" }
+droidkaigiPrimitiveKmpCompose = { id = "droidkaigi.primitive.kmp.compose", version = "unspecified" }
+droidkaigiPrimitiveBuildkonfig = { id = "droidkaigi.primitive.buildkonfig", version = "unspecified" }
+droidkaigiPrimitiveScreenshotTest = { id = "droidkaigi.primitive.screenshot-test", version = "unspecified" }
+droidkaigiConventionKmpFeature = { id = "droidkaigi.convention.kmp-feature", version = "unspecified" }

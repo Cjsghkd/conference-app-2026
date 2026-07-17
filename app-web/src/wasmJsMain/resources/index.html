@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DroidKaigi 2026 — Timetable (wasmJs prototype)</title>
+    <style>
+        html, body { margin: 0; padding: 0; height: 100%; }
+    </style>
+</head>
+<body>
+<!-- Compose Multiplatform/wasmJs binaries.executable() emits <moduleName>.js. The module name is the
+     :app-web subproject's name ("app-web"). It bootstraps skiko + the wasm module and renders into the
+     body via ComposeViewport(document.body!!). -->
+<script type="application/javascript" src="app-web.js"></script>
+</body>
+</html>
