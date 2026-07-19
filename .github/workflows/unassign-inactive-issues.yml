@@ -1,0 +1,154 @@
+name: Unassign inactive issues
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # Daily at UTC 9:00 (JST 18:00)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'When true, log intended actions without posting comments or unassigning'
+        type: boolean
+        default: true
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  unassign-inactive-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const REMIND_AFTER_DAYS = 3
+            const UNASSIGN_AFTER_DAYS = 7
+            const MS_PER_DAY = 24 * 60 * 60 * 1000
+
+            const dryRun = context.eventName === 'workflow_dispatch'
+              ? core.getInput('dry_run') !== 'false'
+              : false
+            core.info(`dry_run=${dryRun}`)
+
+            const { owner, repo } = context.repo
+            const now = Date.now()
+
+            const reminderMarker = (login) => `<!-- stale-reminder:${login} -->`
+
+            async function hasOpenLinkedPullRequest(issueNumber) {
+              const timeline = await github.paginate(github.rest.issues.listEventsForTimeline, {
+                owner,
+                repo,
+                issue_number: issueNumber,
+                per_page: 100,
+              })
+
+              const prNumbers = new Set()
+              for (const event of timeline) {
+                if (event.event === 'cross-referenced' && event.source?.issue?.pull_request) {
+                  prNumbers.add(event.source.issue.number)
+                }
+              }
+
+              for (const prNumber of prNumbers) {
+                const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber })
+                if (pr.state === 'open') {
+                  return true
+                }
+              }
+              return false
+            }
+
+            function lastAssignedAt(timeline, login) {
+              const assignedEvents = timeline
+                .filter((event) => event.event === 'assigned' && event.assignee?.login === login)
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+              return assignedEvents.length > 0
+                ? new Date(assignedEvents[assignedEvents.length - 1].created_at)
+                : null
+            }
+
+            function lastCommentAt(comments, login) {
+              const own = comments
+                .filter((comment) => comment.user?.login === login)
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+              return own.length > 0 ? new Date(own[own.length - 1].created_at) : null
+            }
+
+            function alreadyReminded(comments, login, lastActivity) {
+              const marker = reminderMarker(login)
+              return comments.some(
+                (comment) => comment.body?.includes(marker) && new Date(comment.created_at) > lastActivity
+              )
+            }
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'open',
+              assignee: '*',
+              per_page: 100,
+            })
+
+            for (const issue of issues) {
+              if (issue.pull_request) continue
+              if (!issue.assignees || issue.assignees.length === 0) continue
+
+              const timeline = await github.paginate(github.rest.issues.listEventsForTimeline, {
+                owner,
+                repo,
+                issue_number: issue.number,
+                per_page: 100,
+              })
+
+              if (await hasOpenLinkedPullRequest(issue.number)) {
+                core.info(`#${issue.number}: has an open linked pull request, skipping`)
+                continue
+              }
+
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: issue.number,
+                per_page: 100,
+              })
+
+              for (const assignee of issue.assignees) {
+                const login = assignee.login
+                const lastActivity =
+                  lastCommentAt(comments, login) ?? lastAssignedAt(timeline, login) ?? new Date(issue.created_at)
+                const daysSince = (now - lastActivity.getTime()) / MS_PER_DAY
+
+                if (daysSince >= UNASSIGN_AFTER_DAYS) {
+                  core.info(`#${issue.number}: unassigning ${login} (idle ${daysSince.toFixed(1)}d)`)
+                  if (!dryRun) {
+                    await github.rest.issues.removeAssignees({
+                      owner,
+                      repo,
+                      issue_number: issue.number,
+                      assignees: [login],
+                    })
+                    await github.rest.issues.createComment({
+                      owner,
+                      repo,
+                      issue_number: issue.number,
+                      body: `@${login} This issue has been inactive for ${UNASSIGN_AFTER_DAYS}+ days, so the assignment has been removed. Please reassign yourself if you'd like to continue working on it.`,
+                    })
+                  }
+                } else if (daysSince >= REMIND_AFTER_DAYS) {
+                  if (alreadyReminded(comments, login, lastActivity)) {
+                    core.info(`#${issue.number}: ${login} already reminded, skipping`)
+                    continue
+                  }
+                  core.info(`#${issue.number}: reminding ${login} (idle ${daysSince.toFixed(1)}d)`)
+                  if (!dryRun) {
+                    await github.rest.issues.createComment({
+                      owner,
+                      repo,
+                      issue_number: issue.number,
+                      body: `@${login} This issue has had no activity for ${REMIND_AFTER_DAYS} days. If you're still working on it, please leave a comment. Otherwise, the assignment will be removed after ${UNASSIGN_AFTER_DAYS} days of inactivity.\n${reminderMarker(login)}`,
+                    })
+                  }
+                }
+              }
+            }
