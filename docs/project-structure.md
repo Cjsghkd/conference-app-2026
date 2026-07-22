@@ -134,4 +134,4 @@ Reading the graph:
 - How the dotted edges keep `:feature:debug` and `:core:preview:impl` out of production: [Keeping dev-only code out of release](./build-dev-only-exclusion.md) · [Preview](./preview.md).
 - Build-time tooling (`:tools:*`, `gradle-conventions`) is applied as compiler/KSP/Gradle plugins, not runtime dependencies, so it does not appear in the graph.
 
-Related: [Platforms & modules](./platforms-and-modules.md) · [AppGraph (app-wide dependency graph)](./di-app-graph.md)
+Related: [Platforms & modules](./platforms-and-modules.md) · [AppGraph and UiGraph](./di-app-graph.md)

@@ -28,7 +28,7 @@ interface TimetableScreenGraph {
     val screenNavigator: TimetableScreenNavigator
 
     @GraphExtension.Factory
-    @ContributesTo(AppScope::class)
+    @ContributesTo(UiScope::class)
     fun interface Factory {
         fun createTimetableScreenGraph(): TimetableScreenGraph
     }
@@ -59,11 +59,11 @@ class TimetableScreenContext(
 ## Lifetime and confinement
 
 - The NavEntryProvider `retain`s the **graph** once; because the ScreenContext is `@SingleIn(scope)`, every accessor read returns the same instance for as long as the graph is retained — including across navigation round trips (Timetable → Detail → back).
-- `@SingleIn` also **confines**: the ScreenContext is unresolvable from `AppScope` — the graph factory is the only path to it. The same holds for the screen-scoped Navigator bindings ([Navigator](./navigation-navigator.md)).
+- `@SingleIn` also **confines**: the ScreenContext is unresolvable from the app and UI graphs — the graph factory is the only path to it. The same holds for the screen-scoped Navigator bindings ([Navigator](./navigation-navigator.md)).
 
 ## Factory naming
 
-Every contributed `@GraphExtension.Factory` merges into the platform app graphs, where no-arg `create()` overloads differing only in return type clash (a Kotlin error). Factory methods therefore carry their screen's name — a uniform rule with no exceptions: `createTimetableScreenGraph()`, `createTimetableItemDetailScreenGraph(id)`, … Relying on signature uniqueness for a bare `create(id)` would break as soon as a second id-taking screen appears.
+Every contributed `@GraphExtension.Factory` merges into the `UiGraph`, where no-arg `create()` overloads differing only in return type clash (a Kotlin error). Factory methods therefore carry their screen's name — a uniform rule with no exceptions: `createTimetableScreenGraph()`, `createTimetableItemDetailScreenGraph(id)`, … Relying on signature uniqueness for a bare `create(id)` would break as soon as a second id-taking screen appears.
 
 ## Scoping: accessor vs. constructor
 
@@ -81,7 +81,7 @@ interface TimetableItemDetailScreenGraph {
     private fun provideMutationTag(): MutationTag = MutationTag("TimetableItemDetailScreen")
 
     @GraphExtension.Factory
-    @ContributesTo(AppScope::class)
+    @ContributesTo(UiScope::class)
     fun interface Factory {
         fun createTimetableItemDetailScreenGraph(
             @Provides timetableItemId: TimetableItemId,

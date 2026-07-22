@@ -1,11 +1,17 @@
-# AppGraph (app-wide dependency graph)
+# AppGraph and UiGraph
+
+Dependencies live in two nested graphs with distinct lifetimes:
+
+- **`AppGraph`** (`AppScope`) lives for the process — data layer, Soil client, logging.
+- **`UiGraph`** (`UiScope`) lives for one UI instance — navigation state such as `AppNavigator` and the aggregated `AppEntryProvider`. On Android each `Activity` gets its own `UiGraph`, so several concurrently launched activities never share a back-stack navigator.
+
+## AppGraph
 
 `AppGraph` is a **plain interface** (the contract), realized per platform as a Metro `@DependencyGraph`. `KaigiApp` depends only on the interface and receives it via a `context(AppGraph)` parameter, so the shared UI never knows which platform realized it.
 
 ```kotlin
 interface AppGraph {
-    val appNavigator: AppNavigator
-    val appEntryProvider: AppEntryProvider
+    val uiGraphFactory: UiGraph.Factory
     val navKeySerializers: NavKeySerializers
     val swrClient: SwrClientPlus
     val themeColorSchemeSubscriptionKey: ThemeColorSchemeSubscriptionKey
@@ -47,5 +53,28 @@ class DefaultSessionsApiProvider(ktorfit: Ktorfit) : SessionsApiProvider {
 ## Cross-cutting bindings
 
 Some bindings are declared directly on the graph rather than generated. `CommonAppBindings` (`app-shared`) provides the Soil `SwrClientPlus` and the `ErrorRelay` it consumes; the relay is always bound, retaining only the latest record, so error surfacing needs no per-platform wiring. See [Error handling](./error-handling.md).
+
+## UiGraph
+
+`UiGraph` is a `@GraphExtension(UiScope::class)` of the app graph, declared in `app-shared`. `KaigiApp` creates it from the factory and holds it with `retain`, so it survives configuration changes but is torn down with its UI instance:
+
+```kotlin
+@GraphExtension(UiScope::class)
+interface UiGraph {
+    val appNavigator: AppNavigator
+    val appEntryProvider: AppEntryProvider
+
+    @GraphExtension.Factory
+    @ContributesTo(AppScope::class)
+    fun interface Factory {
+        fun createUiGraph(): UiGraph
+    }
+}
+
+// KaigiApp
+val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
+```
+
+Anything whose lifetime is one UI instance binds into `UiScope`: `AppNavigator` is `@SingleIn(UiScope::class)`, features contribute `NavEntryProvider`s with `@ContributesIntoSet(UiScope::class)`, and the per-screen graph factories are contributed with `@ContributesTo(UiScope::class)` — so screen graphs are extensions of `UiGraph` and can inject UI-scoped bindings. Process-lifetime bindings must not depend on UI-scoped ones; Metro rejects the reverse edge at compile time.
 
 Related: [ScreenContext design](./screen-context.md) · [Per-screen graphs (@GraphExtension)](./di-screen-graph.md)

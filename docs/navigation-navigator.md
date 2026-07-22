@@ -29,7 +29,7 @@ sealed interface NavCommand {
 }
 
 @Inject
-@SingleIn(AppScope::class)
+@SingleIn(UiScope::class)
 class AppNavigator {
     private val commandChannel = Channel<NavCommand>(Channel.BUFFERED)
     val commands: Flow<NavCommand> = commandChannel.receiveAsFlow()
@@ -59,7 +59,7 @@ interface TimetableScreenNavigator {
     fun openSessionDetail(id: TimetableItemId)
 }
 
-// app-shared — sees every NavKey; @SingleIn the screen's scope, not AppScope
+// app-shared — sees every NavKey; @SingleIn the screen's scope, not UiScope
 @Inject
 @SingleIn(TimetableScreenScope::class)
 @ContributesBinding(TimetableScreenScope::class)
@@ -78,7 +78,7 @@ TimetableScreenRoot(
 )
 ```
 
-Because the binding is `@SingleIn` the screen's scope, resolving the navigator from `AppScope` is a Metro compile error — the DI graph confines it to the NavEntry layer, stronger than a checker or convention. (Only `AppNavigator.back()` stays app-scoped.)
+Because the binding is `@SingleIn` the screen's scope, resolving the navigator from the app or UI graph is a Metro compile error — the DI graph confines it to the NavEntry layer, stronger than a checker or convention. (Only `AppNavigator.back()` stays UI-scoped.)
 
 `graph` is the per-screen graph the NavEntry retains — see [NavEntry aggregation](./navigation-entry-aggregation.md) for how entries are registered and aggregated.
 

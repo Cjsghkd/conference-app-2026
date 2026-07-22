@@ -66,4 +66,4 @@ struct KaigiIosApp: App {
 
 The host layers the native Liquid Glass tab bar above this view controller with transparent tab content; for the overlay shape and its requirements, see [Liquid Glass tab bar](./ios-liquid-glass.md).
 
-Related: [iOS overview](./ios.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [AppGraph (app-wide dependency graph)](./di-app-graph.md)
+Related: [iOS overview](./ios.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [AppGraph and UiGraph](./di-app-graph.md)
