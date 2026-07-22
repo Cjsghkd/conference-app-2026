@@ -2,7 +2,7 @@
 
 This page follows one request end to end — from the platform entry point, through dependency injection, navigation, and the data layer, to a rendered, interactive feature screen. Read it top to bottom to see how the pieces fit; every layer links to the page that owns its details.
 
-The core stack: Compose Multiplatform for shared UI across all four platforms (Android / desktop JVM / iOS / Web), a composable Presenter for UI state, [Soil](./soil-keys.md) for the data layer with persist-by-default caching, [Metro](./di-app-graph.md) for compile-time dependency injection, and [Navigation3](./navigation.md) for the back stack on every platform. The one native exception is the iOS [Liquid Glass navigation bar](./ios-liquid-glass.md).
+The core stack: Compose Multiplatform for shared UI across all four platforms (Android / desktop JVM / iOS / Web), a composable Presenter for UI state, [Soil](./soil-keys.md) for the data layer with persist-by-default caching, [Metro](./di-app-graph.md) for compile-time dependency injection, and [Navigation3](./navigation.md) for the back stack on every platform. The one native exception is the iOS [Liquid Glass tab bar](./ios-liquid-glass.md).
 
 The same overall picture repeats at the start of each section, with the part that section covers highlighted.
 

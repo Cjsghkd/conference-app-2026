@@ -15,6 +15,6 @@ A set of documents covering the architecture and implementation policy of the Dr
 - [Navigation overview](./navigation.md) … a per-screen Navigator (hand-written) + `@ContributesIntoSet` + KSP-generated [NavKey serializers](./navigation-navkey-serializers.md) for "no central editing, no missed registrations"
 - [Soil mutation](./soil-mutation.md) … `mutateAsync` + `MutationSuccessEffect` + failure handling
 - [BuildKonfig (build-time values)](./build-config-buildkonfig.md) … exposing build-time values (version and other build state) to common code from a single source
-- [iOS overview](./ios.md) … almost full CMP with only the navigation bar in Liquid Glass
+- [iOS overview](./ios.md) … almost full CMP with only the tab bar in Liquid Glass
 - [Logging (Kermit)](./logging.md) … a single AppScope Kermit `Logger` with KMP-native writers per platform (incl. wasmJs=console), no expect/actual
 

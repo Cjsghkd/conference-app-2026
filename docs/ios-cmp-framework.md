@@ -4,22 +4,23 @@ The entire `KaigiApp` runs on iOS via `ComposeUIViewController`; every screen is
 
 ## Embedding
 
-> `IosAppGraph` exists in `app-shared/src/iosMain`. The entry-point functions and the Swift host app below define the intended embedding shape; they are not in the repository yet, and the only iOS host is the `iosGlassSpike` spike (`GlassSpikeViewController`).
-
-The Kotlin side (`app-shared/src/iosMain`) exposes a graph factory and a `UIViewController` factory that receives the graph — the iOS host owns the graph's lifetime (`createGraph<…>()` is inline + reified, so Swift cannot call it directly):
+The Kotlin side (`app-shared/src/iosMain`) exposes a graph factory and a `UIViewController` factory that receives the graph — the iOS host owns the graph's lifetime (`createGraph<…>()` is inline + reified, so Swift cannot call it directly). The view-controller factory also wires `IosTabBarSyncEffect`, the bridge between the back stack and the native tab bar:
 
 ```kotlin
-// app-shared/src/iosMain/…/KaigiAppViewController.kt
+// app-shared/src/iosMain/…/IosAppGraph.kt
 fun createIosAppGraph(): IosAppGraph = createGraph<IosAppGraph>()
 
-fun kaigiAppViewController(appGraph: AppGraph): UIViewController = ComposeUIViewController {
+// app-shared/src/iosMain/…/KaigiAppViewController.ios.kt
+fun kaigiAppViewController(appGraph: IosAppGraph): UIViewController = ComposeUIViewController {
     context(appGraph) {
-        KaigiApp()
+        val backStack = rememberKaigiBackStack()
+        IosTabBarSyncEffect(backStack)
+        KaigiApp(backStack)
     }
 }
 ```
 
-The Swift side owns the graph in a singleton, `KaigiAppGraphOwner` (modeled on the 2025 app's `Container.shared`), so native code anywhere — the Liquid Glass bar, deep-link handling — reaches the same graph the Compose UI runs on:
+The Swift side owns the graph in a singleton, `KaigiAppGraphOwner` (modeled on the 2025 app's `Container.shared`), so native code anywhere — the Liquid Glass tab bar, deep-link handling — reaches the same graph the Compose UI runs on:
 
 ```swift
 import AppShared
@@ -63,4 +64,6 @@ struct KaigiIosApp: App {
 }
 ```
 
-Related: [iOS overview](./ios.md) · [Liquid Glass navigation bar](./ios-liquid-glass.md) · [AppGraph (app-wide dependency graph)](./di-app-graph.md)
+The host layers the native Liquid Glass tab bar above this view controller with transparent tab content; for the overlay shape and its requirements, see [Liquid Glass tab bar](./ios-liquid-glass.md).
+
+Related: [iOS overview](./ios.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [AppGraph (app-wide dependency graph)](./di-app-graph.md)
