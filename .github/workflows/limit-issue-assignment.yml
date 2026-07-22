@@ -1,0 +1,34 @@
+name: Limit issue assignment
+
+on:
+  issues:
+    types: [assigned]
+
+permissions:
+  issues: write
+
+concurrency:
+  group: limit-issue-assignment-${{ github.event.assignee.login }}
+
+jobs:
+  enforce-single-assignment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check other open issues and enforce single assignment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          ASSIGNEE: ${{ github.event.assignee.login }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          other_issues=$(gh api "repos/${GH_REPO}/issues?assignee=${ASSIGNEE}&state=open&per_page=100" \
+            --jq "[.[] | select(.pull_request == null and .number != ${ISSUE_NUMBER}) | .number]")
+
+          if [ "$(echo "$other_issues" | jq 'length')" -eq 0 ]; then
+            exit 0
+          fi
+
+          gh issue edit "$ISSUE_NUMBER" --remove-assignee "$ASSIGNEE"
+
+          links=$(echo "$other_issues" | jq -r 'map("#" + (. | tostring)) | join(", ")')
+          gh issue comment "$ISSUE_NUMBER" --body "@${ASSIGNEE} you are already assigned to ${links}. Only one open issue can be assigned to you at a time — please finish that one first before taking on this issue."
