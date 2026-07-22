@@ -6,12 +6,11 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.retain.retain
-import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import io.github.droidkaigi.confsched.core.common.NavigatorEffect
+import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.common.rememberRootSceneStrategy
 import io.github.droidkaigi.confsched.core.common.rememberSafeClickInvokerNavEntryDecorator
 import io.github.droidkaigi.confsched.core.common.rememberSnackbarNavEntryDecorator
@@ -25,20 +24,21 @@ import soil.query.compose.rememberSubscription
 context(appGraph: AppGraph)
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun KaigiApp(backStack: NavBackStack<NavKey>) {
+fun KaigiApp() {
     val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
+    val backStack = context(uiGraph) { rememberKaigiBackStack() }
 
     SetupRemoteImageLoader()
 
-    SwrClientProvider(client = appGraph.swrClient) {
+    SwrClientProvider(client = uiGraph.swrClient) {
         SoilDataBoundary(
-            state = rememberSubscription(appGraph.themeColorSchemeSubscriptionKey),
+            state = rememberSubscription(uiGraph.themeColorSchemeSubscriptionKey),
         ) { colorScheme ->
             KaigiTheme(colorScheme = colorScheme) {
                 NavigatorEffect(
                     navigator = uiGraph.appNavigator,
                     backStack = backStack,
-                    logger = appGraph.logger,
+                    logger = uiGraph.logger,
                 )
                 RootTabSyncEffect(
                     backStack = backStack,
@@ -73,7 +73,7 @@ fun KaigiApp(backStack: NavBackStack<NavKey>) {
                     )
                 }
 
-                appGraph.soilErrorMonitor.Overlay()
+                uiGraph.soilErrorMonitor.Overlay()
             }
         }
     }

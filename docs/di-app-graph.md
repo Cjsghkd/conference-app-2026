@@ -12,10 +12,7 @@ Dependencies live in two nested graphs with distinct lifetimes:
 ```kotlin
 interface AppGraph {
     val uiGraphFactory: UiGraph.Factory
-    val navKeySerializers: NavKeySerializers
-    val swrClient: SwrClientPlus
-    val themeColorSchemeSubscriptionKey: ThemeColorSchemeSubscriptionKey
-    // …
+    val rootTabNavigator: RootTabNavigator // bridge to shells outside the Compose tree
 }
 
 @DependencyGraph(scope = AppScope::class)
@@ -63,6 +60,9 @@ Some bindings are declared directly on the graph rather than generated. `CommonA
 interface UiGraph {
     val appNavigator: AppNavigator
     val appEntryProvider: AppEntryProvider
+    val swrClient: SwrClientPlus
+    val themeColorSchemeSubscriptionKey: ThemeColorSchemeSubscriptionKey
+    // …
 
     @GraphExtension.Factory
     @ContributesTo(AppScope::class)
@@ -76,5 +76,7 @@ val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
 ```
 
 Anything whose lifetime is one UI instance binds into `UiScope`: `AppNavigator` is `@SingleIn(UiScope::class)`, features contribute `NavEntryProvider`s with `@ContributesIntoSet(UiScope::class)`, and the per-screen graph factories are contributed with `@ContributesTo(UiScope::class)` — so screen graphs are extensions of `UiGraph` and can inject UI-scoped bindings. Process-lifetime bindings must not depend on UI-scoped ones; Metro rejects the reverse edge at compile time.
+
+Accessors follow the consumer, not the binding's scope: everything the UI shell reads — including app-scoped bindings such as the `SwrClientPlus` or the logger — is exposed on `UiGraph`, while `AppGraph` keeps only what must be reachable before or outside a UI instance (the `UiGraph` factory and the Swift-facing `RootTabNavigator`).
 
 Related: [ScreenContext design](./screen-context.md) · [Per-screen graphs (@GraphExtension)](./di-screen-graph.md)

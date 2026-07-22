@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             context(appGraph) {
-                KaigiApp(backStack = rememberKaigiBackStack())
+                KaigiApp()
             }
         }
     }

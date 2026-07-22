@@ -6,6 +6,6 @@ import platform.UIKit.UIViewController
 
 fun kaigiAppViewController(appGraph: IosAppGraph): UIViewController = ComposeUIViewController {
     context(appGraph) {
-        KaigiApp(backStack = rememberKaigiBackStack())
+        KaigiApp()
     }
 }

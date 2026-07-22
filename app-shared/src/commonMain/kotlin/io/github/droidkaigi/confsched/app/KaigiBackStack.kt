@@ -8,15 +8,13 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.savedstate.serialization.SavedStateConfiguration
 import io.github.droidkaigi.confsched.feature.sessions.timetable.TimetableNavKey
 
-// Created by the platform shell and passed into KaigiApp, so shells (the iOS view controller)
-// can observe the back stack.
-context(appGraph: AppGraph)
+context(uiGraph: UiGraph)
 @Composable
-fun rememberKaigiBackStack(): NavBackStack<NavKey> = rememberNavBackStack(
-    configuration = remember(appGraph.navKeySerializersProvider) {
+internal fun rememberKaigiBackStack(): NavBackStack<NavKey> = rememberNavBackStack(
+    configuration = remember(uiGraph.navKeySerializersProvider) {
         SavedStateConfiguration {
-            serializersModule = appGraph.navKeySerializersProvider.serializersModule
+            serializersModule = uiGraph.navKeySerializersProvider.serializersModule
         }
     },
-    remember { appGraph.initialNavKeyOverrideProvider.initialNavKeyOverride ?: TimetableNavKey },
+    remember { uiGraph.initialNavKeyOverrideProvider.initialNavKeyOverride ?: TimetableNavKey },
 )

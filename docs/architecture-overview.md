@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             context(appGraph) {
-                KaigiApp(backStack = rememberKaigiBackStack())
+                KaigiApp()
             }
         }
     }
@@ -54,9 +54,10 @@ flowchart LR
 ```kotlin
 context(appGraph: AppGraph)
 @Composable
-fun KaigiApp(backStack: NavBackStack<NavKey>) {
+fun KaigiApp() {
     val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
-    SwrClientProvider(appGraph.swrClient) {      // Soil client, available to every screen
+    val backStack = context(uiGraph) { rememberKaigiBackStack() }
+    SwrClientProvider(uiGraph.swrClient) {       // Soil client, available to every screen
         KaigiTheme(colorScheme = …) {            // color scheme subscribed via Soil
             NavigatorEffect(…)                   // AppNavigator commands → back stack
             NavDisplay(
