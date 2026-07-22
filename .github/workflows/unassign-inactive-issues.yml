@@ -25,8 +25,9 @@ jobs:
             const UNASSIGN_AFTER_DAYS = 7
             const MS_PER_DAY = 24 * 60 * 60 * 1000
 
+            const input = context.payload.inputs?.dry_run
             const dryRun = context.eventName === 'workflow_dispatch'
-              ? core.getInput('dry_run') !== 'false'
+              ? input !== false && input !== 'false'
               : false
             core.info(`dry_run=${dryRun}`)
 
@@ -35,28 +36,26 @@ jobs:
 
             const reminderMarker = (login) => `<!-- stale-reminder:${login} -->`
 
-            async function hasOpenLinkedPullRequest(issueNumber) {
-              const timeline = await github.paginate(github.rest.issues.listEventsForTimeline, {
-                owner,
-                repo,
-                issue_number: issueNumber,
-                per_page: 100,
-              })
-
+            async function openLinkedPullRequestAuthors(timeline) {
               const prNumbers = new Set()
               for (const event of timeline) {
-                if (event.event === 'cross-referenced' && event.source?.issue?.pull_request) {
+                if (
+                  event.event === 'cross-referenced' &&
+                  event.source?.issue?.pull_request &&
+                  event.source.issue.repository?.full_name === `${owner}/${repo}`
+                ) {
                   prNumbers.add(event.source.issue.number)
                 }
               }
 
+              const authors = new Set()
               for (const prNumber of prNumbers) {
                 const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber })
-                if (pr.state === 'open') {
-                  return true
+                if (pr.state === 'open' && pr.user?.login) {
+                  authors.add(pr.user.login)
                 }
               }
-              return false
+              return authors
             }
 
             function lastAssignedAt(timeline, login) {
@@ -101,10 +100,7 @@ jobs:
                 per_page: 100,
               })
 
-              if (await hasOpenLinkedPullRequest(issue.number)) {
-                core.info(`#${issue.number}: has an open linked pull request, skipping`)
-                continue
-              }
+              const linkedPrAuthors = await openLinkedPullRequestAuthors(timeline)
 
               const comments = await github.paginate(github.rest.issues.listComments, {
                 owner,
@@ -115,6 +111,10 @@ jobs:
 
               for (const assignee of issue.assignees) {
                 const login = assignee.login
+                if (linkedPrAuthors.has(login)) {
+                  core.info(`#${issue.number}: ${login} has an open linked pull request, skipping`)
+                  continue
+                }
                 const lastActivity =
                   lastCommentAt(comments, login) ?? lastAssignedAt(timeline, login) ?? new Date(issue.created_at)
                 const daysSince = (now - lastActivity.getTime()) / MS_PER_DAY
@@ -146,7 +146,7 @@ jobs:
                       owner,
                       repo,
                       issue_number: issue.number,
-                      body: `@${login} This issue has had no activity for ${REMIND_AFTER_DAYS} days. If you're still working on it, please leave a comment. Otherwise, the assignment will be removed after ${UNASSIGN_AFTER_DAYS} days of inactivity.\n${reminderMarker(login)}`,
+                      body: `@${login} This issue has had no activity for ${REMIND_AFTER_DAYS} days. If you're still working on it, please leave a comment (opening a draft pull request also counts). Otherwise, the assignment will be removed after ${UNASSIGN_AFTER_DAYS} days of inactivity.\n${reminderMarker(login)}`,
                     })
                   }
                 }
