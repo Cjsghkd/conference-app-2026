@@ -1,7 +1,6 @@
 package io.github.droidkaigi.confsched.core.common
 
 import androidx.navigation3.runtime.NavKey
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.channels.Channel
@@ -16,7 +15,7 @@ sealed interface NavCommand {
 }
 
 @Inject
-@SingleIn(AppScope::class)
+@SingleIn(UiScope::class)
 class AppNavigator(private val logger: KaigiLogger) : Navigator {
     private val commandChannel = Channel<NavCommand>(Channel.BUFFERED)
     val commands: Flow<NavCommand> = commandChannel.receiveAsFlow()

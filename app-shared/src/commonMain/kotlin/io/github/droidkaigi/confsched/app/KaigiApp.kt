@@ -5,6 +5,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.retain.retain
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -25,6 +26,8 @@ context(appGraph: AppGraph)
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun KaigiApp(backStack: NavBackStack<NavKey>) {
+    val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
+
     SetupRemoteImageLoader()
 
     SwrClientProvider(client = appGraph.swrClient) {
@@ -33,9 +36,14 @@ fun KaigiApp(backStack: NavBackStack<NavKey>) {
         ) { colorScheme ->
             KaigiTheme(colorScheme = colorScheme) {
                 NavigatorEffect(
-                    navigator = appGraph.appNavigator,
+                    navigator = uiGraph.appNavigator,
                     backStack = backStack,
                     logger = appGraph.logger,
+                )
+                RootTabSyncEffect(
+                    backStack = backStack,
+                    rootTabNavigator = appGraph.rootTabNavigator,
+                    onSelectTab = { tab -> uiGraph.appNavigator.moveToTop(tab.key) },
                 )
 
                 // A themed backdrop behind the transition: while entries cross-fade, both are
@@ -43,7 +51,7 @@ fun KaigiApp(backStack: NavBackStack<NavKey>) {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     NavDisplay(
                         backStack = backStack,
-                        onBack = appGraph.appNavigator::back,
+                        onBack = uiGraph.appNavigator::back,
                         entryDecorators = listOf(
                             rememberSaveableStateHolderNavEntryDecorator(),
                             retainNavEntryDecorator(),
@@ -58,10 +66,10 @@ fun KaigiApp(backStack: NavBackStack<NavKey>) {
                         sceneDecoratorStrategies = listOf(
                             rememberRootTabSceneDecorator(
                                 currentKey = backStack::lastOrNull,
-                                onSelectTab = { tab -> appGraph.appNavigator.moveToTop(tab.key) },
+                                onSelectTab = { tab -> uiGraph.appNavigator.moveToTop(tab.key) },
                             )
                         ),
-                        entryProvider = appGraph.appEntryProvider.entryProvider,
+                        entryProvider = uiGraph.appEntryProvider.entryProvider,
                     )
                 }
 

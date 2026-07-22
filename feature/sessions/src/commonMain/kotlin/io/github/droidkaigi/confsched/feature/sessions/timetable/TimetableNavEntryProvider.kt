@@ -7,15 +7,15 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.AppScope
 import io.github.droidkaigi.confsched.core.common.NavEntryProvider
-import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.common.RootSceneStrategy
+import io.github.droidkaigi.confsched.core.common.UiScope
+import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.common.instantNavTransition
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-@ContributesIntoSet(AppScope::class)
+@ContributesIntoSet(UiScope::class)
 @Inject
 class TimetableNavEntryProvider(
     private val screenGraphFactory: TimetableScreenGraph.Factory,

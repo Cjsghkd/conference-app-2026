@@ -1,19 +1,19 @@
 package io.github.droidkaigi.confsched.feature.sessions.timetable
 
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.runtime.retain.retain
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import io.github.droidkaigi.confsched.core.common.AppNavigator
 import io.github.droidkaigi.confsched.core.common.NavEntryProvider
+import io.github.droidkaigi.confsched.core.common.UiScope
 import io.github.droidkaigi.confsched.core.common.context
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
-@ContributesIntoSet(AppScope::class)
+@ContributesIntoSet(UiScope::class)
 @Inject
 class TimetableItemDetailNavEntryProvider(
     private val screenGraphFactory: TimetableItemDetailScreenGraph.Factory,
