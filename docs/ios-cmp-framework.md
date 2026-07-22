@@ -32,7 +32,7 @@ final class KaigiAppGraphOwner: Sendable {
     let appGraph: IosAppGraph
 
     private init() {
-        appGraph = KaigiAppViewControllerKt.createIosAppGraph()
+        appGraph = IosAppGraphKt.createIosAppGraph()
     }
 }
 ```
@@ -45,7 +45,7 @@ import AppShared
 
 struct CMPKaigiAppViewController: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        KaigiAppViewControllerKt.kaigiAppViewController(
+        KaigiAppViewController_iosKt.kaigiAppViewController(
             appGraph: KaigiAppGraphOwner.shared.appGraph,
         )
     }

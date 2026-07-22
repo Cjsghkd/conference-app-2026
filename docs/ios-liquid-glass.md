@@ -33,11 +33,11 @@ Scroll-driven bar behaviors (`tabBarMinimizeBehavior`, scroll-edge reactions) ar
 
 ## Cross-renderer compositing
 
-The Liquid Glass bar refracts and tints the CMP (Skia/Metal) backdrop behind it: the glass samples the live Compose Metal layer, so as content scrolls the glass tracks the CMP colors underneath. `GlassSpikeViewController` (`app-shared/src/iosMain`) renders colorful scroll content for compositing experiments, targeting iOS 26.
+The Liquid Glass bar refracts and tints the CMP (Skia/Metal) backdrop behind it: the glass samples the live Compose Metal layer, so as content scrolls the glass tracks the CMP colors underneath. The native `TabView` bar relies on this compositing; `GlassSpikeViewController` (`app-shared/src/iosMain`) renders colorful scroll content for exercising it, targeting iOS 26.
 
 ![iOS 26 Liquid Glass refracting and tinting the CMP (Skia/Metal) content behind the top bar and bottom tab capsule](./images/ios-liquid-glass-cmp-backdrop.png)
 
-The top bar picks up the red card behind it and is tinted red, while the bottom floating tab capsule refracts the text behind it through glass. Captured on the iOS 26.2 simulator in light mode.
+The screenshot shows a hand-built `.glassEffect` host over the spike content, demonstrating the compositing the `TabView` bar relies on. The top bar picks up the red card behind it and is tinted red, while the bottom floating tab capsule refracts the text behind it through glass. Captured on the iOS 26.2 simulator in light mode.
 
 CMP requires `CADisableMinimumFrameDurationOnPhone=true` in `Info.plist`, or it aborts on launch at `PlistSanityCheck`.
 
@@ -49,6 +49,6 @@ An alternative embedding gives each tab of the `TabView` its own `ComposeUIViewC
 - **Per-tab state plumbing.** Back-stack persistence, `RetainNavEntryDecorator` scopes, and the snackbar and overlay hosts multiply per stack, and back semantics diverge from the other platforms: back no longer falls through stashed tabs, so the [`RootSceneStrategy`](./navigation-predictive-back-tabs.md) model does not carry over.
 - **Deep-link routing.** A deep link resolves to a tab first, then pushes onto that tab's stack.
 
-Scroll-driven bar behaviors remain unavailable in this embedding too — the content inside each tab is still Compose, not a native `UIScrollView`. The overlay embedding is the default because it keeps the navigation model identical across platforms at near-zero cost.
+Scroll-driven bar behaviors remain unavailable in this embedding too — the content inside each tab is still Compose, not a native `UIScrollView`. The overlay embedding is the default because it keeps the navigation model identical across platforms and requires no change to the shared navigation code.
 
 Related: [iOS overview](./ios.md) · [Root tab bar](./navigation-root-tab-bar.md) · [Navigation](./navigation.md)
