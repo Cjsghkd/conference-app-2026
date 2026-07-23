@@ -27,4 +27,8 @@ Tab taps are propagated out of the decorator as events; `KaigiApp` turns them in
 
 The selected item reflects whichever root is on top. Back falls out of the single stack via `NavDisplay`'s `onBack`: from About → Timetable; from the home root → exit, even with a tab stashed beneath it, because [`RootSceneStrategy`](./navigation-predictive-back-tabs.md) empties its `previousEntries`.
 
+## iOS
+
+On iOS the bar is native: a SwiftUI `TabView` overlays the Compose content and `RootTabSceneDecorator` is not applied. Tab taps arrive through `RootTabNavigator` and land in the same `AppNavigator.moveToTop` path, so the back-stack semantics above hold unchanged. For details, see [Liquid Glass tab bar](./ios-liquid-glass.md).
+
 Related: [Root NavEntry emulation (RootSceneStrategy)](./navigation-predictive-back-tabs.md) · [Architecture overview](./architecture-overview.md) · [Entry retention (RetainNavEntryDecorator)](./navigation-retain-entry-decorator.md)
