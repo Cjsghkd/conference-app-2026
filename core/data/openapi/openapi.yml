@@ -1,0 +1,679 @@
+openapi: 3.0.0
+info:
+  title: DroidKaigi API Service
+  version: 0.0.0
+paths:
+  /events/droidkaigi2026/categories:
+    get:
+      operationId: DroidKaigi2026Routes_getCategories
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryListResponse"
+      tags:
+      - Categories
+  /events/droidkaigi2026/contributors:
+    get:
+      operationId: DroidKaigi2026Routes_getContributors
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContributorListResponse"
+      tags:
+      - Contributors
+  /events/droidkaigi2026/prizes:
+    get:
+      operationId: DroidKaigi2026Routes_getPrizes
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrizeListResponse"
+      tags:
+      - Prizes
+  /events/droidkaigi2026/projects:
+    get:
+      operationId: DroidKaigi2026Routes_getProjects
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectListResponse"
+      tags:
+      - Projects
+  /events/droidkaigi2026/rooms:
+    get:
+      operationId: DroidKaigi2026Routes_getRooms
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomListResponse"
+      tags:
+      - Rooms
+  /events/droidkaigi2026/sessions:
+    get:
+      operationId: DroidKaigi2026Routes_getSessions
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionListResponseV4"
+      tags:
+      - Sessions
+  /events/droidkaigi2026/speakers:
+    get:
+      operationId: DroidKaigi2026Routes_getSpeakers
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpeakerListResponseV2"
+      tags:
+      - Speakers
+  /events/droidkaigi2026/sponsor:
+    get:
+      operationId: DroidKaigi2026Routes_getSponsors
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SponsorListResponse"
+      tags:
+      - Sponsor
+  /events/droidkaigi2026/staff:
+    get:
+      operationId: DroidKaigi2026Routes_getStaff
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffListResponse"
+      tags:
+      - Staff
+  /events/droidkaigi2026/timetable:
+    get:
+      operationId: DroidKaigi2026Routes_getTimetable
+      parameters: []
+      responses:
+        200:
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TimetableResponseV4"
+      tags:
+      - Timetable
+components:
+  schemas:
+    Asset:
+      type: object
+      properties:
+        videoUrl:
+          type: string
+          format: uri
+        slideUrl:
+          type: string
+          format: uri
+    CategoryListResponse:
+      type: object
+      required:
+      - status
+      - categories
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionCategory"
+    Contributor:
+      type: object
+      required:
+      - id
+      - username
+      - iconUrl
+      - icon32Url
+      - icon64Url
+      - icon128Url
+      - profileUrl
+      properties:
+        id:
+          $ref: "#/components/schemas/ContributorId"
+        username:
+          type: string
+        iconUrl:
+          type: string
+          format: uri
+        icon32Url:
+          type: string
+          format: uri
+        icon64Url:
+          type: string
+          format: uri
+        icon128Url:
+          type: string
+          format: uri
+        profileUrl:
+          type: string
+          format: uri
+    ContributorId:
+      type: integer
+      format: int64
+    ContributorListResponse:
+      type: object
+      required:
+      - status
+      - contributors
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        contributors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contributor"
+    EventProject:
+      type: object
+      required:
+      - id
+      - title
+      - i18nDesc
+      - roomId
+      - startsAt
+      - endsAt
+      - noShow
+      properties:
+        id:
+          $ref: "#/components/schemas/EventProjectId"
+        title:
+          $ref: "#/components/schemas/I18nMessage"
+        i18nDesc:
+          $ref: "#/components/schemas/I18nMessage"
+        roomId:
+          $ref: "#/components/schemas/SessionRoomId"
+        message:
+          $ref: "#/components/schemas/I18nMessage"
+        startsAt:
+          $ref: "#/components/schemas/JSTDateTime"
+        endsAt:
+          $ref: "#/components/schemas/JSTDateTime"
+        moreDetailsUrl:
+          type: string
+          format: uri
+        noShow:
+          type: boolean
+    EventProjectId:
+      type: string
+      format: uuid
+    HttpStatus:
+      type: string
+      enum:
+      - CONTINUE
+      - SWITCHING_PROTOCOLS
+      - PROCESSING
+      - CHECKPOINT
+      - OK
+      - CREATED
+      - ACCEPTED
+      - NON_AUTHORITATIVE_INFORMATION
+      - NO_CONTENT
+      - RESET_CONTENT
+      - PARTIAL_CONTENT
+      - MULTI_STATUS
+      - ALREADY_REPORTED
+      - IM_USED
+      - MULTIPLE_CHOICES
+      - MOVED_PERMANENTLY
+      - FOUND
+      - MOVED_TEMPORARILY
+      - SEE_OTHER
+      - NOT_MODIFIED
+      - USE_PROXY
+      - TEMPORARY_REDIRECT
+      - PERMANENT_REDIRECT
+      - BAD_REQUEST
+      - UNAUTHORIZED
+      - PAYMENT_REQUIRED
+      - FORBIDDEN
+      - NOT_FOUND
+      - METHOD_NOT_ALLOWED
+      - NOT_ACCEPTABLE
+      - PROXY_AUTHENTICATION_REQUIRED
+      - REQUEST_TIMEOUT
+      - CONFLICT
+      - GONE
+      - LENGTH_REQUIRED
+      - PRECONDITION_FAILED
+      - PAYLOAD_TOO_LARGE
+      - REQUEST_ENTITY_TOO_LARGE
+      - URI_TOO_LONG
+      - REQUEST_URI_TOO_LONG
+      - UNSUPPORTED_MEDIA_TYPE
+      - REQUESTED_RANGE_NOT_SATISFIABLE
+      - EXPECTATION_FAILED
+      - I_AM_A_TEAPOT
+      - INSUFFICIENT_SPACE_ON_RESOURCE
+      - METHOD_FAILURE
+      - DESTINATION_LOCKED
+      - UNPROCESSABLE_ENTITY
+      - LOCKED
+      - FAILED_DEPENDENCY
+      - TOO_EARLY
+      - UPGRADE_REQUIRED
+      - PRECONDITION_REQUIRED
+      - TOO_MANY_REQUESTS
+      - REQUEST_HEADER_FIELDS_TOO_LARGE
+      - UNAVAILABLE_FOR_LEGAL_REASONS
+      - INTERNAL_SERVER_ERROR
+      - NOT_IMPLEMENTED
+      - BAD_GATEWAY
+      - SERVICE_UNAVAILABLE
+      - GATEWAY_TIMEOUT
+      - HTTP_VERSION_NOT_SUPPORTED
+      - VARIANT_ALSO_NEGOTIATES
+      - INSUFFICIENT_STORAGE
+      - LOOP_DETECTED
+      - BANDWIDTH_LIMIT_EXCEEDED
+      - NOT_EXTENDED
+      - NETWORK_AUTHENTICATION_REQUIRED
+    I18nMessage:
+      type: object
+      required:
+      - ja
+      - en
+      properties:
+        ja:
+          type: string
+          minLength: 1
+        en:
+          type: string
+          minLength: 1
+    JSTDateTime:
+      type: string
+    Language:
+      type: string
+      enum:
+      - ENGLISH
+      - JAPANESE
+      - MIXED
+    Prize:
+      type: object
+      required:
+      - id
+      - name
+      - group
+      - image
+      properties:
+        id:
+          $ref: "#/components/schemas/PrizeId"
+        name:
+          $ref: "#/components/schemas/I18nMessage"
+        group:
+          $ref: "#/components/schemas/PrizeGroup"
+        image:
+          type: string
+          format: uri
+    PrizeGroup:
+      type: string
+      enum:
+      - A
+      - B
+    PrizeId:
+      type: string
+      format: uuid
+    PrizeListResponse:
+      type: object
+      required:
+      - status
+      - prizes
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        prizes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Prize"
+    ProjectListResponse:
+      type: object
+      required:
+      - status
+      - projects
+      - rooms
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/EventProject"
+        rooms:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionRoom"
+    RoomListResponse:
+      type: object
+      required:
+      - status
+      - rooms
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        rooms:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionRoom"
+    SessionCategory:
+      type: object
+      required:
+      - id
+      - title
+      - items
+      - sort
+      properties:
+        id:
+          $ref: "#/components/schemas/SessionCategoryId"
+        title:
+          $ref: "#/components/schemas/I18nMessage"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionCategoryItem"
+        sort:
+          type: integer
+          format: int32
+    SessionCategoryId:
+      type: integer
+      format: int64
+    SessionCategoryItem:
+      type: object
+      required:
+      - id
+      - name
+      - sort
+      properties:
+        id:
+          $ref: "#/components/schemas/SessionCategoryItemId"
+        name:
+          $ref: "#/components/schemas/I18nMessage"
+        sort:
+          type: integer
+          format: int32
+    SessionCategoryItemId:
+      type: integer
+      format: int64
+    SessionId:
+      type: string
+    SessionListResponseV4:
+      type: object
+      required:
+      - status
+      - sessions
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionV4"
+    SessionRoom:
+      type: object
+      required:
+      - id
+      - name
+      - sort
+      properties:
+        id:
+          $ref: "#/components/schemas/SessionRoomId"
+        name:
+          $ref: "#/components/schemas/I18nMessage"
+        sort:
+          type: integer
+          format: int32
+    SessionRoomId:
+      type: integer
+      format: int64
+    SessionSpeakerId:
+      type: string
+      format: uuid
+    SessionSpeakerV2:
+      type: object
+      required:
+      - id
+      - fullName
+      - tagLine
+      - sessions
+      properties:
+        id:
+          $ref: "#/components/schemas/SessionSpeakerId"
+        fullName:
+          type: string
+        bio:
+          type: string
+        tagLine:
+          type: string
+        profilePicture:
+          type: string
+          format: uri
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionId"
+    SessionType:
+      type: string
+      enum:
+      - NORMAL
+      - WELCOME_TALK
+      - RESERVED
+      - CODELABS
+      - FIRESIDE_CHAT
+      - LUNCH
+      - BREAK
+      - AFTER_PARTY
+      - RECAP
+    SessionV4:
+      type: object
+      required:
+      - id
+      - title
+      - startsAt
+      - endsAt
+      - speakers
+      - roomId
+      - language
+      - lengthInMinutes
+      - interpretationTarget
+      - asset
+      - sessionType
+      - noShow
+      - targetAudience
+      properties:
+        id:
+          $ref: "#/components/schemas/SessionId"
+        title:
+          $ref: "#/components/schemas/I18nMessage"
+        startsAt:
+          $ref: "#/components/schemas/JSTDateTime"
+        endsAt:
+          $ref: "#/components/schemas/JSTDateTime"
+        speakers:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionSpeakerId"
+        roomId:
+          $ref: "#/components/schemas/SessionRoomId"
+        language:
+          $ref: "#/components/schemas/Language"
+        lengthInMinutes:
+          type: integer
+          format: int32
+        interpretationTarget:
+          type: boolean
+        asset:
+          $ref: "#/components/schemas/Asset"
+        message:
+          $ref: "#/components/schemas/I18nMessage"
+        sessionType:
+          $ref: "#/components/schemas/SessionType"
+        noShow:
+          type: boolean
+        sessionCategoryItemId:
+          $ref: "#/components/schemas/SessionCategoryItemId"
+        description:
+          $ref: "#/components/schemas/I18nMessage"
+        targetAudience:
+          $ref: "#/components/schemas/I18nMessage"
+    SpeakerListResponseV2:
+      type: object
+      required:
+      - status
+      - speakers
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        speakers:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionSpeakerV2"
+    Sponsor:
+      type: object
+      required:
+      - sponsorName
+      - sponsorLogo
+      - plan
+      - link
+      - checkedBySponsor
+      properties:
+        sponsorName:
+          type: string
+          minLength: 1
+        sponsorLogo:
+          type: string
+          format: uri
+          minLength: 1
+        plan:
+          $ref: "#/components/schemas/SponsorPlan"
+        link:
+          type: string
+          format: uri
+          minLength: 1
+        checkedBySponsor:
+          type: boolean
+    SponsorListResponse:
+      type: object
+      required:
+      - status
+      - sponsor
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        sponsor:
+          type: array
+          items:
+            $ref: "#/components/schemas/Sponsor"
+    SponsorPlan:
+      type: string
+      enum:
+      - PLATINUM
+      - GOLD
+      - SUPPORTER
+    Staff:
+      type: object
+      required:
+      - id
+      - username
+      - profileUrl
+      - iconUrl
+      - icon32Url
+      - icon64Url
+      - icon128Url
+      properties:
+        id:
+          $ref: "#/components/schemas/StaffId"
+        username:
+          type: string
+        profileUrl:
+          type: string
+          format: uri
+        iconUrl:
+          type: string
+          format: uri
+        icon32Url:
+          type: string
+          format: uri
+        icon64Url:
+          type: string
+          format: uri
+        icon128Url:
+          type: string
+          format: uri
+    StaffId:
+      type: integer
+      format: int64
+    StaffListResponse:
+      type: object
+      required:
+      - status
+      - staff
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        staff:
+          type: array
+          items:
+            $ref: "#/components/schemas/Staff"
+    TimetableResponseV4:
+      type: object
+      required:
+      - status
+      - sessions
+      - speakers
+      - rooms
+      - categories
+      properties:
+        status:
+          $ref: "#/components/schemas/HttpStatus"
+        sessions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionV4"
+        speakers:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionSpeakerV2"
+        rooms:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionRoom"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/SessionCategory"

@@ -11,7 +11,7 @@ import kotlinx.collections.immutable.toPersistentList
 @Inject
 @ContributesBinding(AppScope::class)
 class DefaultTimetableQueryKey(
-    private val api: SessionsApi,
+    private val api: TimetableApi,
     private val fileStorage: ServerEnvironmentScopedFileStorage,
 ) : TimetableQueryKey by buildPersistedQueryKey(
     id = SoilIds.timetableQuery,

@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.metro)
     alias(libs.plugins.ktorfit)
+    alias(libs.plugins.droidkaigiPrimitiveOpenapi)
     id("com.google.devtools.ksp")
 }
 
