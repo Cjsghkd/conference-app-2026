@@ -95,13 +95,7 @@ import kotlinx.serialization.*
     {{#name}}{{^isEmpty}}{{&name}}{{/isEmpty}}{{#isEmpty}}_{{/isEmpty}}{{/name}}({{{value}}}){{^-last}},{{/-last}}{{#-last}};{{/-last}}
     {{/isArray}}
 {{/enumVars}}{{/allowableValues}}
-    /**
-     * Override [toString()] to avoid using the enum variable name as the value, and instead use
-     * the actual value defined in the API spec file.
-     *
-     * This solves a problem when the variable name and its value are different, and ensures that
-     * the client sends the correct enum values to the server always.
-     */
+    // Must return the spec-defined value, not the constant name, so serialized requests stay valid.
     override fun toString(): kotlin.String = value{{^isString}}.toString(){{/isString}}
 
     {{^nonPublicApi}}{{#explicitApi}}public {{/explicitApi}}{{/nonPublicApi}}companion object {

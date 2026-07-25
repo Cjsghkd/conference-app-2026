@@ -78,9 +78,12 @@ openApiGenerate {
 
 pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
     extensions.configure<KotlinMultiplatformExtension> {
-        // The task-provider mapping carries the openApiGenerate dependency to every consumer of
-        // the source set (compilations, KSP, IDE import) without explicit dependsOn wiring.
-        val generatedSources = tasks.named("openApiGenerate").map { generatedDir.get().dir("src/commonMain/kotlin") }
+        // zip keeps the directory provider lazy while carrying the openApiGenerate dependency to
+        // every consumer of the source set (compilations, KSP, IDE import) without explicit
+        // dependsOn wiring. The task's own outputDir property cannot be read here: consumers
+        // resolve source directories at task-graph time, before the task has run.
+        val generatedSources = tasks.named("openApiGenerate")
+            .zip(generatedDir) { _, dir -> dir.dir("src/commonMain/kotlin") }
         sourceSets.getByName("commonMain").kotlin.srcDir(generatedSources)
     }
 }
