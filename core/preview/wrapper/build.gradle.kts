@@ -12,13 +12,17 @@ kotlin {
             implementation(libs.composeRuntime)
             implementation(libs.composeUi)
             implementation(libs.composeUiToolingPreview)
-            // Metro aggregates the resolver binding from impl at this module's compile time, while impl
-            // stays off production classpaths; partial linkage tolerates the dangling reference because
-            // Wrap never runs in production.
+        }
+
+        // Metro aggregates the resolver binding from impl at this module's compile time, while impl
+        // stays off production classpaths. Only the Android and JVM targets render previews, and
+        // compileOnly is unsupported for Kotlin/Native and Kotlin/Wasm, so the dependency is declared
+        // per target instead of in commonMain; the other targets fall back to NoopPreviewImageResolver.
+        androidMain.dependencies {
             compileOnly(project(":core:preview:impl"))
         }
 
-        androidMain.dependencies {
+        jvmMain.dependencies {
             compileOnly(project(":core:preview:impl"))
         }
     }
