@@ -29,7 +29,7 @@ For screen `Foo` in feature module `bar`, expect (see `docs/building-a-screen.md
 
 - `core/model/.../FooScreenScope.kt`, plus any `Foo*QueryKey` / `Foo*SubscriptionKey` / `Foo*MutationKey` typealiases
 - `core/data/.../DefaultFoo*Key.kt`
-- `feature/bar/.../FooScreenContext.kt`, `FooScreenGraph.kt`, `FooScreenContract.kt`, `FooScreenPresenter.kt`, `FooScreen.kt`, `FooScreenRoot.kt`, `FooNavKey.kt`, `FooNavEntryProvider.kt`, `FooScreenNavigator.kt`
+- `feature/bar/.../FooScreenContext.kt`, `FooScreenGraph.kt`, `FooScreenAction.kt`, `FooScreenActionResult.kt`, `FooScreenUiState.kt`, `FooScreenPresenter.kt`, `FooScreen.kt`, `FooScreenRoot.kt`, `FooNavKey.kt`, `FooNavEntryProvider.kt`, `FooScreenNavigator.kt`
 - `app-shared/.../DefaultFooScreenNavigator.kt` (exception: `feature:debug` screens keep their Default navigator in-feature because the module is excluded from production builds)
 - Tests under `feature/bar/src/jvmTest/` and screenshots under `feature/bar/screenshots/`
 
@@ -44,7 +44,8 @@ Work through every section. For each item, verify in the actual code, not by fil
 - [ ] Soil key **typealiases** (contracts) live in `core:model` (or `core:data` when the payload type is data-layer-only); **implementations** live in `core:data`.
 - [ ] No cross-feature imports (only `feature:debug` is exempt as dev-only tooling).
 
-### 2. Contract (Action / ActionResult / UiState)
+### 2. Action / ActionResult / UiState
+- [ ] Each of the three lives in its own file, named after the declaration it holds.
 - [ ] `UiState` is a plain data class of render-ready values — no callbacks, no mutable state, no Soil objects.
 - [ ] Actions represent real work handled by the presenter. Navigation-only clicks are wired straight from Root to the nav lambda, not routed through the channel (the `NoForwardOnlyActionHandler` checker catches the emit-only shape, but not a handler that does trivial non-work).
 - [ ] ActionResults are one-shot outcomes (messages, navigation triggers) consumed in Root via `ActionResultEffect`.

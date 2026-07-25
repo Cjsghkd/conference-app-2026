@@ -103,11 +103,12 @@ class TimetableScreenContext(
 
 Composition (holds), not inheritance (is-a): were it is-a, the `ScreenContext` that Root holds would also satisfy `PresenterContext`, leaking the action-consume capability into Root. That mistake is rejected by a FIR checker. For the reasoning, retain, and the per-screen `@GraphExtension` trio, see [ScreenContext design](./screen-context.md).
 
-## Contract — Action / ActionResult / UiState
+## Action / ActionResult / UiState
 
 **Diagram: the labels on the `ScreenChannel` edges.** `Action` is the channel input (UI → presenter), `ActionResult` the one-off output (presenter → Root), `UiState` the render input.
 
 Do here:
+- Declare each of the three in its own file, named after the declaration (`<Screen>ScreenAction.kt`, `<Screen>ScreenActionResult.kt`, `<Screen>ScreenUiState.kt`). A screen with no action and no one-off declares only `UiState`.
 - List only **real-work** actions in `Action` (no navigation-only cases).
 - Keep `UiState` immutable (immutable collections) for strong-skipping.
 
@@ -312,7 +313,9 @@ core/model/.../Timetable.kt                               // domain models
 core/data/.../Default*Key.kt                              // one file per key impl (shaping in fetch)
 feature/sessions/.../timetable/TimetableScreenContext.kt  // PresenterContext + ScreenContext
 feature/sessions/.../timetable/TimetableScreenGraph.kt    // per-screen @GraphExtension (+ MutationTag @Provides)
-feature/sessions/.../timetable/TimetableScreenContract.kt // Action / ActionResult / UiState
+feature/sessions/.../timetable/TimetableScreenAction.kt   // one file per contract declaration
+feature/sessions/.../timetable/TimetableScreenActionResult.kt
+feature/sessions/.../timetable/TimetableScreenUiState.kt
 feature/sessions/.../timetable/TimetableScreenPresenter.kt
 feature/sessions/.../timetable/TimetableScreen.kt         // Screen + previews
 feature/sessions/.../timetable/TimetableScreenRoot.kt

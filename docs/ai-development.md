@@ -13,7 +13,7 @@ conference-app-2026/scripts/new-screen.sh --feature sponsors --screen Sponsors
 | Where | Generated |
 | --- | --- |
 | `:core:model` | `<Screen>ScreenScope` (scope marker) |
-| `feature/<f>` | [`ScreenContext`](./screen-context.md)/`PresenterContext`, `@GraphExtension` graph, Contract (Action / ActionResult / UiState), Presenter, Screen, ScreenRoot, `NavKey`, `NavEntryProvider`, `ScreenNavigator` |
+| `feature/<f>` | [`ScreenContext`](./screen-context.md)/`PresenterContext`, `@GraphExtension` graph, `Action` / `ActionResult` / `UiState` (one file each), Presenter, Screen, ScreenRoot, `NavKey`, `NavEntryProvider`, `ScreenNavigator` |
 | `app-shared` | `Default<Screen>ScreenNavigator` |
 
 If the feature module does not exist, pass `--create-module` to scaffold the module itself (build file, `settings.gradle.kts` include, `app-shared` dependency) — without the flag a missing module is an error, so a typo in `--feature` cannot silently create a module. Existing files are never overwritten, and the script prints a summary of what it created. The generated code compiles on all four targets and passes every FIR checker.
