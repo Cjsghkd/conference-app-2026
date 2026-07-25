@@ -15,4 +15,4 @@ Before | After
 ## Movie (Optional)
 Before | After
 :--: | :--:
-<video src="" width="300" > | <video src="" width="300" >
+<video src="" width="300"></video> | <video src="" width="300"></video>
