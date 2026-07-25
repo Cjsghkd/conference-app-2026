@@ -188,9 +188,9 @@ Why: the consumed Success/Error stays in the Soil cache beyond the screen instan
 ```kotlin
 // commonMain
 @PlatformOnly(TargetPlatform.Ios)
-fun TabBarSyncEffect(...) { … }   // ERROR: name must start with "Ios"
+fun HapticsSyncEffect(...) { … }   // ERROR: name must start with "Ios"
 
-fun IosTabBarSyncEffect(...) { … } // ERROR: "Ios" prefix without @PlatformOnly
+fun IosHapticsSyncEffect(...) { … } // ERROR: "Ios" prefix without @PlatformOnly
 ```
 
 Why: a declaration in a common source set that only has an effect on one platform must say so in its name, and a platform-prefixed name must be backed by `@PlatformOnly` (`:core:common`) so the prefix cannot lie or go stale. The reverse rule applies only to top-level declarations under `commonMain`; platform source sets use platform-prefixed names freely.

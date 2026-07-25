@@ -9,10 +9,10 @@ interface NavEntryProvider {
     fun EntryProviderScope<NavKey>.register()
 }
 
-@ContributesIntoSet(AppScope::class)
+@ContributesIntoSet(UiScope::class)
 @Inject
 class TimetableNavEntryProvider(
-    private val screenGraphFactory: TimetableScreenGraph.Factory, // the per-screen graph factory (contributed to AppScope)
+    private val screenGraphFactory: TimetableScreenGraph.Factory, // the per-screen graph factory (contributed to UiScope)
 ) : NavEntryProvider {
     override fun EntryProviderScope<NavKey>.register() {
         entry<TimetableNavKey> {
@@ -29,7 +29,7 @@ class TimetableNavEntryProvider(
 
 ```kotlin
 @Inject
-@SingleIn(AppScope::class)
+@SingleIn(UiScope::class)
 class AppEntryProvider(providers: Set<NavEntryProvider>) {
     val entryProvider: (NavKey) -> NavEntry<NavKey> = entryProvider {
         providers.forEach { provider ->
@@ -41,7 +41,7 @@ class AppEntryProvider(providers: Set<NavEntryProvider>) {
 }
 ```
 
-- Metro's `@ContributesIntoSet` aggregates across module boundaries with **zero extra configuration** (a feature's entry reaches the app-shared graph).
+- Metro's `@ContributesIntoSet` aggregates across module boundaries with **zero extra configuration** (a feature's entry reaches the `UiGraph` in app-shared).
 - A screen that takes an argument (detail) builds a **per-id graph** with `retain(key) { screenGraphFactory.create(key.id) }`; the `@SingleIn` ScreenContext (and, where present, the screen Navigator) are read from that retained graph ([ScreenContext](./screen-context.md)).
 
 ## KaigiApp side: NavDisplay reads the aggregated provider
@@ -50,7 +50,7 @@ class AppEntryProvider(providers: Set<NavEntryProvider>) {
 NavDisplay(
     backStack = backStack,
     // …
-    entryProvider = appGraph.appEntryProvider.entryProvider,
+    entryProvider = uiGraph.appEntryProvider.entryProvider,
 )
 ```
 

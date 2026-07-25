@@ -14,7 +14,7 @@ fun main() {
             title = "DroidKaigi 2026 — Timetable",
         ) {
             context(graph) {
-                KaigiApp(backStack = rememberKaigiBackStack())
+                KaigiApp()
             }
         }
     }

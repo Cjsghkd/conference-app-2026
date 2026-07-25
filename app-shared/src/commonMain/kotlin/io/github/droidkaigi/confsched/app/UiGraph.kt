@@ -1,0 +1,33 @@
+package io.github.droidkaigi.confsched.app
+
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
+import dev.zacsweers.metro.GraphExtension
+import io.github.droidkaigi.confsched.core.common.AppNavigator
+import io.github.droidkaigi.confsched.core.common.InitialNavKeyOverrideProvider
+import io.github.droidkaigi.confsched.core.common.KaigiLogger
+import io.github.droidkaigi.confsched.core.common.MergedNavKeySerializersProvider
+import io.github.droidkaigi.confsched.core.common.SoilErrorMonitor
+import io.github.droidkaigi.confsched.core.common.UiScope
+import io.github.droidkaigi.confsched.core.data.ThemeColorSchemeSubscriptionKey
+import soil.query.SwrClientPlus
+
+@GraphExtension(UiScope::class)
+interface UiGraph {
+    val appNavigator: AppNavigator
+    val appEntryProvider: AppEntryProvider
+
+    val initialNavKeyOverrideProvider: InitialNavKeyOverrideProvider
+    val navKeySerializersProvider: MergedNavKeySerializersProvider
+
+    val logger: KaigiLogger
+    val soilErrorMonitor: SoilErrorMonitor
+    val swrClient: SwrClientPlus
+    val themeColorSchemeSubscriptionKey: ThemeColorSchemeSubscriptionKey
+
+    @GraphExtension.Factory
+    @ContributesTo(AppScope::class)
+    fun interface Factory {
+        fun createUiGraph(): UiGraph
+    }
+}

@@ -36,4 +36,4 @@ class AppNavigator(private val logger: KaigiLogger) : Navigator {
 
 `KaigiLogger.error` additionally forwards to a `CrashReporter` (`:core:common`). The default binding (`CrashReporterDefaults`) reports nowhere. Android and iOS replace it with Firebase Crashlytics implementations written entirely in Kotlin (app-shared `androidMain` / `iosMain`). On Android the SDK is a plain Gradle dependency; on iOS it is declared through the `swiftPMDependencies` Swift Package Manager import, and the generated cinterop exposes `FIRApp`/`FIRCrashlytics` to `iosMain`. Both reporters stay no-op until the Firebase project configuration is bundled. Only error-level logs ever leave the device; debug/info/warn are muted in production via the injected `MinLogSeverity` (the debug build replaces it with Verbose).
 
-Related: [Debugging](./debugging.md) · [AppGraph (app-wide dependency graph)](./di-app-graph.md)
+Related: [Debugging](./debugging.md) · [AppGraph and UiGraph](./di-app-graph.md)

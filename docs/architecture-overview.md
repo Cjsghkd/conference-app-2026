@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             context(appGraph) {
-                KaigiApp(backStack = rememberKaigiBackStack())
+                KaigiApp()
             }
         }
     }
@@ -49,13 +49,15 @@ flowchart LR
   class Shell focus
 ```
 
-`KaigiApp` is the layer that provides the app-global environment every screen assumes — the Soil client, the theme, and a set of per-entry services — and drives navigation over a single back stack:
+`KaigiApp` is the layer that provides the app-global environment every screen assumes — the Soil client, the theme, and a set of per-entry services — and drives navigation over a single back stack. It also retains the UI-scoped `UiGraph` ([AppGraph and UiGraph](./di-app-graph.md)), so one UI instance owns one navigator and entry provider:
 
 ```kotlin
 context(appGraph: AppGraph)
 @Composable
-fun KaigiApp(backStack: NavBackStack<NavKey>) {
-    SwrClientProvider(appGraph.swrClient) {      // Soil client, available to every screen
+fun KaigiApp() {
+    val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
+    val backStack = context(uiGraph) { rememberKaigiBackStack() }
+    SwrClientProvider(uiGraph.swrClient) {       // Soil client, available to every screen
         KaigiTheme(colorScheme = …) {            // color scheme subscribed via Soil
             NavigatorEffect(…)                   // AppNavigator commands → back stack
             NavDisplay(
@@ -80,12 +82,12 @@ flowchart LR
   class Nav focus
 ```
 
-`NavDisplay` renders whatever `NavKey` sits on top of the back stack. It resolves that key through `appGraph.appEntryProvider.entryProvider`, an aggregated function built from a `Set<NavEntryProvider>`. Each feature contributes its own `NavEntryProvider` with `@ContributesIntoSet(AppScope::class)`, and `AppEntryProvider` merges them in `app-shared` — no central registry is edited when a screen is added. See [entry aggregation](./navigation-entry-aggregation.md).
+`NavDisplay` renders whatever `NavKey` sits on top of the back stack. It resolves that key through `uiGraph.appEntryProvider.entryProvider`, an aggregated function built from a `Set<NavEntryProvider>`. Each feature contributes its own `NavEntryProvider` with `@ContributesIntoSet(UiScope::class)`, and `AppEntryProvider` merges them in `app-shared` — no central registry is edited when a screen is added. See [entry aggregation](./navigation-entry-aggregation.md).
 
 A feature's provider looks like this (code on this page is simplified for reading — exact signatures live in the linked pages):
 
 ```kotlin
-@ContributesIntoSet(AppScope::class)
+@ContributesIntoSet(UiScope::class)
 @Inject
 class TimetableNavEntryProvider(
     private val screenGraphFactory: TimetableScreenGraph.Factory,

@@ -4,7 +4,7 @@ The entire `KaigiApp` runs on iOS via `ComposeUIViewController`; every screen is
 
 ## Embedding
 
-The Kotlin side (`app-shared/src/iosMain`) exposes a graph factory and a `UIViewController` factory that receives the graph — the iOS host owns the graph's lifetime (`createGraph<…>()` is inline + reified, so Swift cannot call it directly). The view-controller factory also wires `IosTabBarSyncEffect`, the bridge between the back stack and the native tab bar:
+The Kotlin side (`app-shared/src/iosMain`) exposes a graph factory and a `UIViewController` factory that receives the graph — the iOS host owns the graph's lifetime (`createGraph<…>()` is inline + reified, so Swift cannot call it directly). The bridge between the back stack and the native tab bar needs no iOS-specific wiring: `KaigiApp` runs `IosTabBarSyncEffect` internally against the app-scoped `RootTabNavigator` ([Root tab bar](./navigation-root-tab-bar.md)):
 
 ```kotlin
 // app-shared/src/iosMain/…/IosAppGraph.kt
@@ -13,9 +13,7 @@ fun createIosAppGraph(): IosAppGraph = createGraph<IosAppGraph>()
 // app-shared/src/iosMain/…/KaigiAppViewController.ios.kt
 fun kaigiAppViewController(appGraph: IosAppGraph): UIViewController = ComposeUIViewController {
     context(appGraph) {
-        val backStack = rememberKaigiBackStack()
-        IosTabBarSyncEffect(backStack)
-        KaigiApp(backStack)
+        KaigiApp()
     }
 }
 ```
@@ -66,4 +64,4 @@ struct KaigiIosApp: App {
 
 The host layers the native Liquid Glass tab bar above this view controller with transparent tab content; for the overlay shape and its requirements, see [Liquid Glass tab bar](./ios-liquid-glass.md).
 
-Related: [iOS overview](./ios.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [AppGraph (app-wide dependency graph)](./di-app-graph.md)
+Related: [iOS overview](./ios.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [AppGraph and UiGraph](./di-app-graph.md)

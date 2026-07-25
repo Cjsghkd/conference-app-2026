@@ -11,7 +11,7 @@ fun main() {
     val graph = createGraph<WebAppGraph>()
     ComposeViewport(document.body!!) {
         context(graph) {
-            KaigiApp(backStack = rememberKaigiBackStack())
+            KaigiApp()
         }
     }
 }

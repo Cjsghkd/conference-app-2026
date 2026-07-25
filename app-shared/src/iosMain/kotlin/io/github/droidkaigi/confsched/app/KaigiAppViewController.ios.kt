@@ -6,8 +6,6 @@ import platform.UIKit.UIViewController
 
 fun kaigiAppViewController(appGraph: IosAppGraph): UIViewController = ComposeUIViewController {
     context(appGraph) {
-        val backStack = rememberKaigiBackStack()
-        IosTabBarSyncEffect(backStack)
-        KaigiApp(backStack)
+        KaigiApp()
     }
 }

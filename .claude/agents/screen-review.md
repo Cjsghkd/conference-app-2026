@@ -62,12 +62,12 @@ Work through every section. For each item, verify in the actual code, not by fil
 - [ ] User-owned data (settings, images) uses the unscoped storage / settings DataStore, wrapped in a `*Store` class rather than touching `DataStore<Preferences>` inline.
 
 ### 5. DI (Metro)
-- [ ] Per-screen `@GraphExtension(FooScreenScope::class)` with a `@ContributesTo(AppScope::class)` factory; the entry provider retains the graph with `retain(factory::create...)`.
+- [ ] Per-screen `@GraphExtension(FooScreenScope::class)` with a `@ContributesTo(UiScope::class)` factory; the entry provider retains the graph with `retain(factory::create...)`.
 - [ ] `ScreenContext` holds Root-role deps (query/subscription keys, presenter context); `PresenterContext` holds presenter-role deps (mutation keys, stores). No overlap smuggling.
 - [ ] Bindings contributed to the narrowest correct scope; optional/debug-only behavior uses the Noop-default + `replaces` pattern (see `DebugNavKeyProvider`, `InitialNavKeyOverrideProvider`).
 
 ### 6. Navigation
-- [ ] `NavKey` is `@Serializable` and registered through a `@ContributesIntoSet(AppScope::class)` `NavEntryProvider`.
+- [ ] `NavKey` is `@Serializable` and registered through a `@ContributesIntoSet(UiScope::class)` `NavEntryProvider`.
 - [ ] Outgoing navigation goes through the screen's `Navigator` interface, implemented in `app-shared` (so the feature never imports another feature's NavKey).
 - [ ] `RootSceneStrategy.root()` appears **only** on the home root entry (Timetable) — it is the predictive-back marker, not a tab marker. Tab entries use `instantNavTransition()` for snap switching.
 - [ ] Back handling: pushed screens expose back via the top app bar wired to `appNavigator::back`; root tabs do not show a back affordance.

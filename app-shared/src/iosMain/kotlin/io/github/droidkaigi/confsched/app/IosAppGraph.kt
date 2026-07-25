@@ -6,9 +6,7 @@ import dev.zacsweers.metro.createGraph
 
 // Parameter-less (no Context factory) because Swift cannot call the reified createGraph<IosAppGraph>().
 @DependencyGraph(scope = AppScope::class)
-interface IosAppGraph : AppGraph {
-    val rootTabNavigator: RootTabNavigator
-}
+interface IosAppGraph : AppGraph
 
 // Swift cannot call the reified createGraph<IosAppGraph>(); this is the Swift-facing entry point.
 fun createIosAppGraph(): IosAppGraph = createGraph<IosAppGraph>()

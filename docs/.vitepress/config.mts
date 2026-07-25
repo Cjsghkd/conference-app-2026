@@ -50,7 +50,7 @@ export default withMermaid(defineConfig({
         text: 'Dependency injection',
         collapsed: false,
         items: [
-          { text: 'AppGraph (app-wide dependency graph)', link: '/di-app-graph' },
+          { text: 'AppGraph and UiGraph', link: '/di-app-graph' },
           { text: 'Per-screen graphs (@GraphExtension)', link: '/di-screen-graph' },
         ],
       },

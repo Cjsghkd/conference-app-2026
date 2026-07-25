@@ -1,9 +1,9 @@
 package io.github.droidkaigi.confsched.feature.debug
 
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.Provides
+import io.github.droidkaigi.confsched.core.common.UiScope
 import io.github.droidkaigi.confsched.core.model.MutationTag
 import io.github.droidkaigi.confsched.core.model.ServerEnvironmentScreenScope
 
@@ -15,7 +15,7 @@ interface ServerEnvironmentScreenGraph {
     private fun provideMutationTag(): MutationTag = MutationTag("ServerEnvironmentScreen")
 
     @GraphExtension.Factory
-    @ContributesTo(AppScope::class)
+    @ContributesTo(UiScope::class)
     fun interface Factory {
         fun createServerEnvironmentScreenGraph(): ServerEnvironmentScreenGraph
     }

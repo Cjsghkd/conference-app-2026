@@ -5,12 +5,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
-import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
+import androidx.compose.runtime.retain.retain
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.scene.SinglePaneSceneStrategy
 import androidx.navigation3.ui.NavDisplay
 import io.github.droidkaigi.confsched.core.common.NavigatorEffect
+import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.common.rememberRootSceneStrategy
 import io.github.droidkaigi.confsched.core.common.rememberSafeClickInvokerNavEntryDecorator
 import io.github.droidkaigi.confsched.core.common.rememberSnackbarNavEntryDecorator
@@ -24,18 +24,26 @@ import soil.query.compose.rememberSubscription
 context(appGraph: AppGraph)
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun KaigiApp(backStack: NavBackStack<NavKey>) {
+fun KaigiApp() {
+    val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
+    val backStack = context(uiGraph) { rememberKaigiBackStack() }
+
     SetupRemoteImageLoader()
 
-    SwrClientProvider(client = appGraph.swrClient) {
+    SwrClientProvider(client = uiGraph.swrClient) {
         SoilDataBoundary(
-            state = rememberSubscription(appGraph.themeColorSchemeSubscriptionKey),
+            state = rememberSubscription(uiGraph.themeColorSchemeSubscriptionKey),
         ) { colorScheme ->
             KaigiTheme(colorScheme = colorScheme) {
                 NavigatorEffect(
-                    navigator = appGraph.appNavigator,
+                    navigator = uiGraph.appNavigator,
                     backStack = backStack,
-                    logger = appGraph.logger,
+                    logger = uiGraph.logger,
+                )
+                IosTabBarSyncEffect(
+                    backStack = backStack,
+                    rootTabNavigator = appGraph.rootTabNavigator,
+                    onSelectTab = { tab -> uiGraph.appNavigator.moveToTop(tab.key) },
                 )
 
                 // A themed backdrop behind the transition: while entries cross-fade, both are
@@ -43,7 +51,7 @@ fun KaigiApp(backStack: NavBackStack<NavKey>) {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     NavDisplay(
                         backStack = backStack,
-                        onBack = appGraph.appNavigator::back,
+                        onBack = uiGraph.appNavigator::back,
                         entryDecorators = listOf(
                             rememberSaveableStateHolderNavEntryDecorator(),
                             retainNavEntryDecorator(),
@@ -58,14 +66,14 @@ fun KaigiApp(backStack: NavBackStack<NavKey>) {
                         sceneDecoratorStrategies = listOf(
                             rememberRootTabSceneDecorator(
                                 currentKey = backStack::lastOrNull,
-                                onSelectTab = { tab -> appGraph.appNavigator.moveToTop(tab.key) },
+                                onSelectTab = { tab -> uiGraph.appNavigator.moveToTop(tab.key) },
                             )
                         ),
-                        entryProvider = appGraph.appEntryProvider.entryProvider,
+                        entryProvider = uiGraph.appEntryProvider.entryProvider,
                     )
                 }
 
-                appGraph.soilErrorMonitor.Overlay()
+                uiGraph.soilErrorMonitor.Overlay()
             }
         }
     }

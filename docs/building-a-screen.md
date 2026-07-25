@@ -240,14 +240,14 @@ fun TimetableScreenRoot(onNavigateToDetail: (TimetableItemId) -> Unit) {
 
 Do here:
 - Declare a `@Serializable` `NavKey` in commonMain.
-- Contribute a `NavEntryProvider` with `@ContributesIntoSet(AppScope::class)` (the central `NavDisplay` is never edited).
+- Contribute a `NavEntryProvider` with `@ContributesIntoSet(UiScope::class)` (the central `NavDisplay` is never edited).
 - In the entry, `retain` the per-screen graph factory, open `graph.screenContext` around the Root, and pass navigation as `graph.screenNavigator::openSessionDetail`.
 
 ```kotlin
 @Serializable
 data object TimetableNavKey : NavKey
 
-@ContributesIntoSet(AppScope::class)
+@ContributesIntoSet(UiScope::class)
 @Inject
 class TimetableNavEntryProvider(
     private val screenGraphFactory: TimetableScreenGraph.Factory,
