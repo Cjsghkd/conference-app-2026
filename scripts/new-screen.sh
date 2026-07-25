@@ -324,7 +324,7 @@ cat << EOF
 
 Next steps:
   1. Navigate to the screen: appNavigator.goTo(${screen}NavKey) (or add it to the root tabs).
-  2. Fill in the action / UiState / presenter / screen; add Soil keys + SoilDataBoundary when the screen reads data.
+  2. Fill in the action / action result / UiState / presenter / screen; add Soil keys + SoilDataBoundary when the screen reads data.
   3. Add outgoing navigations to ${screen}ScreenNavigator and map them in Default${screen}ScreenNavigator.
   4. Build: ./gradlew :app-desktop:compileKotlinJvm
 EOF
