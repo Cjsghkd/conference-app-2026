@@ -27,7 +27,7 @@ Scroll-driven bar behaviors (`tabBarMinimizeBehavior`, scroll-edge reactions) ar
 `RootTab` and `RootTabNavigator` (`:app-shared`, free of UI types) form the model both sides share:
 
 - **Kotlin → Swift**: `currentTab: StateFlow<RootTab?>` drives the `TabView` selection; `null` (a non-tab entry on top, that is, a detail screen) hides the bar.
-- **Swift → Kotlin**: tab taps call `select(tab)`; `IosTabBarSyncEffect` turns each selection into `AppNavigator.moveToTop(tab.key)` — the same command the Compose bar issues on the other platforms.
+- **Swift → Kotlin**: tab taps call `select(tab)`; `RootTabSyncEffect` (inside `KaigiApp`) turns each selection into `AppNavigator.moveToTop(tab.key)` — the same command the Compose bar issues on the other platforms.
 
 `RootTabSceneDecorator` (the Compose bottom bar) is not applied on iOS; the native bar replaces it. For the tab-switching semantics, see [Root tab bar](./navigation-root-tab-bar.md).
 
