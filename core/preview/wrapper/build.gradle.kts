@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        withHostTest {}
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:preview:api"))
@@ -15,22 +19,20 @@ kotlin {
         }
 
         // Metro aggregates the resolver binding from impl at this module's compile time, while impl
-        // stays off production classpaths. Only the Android and JVM targets render previews, and
+        // stays off production classpaths. Previews render through the Android target only, and
         // compileOnly is unsupported for Kotlin/Native and Kotlin/Wasm, so the dependency is declared
-        // per target instead of in commonMain; the other targets fall back to NoopPreviewImageResolver.
+        // here instead of in commonMain; the other targets fall back to NoopPreviewImageResolver.
         androidMain.dependencies {
             compileOnly(project(":core:preview:impl"))
         }
 
-        jvmMain.dependencies {
-            compileOnly(project(":core:preview:impl"))
-        }
-
-        jvmTest.dependencies {
-            implementation(kotlin("test"))
-            implementation(project(":core:preview:api"))
-            // Supplies at runtime the impl classes that jvmMain sees only at compile time.
-            implementation(project(":core:preview:impl"))
+        val androidHostTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(project(":core:preview:api"))
+                // Supplies at runtime the impl classes that androidMain sees only at compile time.
+                implementation(project(":core:preview:impl"))
+            }
         }
     }
 }
