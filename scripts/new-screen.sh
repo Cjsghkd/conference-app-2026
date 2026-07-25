@@ -49,7 +49,7 @@ fi
 if [ ! -d "$feature_dir" ]; then
   put "$feature_dir/build.gradle.kts" << EOF
 plugins {
-    id("droidkaigi.convention.kmp-feature")
+    alias(libs.plugins.droidkaigiConventionKmpFeature)
 }
 
 kotlin {
@@ -102,37 +102,47 @@ EOF
 put "$feature_src/${screen}ScreenGraph.kt" << EOF
 package $feature_pkg
 
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.GraphExtension
+import $base_pkg.core.common.UiScope
 import $base_pkg.core.model.${screen}ScreenScope
 
 @GraphExtension(${screen}ScreenScope::class)
 interface ${screen}ScreenGraph {
     val screenContext: ${screen}ScreenContext
+
     val screenNavigator: ${screen}ScreenNavigator
 
     @GraphExtension.Factory
-    @ContributesTo(AppScope::class)
+    @ContributesTo(UiScope::class)
     fun interface Factory {
         fun create${screen}ScreenGraph(): ${screen}ScreenGraph
     }
 }
 EOF
 
-put "$feature_src/${screen}ScreenContract.kt" << EOF
+put "$feature_src/${screen}ScreenAction.kt" << EOF
 package $feature_pkg
 
 sealed interface ${screen}ScreenAction {
-    data object NavigateBack : ${screen}ScreenAction
+    data object Reload : ${screen}ScreenAction
 }
+EOF
+
+put "$feature_src/${screen}ScreenActionResult.kt" << EOF
+package $feature_pkg
 
 sealed interface ${screen}ScreenActionResult {
-    data object NavigateBack : ${screen}ScreenActionResult
+    data object Reloaded : ${screen}ScreenActionResult
 }
+EOF
+
+put "$feature_src/${screen}ScreenUiState.kt" << EOF
+package $feature_pkg
 
 data class ${screen}ScreenUiState(
     val title: String,
+    val reloadCount: Int,
 )
 EOF
 
@@ -140,6 +150,10 @@ put "$feature_src/${screen}ScreenPresenter.kt" << EOF
 package $feature_pkg
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.setValue
 import $base_pkg.core.common.ActionEffect
 import $base_pkg.core.common.ScreenChannel
 
@@ -148,15 +162,20 @@ context(_: ${screen}PresenterContext)
 fun ${lower}ScreenPresenter(
     screenChannel: ScreenChannel<${screen}ScreenAction, ${screen}ScreenActionResult>,
 ): ${screen}ScreenUiState {
+    var reloadCount by retain { mutableStateOf(0) }
+
     ActionEffect(screenChannel) { action ->
         when (action) {
-            ${screen}ScreenAction.NavigateBack ->
-                screenChannel.emit(${screen}ScreenActionResult.NavigateBack)
+            ${screen}ScreenAction.Reload -> {
+                reloadCount++
+                screenChannel.emit(${screen}ScreenActionResult.Reloaded)
+            }
         }
     }
 
     return ${screen}ScreenUiState(
         title = "${screen}",
+        reloadCount = reloadCount,
     )
 }
 EOF
@@ -178,6 +197,7 @@ import $base_pkg.core.ui.safeClick
 @Composable
 fun ${screen}Screen(
     uiState: ${screen}ScreenUiState,
+    onReloadClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     Column(
@@ -185,6 +205,8 @@ fun ${screen}Screen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(uiState.title)
+        Text("Reloaded \${uiState.reloadCount} times")
+        Button(onClick = safeClick(onReloadClick)) { Text("Reload") }
         Button(onClick = safeClick(onBackClick)) { Text("Back") }
     }
 }
@@ -195,6 +217,7 @@ package $feature_pkg
 
 import androidx.compose.runtime.Composable
 import $base_pkg.core.common.ActionResultEffect
+import $base_pkg.core.common.LocalSnackbarHostState
 import $base_pkg.core.common.context
 import $base_pkg.core.common.retainScreenChannel
 
@@ -204,10 +227,11 @@ fun ${screen}ScreenRoot(
     onNavigateBack: () -> Unit,
 ) {
     val screenChannel = retainScreenChannel<${screen}ScreenAction, ${screen}ScreenActionResult>()
+    val snackbarHostState = LocalSnackbarHostState.current
 
     ActionResultEffect(screenChannel) { result ->
         when (result) {
-            ${screen}ScreenActionResult.NavigateBack -> onNavigateBack()
+            ${screen}ScreenActionResult.Reloaded -> snackbarHostState.showSnackbar("Reloaded")
         }
     }
 
@@ -216,7 +240,8 @@ fun ${screen}ScreenRoot(
     }
     ${screen}Screen(
         uiState = uiState,
-        onBackClick = { screenChannel.send(${screen}ScreenAction.NavigateBack) },
+        onReloadClick = { screenChannel.send(${screen}ScreenAction.Reload) },
+        onBackClick = onNavigateBack,
     )
 }
 EOF
@@ -237,14 +262,14 @@ package $feature_pkg
 import androidx.compose.runtime.retain.retain
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
 import $base_pkg.core.common.AppNavigator
 import $base_pkg.core.common.NavEntryProvider
+import $base_pkg.core.common.UiScope
 import $base_pkg.core.common.context
 
-@ContributesIntoSet(AppScope::class)
+@ContributesIntoSet(UiScope::class)
 @Inject
 class ${screen}NavEntryProvider(
     private val screenGraphFactory: ${screen}ScreenGraph.Factory,
@@ -252,10 +277,10 @@ class ${screen}NavEntryProvider(
 ) : NavEntryProvider {
     override fun EntryProviderScope<NavKey>.register() {
         entry<${screen}NavKey> {
-            val graph = retain { screenGraphFactory.create${screen}ScreenGraph() }
+            val graph = retain(screenGraphFactory::create${screen}ScreenGraph)
             context(graph.screenContext) {
                 ${screen}ScreenRoot(
-                    onNavigateBack = { appNavigator.back() },
+                    onNavigateBack = appNavigator::back,
                 )
             }
         }
@@ -299,7 +324,7 @@ cat << EOF
 
 Next steps:
   1. Navigate to the screen: appNavigator.goTo(${screen}NavKey) (or add it to the root tabs).
-  2. Fill in the contract/presenter/screen; add Soil keys + SoilDataBoundary when the screen reads data.
+  2. Fill in the action / UiState / presenter / screen; add Soil keys + SoilDataBoundary when the screen reads data.
   3. Add outgoing navigations to ${screen}ScreenNavigator and map them in Default${screen}ScreenNavigator.
   4. Build: ./gradlew :app-desktop:compileKotlinJvm
 EOF
