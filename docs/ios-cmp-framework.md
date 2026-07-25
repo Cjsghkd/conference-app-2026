@@ -4,7 +4,7 @@ The entire `KaigiApp` runs on iOS via `ComposeUIViewController`; every screen is
 
 ## Embedding
 
-The Kotlin side (`app-shared/src/iosMain`) exposes a graph factory and a `UIViewController` factory that receives the graph — the iOS host owns the graph's lifetime (`createGraph<…>()` is inline + reified, so Swift cannot call it directly). The bridge between the back stack and the native tab bar needs no iOS-specific wiring: `KaigiApp` runs `RootTabSyncEffect` internally against the app-scoped `RootTabNavigator` ([Root tab bar](./navigation-root-tab-bar.md)):
+The Kotlin side (`app-shared/src/iosMain`) exposes a graph factory and a `UIViewController` factory that receives the graph — the iOS host owns the graph's lifetime (`createGraph<…>()` is inline + reified, so Swift cannot call it directly). The bridge between the back stack and the native tab bar needs no iOS-specific wiring: `KaigiApp` runs `IosTabBarSyncEffect` internally against the app-scoped `RootTabNavigator` ([Root tab bar](./navigation-root-tab-bar.md)):
 
 ```kotlin
 // app-shared/src/iosMain/…/IosAppGraph.kt

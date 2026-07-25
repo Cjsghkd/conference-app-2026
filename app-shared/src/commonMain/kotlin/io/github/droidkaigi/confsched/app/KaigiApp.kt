@@ -40,7 +40,7 @@ fun KaigiApp() {
                     backStack = backStack,
                     logger = uiGraph.logger,
                 )
-                RootTabSyncEffect(
+                IosTabBarSyncEffect(
                     backStack = backStack,
                     rootTabNavigator = appGraph.rootTabNavigator,
                     onSelectTab = { tab -> uiGraph.appNavigator.moveToTop(tab.key) },
