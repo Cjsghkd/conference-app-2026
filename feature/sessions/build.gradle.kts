@@ -15,7 +15,6 @@ kotlin {
             implementation(project(":core:model"))
             implementation(kotlin("test"))
             implementation(project(":core:testing"))
-            implementation(project(":core:preview:impl"))
         }
     }
 }

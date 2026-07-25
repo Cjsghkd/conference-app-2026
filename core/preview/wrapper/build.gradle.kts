@@ -25,5 +25,12 @@ kotlin {
         jvmMain.dependencies {
             compileOnly(project(":core:preview:impl"))
         }
+
+        jvmTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(project(":core:preview:api"))
+            // Supplies at runtime the impl classes that jvmMain sees only at compile time.
+            implementation(project(":core:preview:impl"))
+        }
     }
 }
