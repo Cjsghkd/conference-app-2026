@@ -3,6 +3,9 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 
 // https://vitepress.dev/reference/site-config
 export default withMermaid(defineConfig({
+  // VitePress uses srcDir as the Vite root, so docs/ needs a node_modules link
+  // back to this directory; scripts/link-docs-node-modules.mjs creates it on install.
+  srcDir: '../docs',
   lang: 'en-US',
   title: 'conference-app-2026',
   description: 'Architecture and implementation guide for the DroidKaigi 2026 conference app',

@@ -28,5 +28,6 @@ screenshots/
 
 # --- VitePress docs site ---
 docs-site/node_modules/
-docs/.vitepress/cache/
-docs/.vitepress/dist/
+docs-site/.vitepress/cache/
+docs-site/.vitepress/dist/
+docs/node_modules
