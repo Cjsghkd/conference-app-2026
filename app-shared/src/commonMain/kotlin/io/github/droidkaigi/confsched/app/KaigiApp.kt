@@ -25,7 +25,7 @@ context(appGraph: AppGraph)
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun KaigiApp() {
-    val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
+    val uiGraph = retain { appGraph.uiGraph }
     val backStack = context(uiGraph) { rememberKaigiBackStack() }
 
     SetupRemoteImageLoader()

@@ -55,7 +55,7 @@ flowchart LR
 context(appGraph: AppGraph)
 @Composable
 fun KaigiApp() {
-    val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
+    val uiGraph = retain { appGraph.uiGraph }
     val backStack = context(uiGraph) { rememberKaigiBackStack() }
     SwrClientProvider(uiGraph.swrClient) {       // Soil client, available to every screen
         KaigiTheme(colorScheme = …) {            // color scheme subscribed via Soil
