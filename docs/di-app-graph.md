@@ -11,7 +11,7 @@ Dependencies live in two nested graphs with distinct lifetimes:
 
 ```kotlin
 interface AppGraph {
-    val uiGraphFactory: UiGraph.Factory
+    val uiGraph: UiGraph
     val rootTabNavigator: RootTabNavigator // bridge to shells outside the Compose tree
 }
 
@@ -53,7 +53,7 @@ Some bindings are declared directly on the graph rather than generated. `CommonA
 
 ## UiGraph
 
-`UiGraph` is a `@GraphExtension(UiScope::class)` of the app graph, declared in `app-shared`. `KaigiApp` creates it from the factory and holds it with `retain`, so it survives configuration changes but is torn down with its UI instance:
+`UiGraph` is a `@GraphExtension(UiScope::class)` of the app graph, declared in `app-shared`. `AppGraph` declares it as a plain accessor — every read of `appGraph.uiGraph` builds a new graph — and `KaigiApp` holds one with `retain`, so it survives configuration changes but is torn down with its UI instance:
 
 ```kotlin
 @GraphExtension(UiScope::class)
@@ -63,20 +63,16 @@ interface UiGraph {
     val swrClient: SwrClientPlus
     val themeColorSchemeSubscriptionKey: ThemeColorSchemeSubscriptionKey
     // …
-
-    @GraphExtension.Factory
-    @ContributesTo(AppScope::class)
-    fun interface Factory {
-        fun createUiGraph(): UiGraph
-    }
 }
 
 // KaigiApp
-val uiGraph = retain(appGraph.uiGraphFactory::createUiGraph)
+val uiGraph = retain { appGraph.uiGraph }
 ```
+
+A `@GraphExtension.Factory` is only required where the creation itself must be *injected* into another class, or where the graph takes arguments. `AppGraph` is handed to `KaigiApp` directly, so the accessor suffices.
 
 Anything whose lifetime is one UI instance binds into `UiScope`: `AppNavigator` is `@SingleIn(UiScope::class)`, features contribute `NavEntryProvider`s with `@ContributesIntoSet(UiScope::class)`, and the per-screen graph factories are contributed with `@ContributesTo(UiScope::class)` — so screen graphs are extensions of `UiGraph` and can inject UI-scoped bindings. Process-lifetime bindings must not depend on UI-scoped ones; Metro rejects the reverse edge at compile time.
 
-Accessors follow the consumer, not the binding's scope: everything the UI shell reads — including app-scoped bindings such as the `SwrClientPlus` or the logger — is exposed on `UiGraph`, while `AppGraph` keeps only what must be reachable before or outside a UI instance (the `UiGraph` factory and the Swift-facing `RootTabNavigator`).
+Accessors follow the consumer, not the binding's scope: everything the UI shell reads — including app-scoped bindings such as the `SwrClientPlus` or the logger — is exposed on `UiGraph`, while `AppGraph` keeps only what must be reachable before or outside a UI instance (the `UiGraph` accessor and the Swift-facing `RootTabNavigator`).
 
 Related: [ScreenContext design](./screen-context.md) · [Per-screen graphs (@GraphExtension)](./di-screen-graph.md)
