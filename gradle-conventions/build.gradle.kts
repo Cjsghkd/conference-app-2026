@@ -24,6 +24,8 @@ dependencies {
     implementation(pluginMarker("com.google.devtools.ksp", libs.versions.ksp.get()))
     implementation(pluginMarker("com.codingfeline.buildkonfig", libs.versions.buildkonfig.get()))
     implementation(pluginMarker("io.github.takahirom.roborazzi", libs.versions.roborazzi.get()))
+    implementation(pluginMarker("org.openapi.generator", libs.versions.openapiGenerator.get()))
+    implementation(libs.kaml)
 
     // Expose the generated version-catalog accessors (the<LibrariesForLibs>()) to the precompiled script plugins.
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))

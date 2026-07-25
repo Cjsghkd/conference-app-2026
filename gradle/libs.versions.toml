@@ -35,6 +35,10 @@ droidkaigiApp = "0.1.0"
 kermit = "2.1.0"
 # Retrofit-style declarative HTTP clients over Ktor (KSP-generated implementations).
 ktorfit = "2.7.5"
+# Generates the Ktorfit API surface from openapi/openapi.yml via custom Mustache templates.
+openapiGenerator = "7.14.0"
+# YAML parser used by the trimOpenApiSpec convention task (gradle-conventions only).
+kaml = "0.104.0"
 # Preview screenshot-test stack (Android host tests only — see docs/testing-preview-screenshot.md).
 # Roborazzi renders @Preview composables headlessly via Robolectric; ComposablePreviewScanner
 # discovers them (its :common artifact scans org.jetbrains.compose's @Preview / @PreviewParameter).
@@ -48,6 +52,7 @@ composeRuntimeRetain = { module = "androidx.compose.runtime:runtime-retain", ver
 navigation3Runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "androidxNavigation3" }
 navigation3Ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "androidxNavigation3" }
 composeMaterial3AdaptiveNavigation3 = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "composeMaterial3AdaptiveNavigation3" }
+kaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kaml" }
 kotlinxCoroutinesCore = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinxCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
@@ -125,6 +130,7 @@ ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 # Local convention plugins (gradle-conventions included build); the version is never resolved —
 # includeBuild substitution wins — but the catalog schema requires one.
 droidkaigiPrimitiveKmp = { id = "droidkaigi.primitive.kmp", version = "unspecified" }
+droidkaigiPrimitiveOpenapi = { id = "droidkaigi.primitive.openapi", version = "unspecified" }
 droidkaigiPrimitiveKmpCompose = { id = "droidkaigi.primitive.kmp.compose", version = "unspecified" }
 droidkaigiPrimitiveBuildkonfig = { id = "droidkaigi.primitive.buildkonfig", version = "unspecified" }
 droidkaigiPrimitiveScreenshotTest = { id = "droidkaigi.primitive.screenshot-test", version = "unspecified" }
