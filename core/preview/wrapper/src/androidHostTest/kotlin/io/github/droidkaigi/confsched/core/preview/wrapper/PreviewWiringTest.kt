@@ -1,8 +1,7 @@
-package io.github.droidkaigi.confsched.feature.sessions.preview
+package io.github.droidkaigi.confsched.core.preview.wrapper
 
 import dev.zacsweers.metro.createGraph
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
-import io.github.droidkaigi.confsched.core.preview.wrapper.PreviewGraph
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

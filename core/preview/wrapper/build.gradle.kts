@@ -5,6 +5,10 @@ plugins {
 }
 
 kotlin {
+    android {
+        withHostTest {}
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:preview:api"))
@@ -12,14 +16,23 @@ kotlin {
             implementation(libs.composeRuntime)
             implementation(libs.composeUi)
             implementation(libs.composeUiToolingPreview)
-            // Metro aggregates the resolver binding from impl at this module's compile time, while impl
-            // stays off production classpaths; partial linkage tolerates the dangling reference because
-            // Wrap never runs in production.
+        }
+
+        // Metro aggregates the resolver binding from impl at this module's compile time, while impl
+        // stays off production classpaths. Previews render through the Android target only, and
+        // compileOnly is unsupported for Kotlin/Native and Kotlin/Wasm, so the dependency is declared
+        // here instead of in commonMain; the other targets fall back to NoopPreviewImageResolver.
+        androidMain.dependencies {
             compileOnly(project(":core:preview:impl"))
         }
 
-        androidMain.dependencies {
-            compileOnly(project(":core:preview:impl"))
+        val androidHostTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(project(":core:preview:api"))
+                // Supplies at runtime the impl classes that androidMain sees only at compile time.
+                implementation(project(":core:preview:impl"))
+            }
         }
     }
 }
