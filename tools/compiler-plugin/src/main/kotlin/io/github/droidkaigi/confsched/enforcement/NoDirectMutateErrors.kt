@@ -15,6 +15,7 @@ object NoDirectMutateErrors : KtDiagnosticsContainer() {
 }
 
 object NoDirectMutateErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("NoDirectMutate") { map ->
         map.put(
             NoDirectMutateErrors.NO_DIRECT_MUTATE,

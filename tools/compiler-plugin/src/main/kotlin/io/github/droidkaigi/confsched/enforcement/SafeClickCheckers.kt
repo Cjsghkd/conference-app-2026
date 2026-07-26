@@ -121,6 +121,7 @@ object SafeClickErrors : KtDiagnosticsContainer() {
 }
 
 object SafeClickErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("SafeClick") { map ->
         map.put(
             SafeClickErrors.NAV_LAMBDA_MUST_FLOW_TO_SAFE_CLICK,
@@ -131,4 +132,3 @@ object SafeClickErrorMessages : BaseDiagnosticRendererFactory() {
         )
     }
 }
-

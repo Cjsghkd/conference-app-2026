@@ -82,6 +82,7 @@ object PlatformOnlyErrors : KtDiagnosticsContainer() {
 }
 
 object PlatformOnlyErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("PlatformOnly") { map ->
         map.put(
             PlatformOnlyErrors.PLATFORM_ONLY_NAME_MISMATCH,
@@ -97,4 +98,3 @@ object PlatformOnlyErrorMessages : BaseDiagnosticRendererFactory() {
         )
     }
 }
-

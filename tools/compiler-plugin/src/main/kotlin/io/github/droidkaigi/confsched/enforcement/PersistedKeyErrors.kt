@@ -18,6 +18,7 @@ object PersistedKeyErrors : KtDiagnosticsContainer() {
 }
 
 object PersistedKeyErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("PersistedKey") { map ->
         map.put(
             PersistedKeyErrors.PERSISTED_KEY_TYPE_NOT_SERIALIZABLE,
