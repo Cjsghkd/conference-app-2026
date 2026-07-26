@@ -1,5 +1,5 @@
 plugins {
-    id("droidkaigi.convention.kmp-feature")
+    alias(libs.plugins.droidkaigiConventionKmpFeature)
 }
 
 kotlin {
