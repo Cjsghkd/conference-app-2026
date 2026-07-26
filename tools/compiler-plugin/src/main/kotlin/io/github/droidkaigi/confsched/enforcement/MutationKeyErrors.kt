@@ -17,6 +17,7 @@ object MutationKeyErrors : KtDiagnosticsContainer() {
 }
 
 object MutationKeyErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("MutationKey") { map ->
         map.put(
             MutationKeyErrors.MUTATION_KEY_WITHOUT_TAG,

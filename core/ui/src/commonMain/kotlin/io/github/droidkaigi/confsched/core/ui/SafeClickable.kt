@@ -8,7 +8,6 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.semantics.Role
 import io.github.droidkaigi.confsched.core.common.LocalSafeClickInvoker
 
-
 fun Modifier.safeClickable(
     enabled: Boolean = true,
     onClickLabel: String? = null,

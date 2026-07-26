@@ -25,6 +25,7 @@ dependencies {
     implementation(pluginMarker("com.codingfeline.buildkonfig", libs.versions.buildkonfig.get()))
     implementation(pluginMarker("io.github.takahirom.roborazzi", libs.versions.roborazzi.get()))
     implementation(pluginMarker("org.openapi.generator", libs.versions.openapiGenerator.get()))
+    implementation(pluginMarker("com.diffplug.spotless", libs.versions.spotless.get()))
     implementation(libs.kaml)
 
     // Expose the generated version-catalog accessors (the<LibrariesForLibs>()) to the precompiled script plugins.

@@ -2,17 +2,17 @@
 
 package io.github.droidkaigi.confsched.app
 
-import swiftPMImport.conference.app.`2026`.app.shared.FIRApp
-import swiftPMImport.conference.app.`2026`.app.shared.FIRCrashlytics
 import dev.zacsweers.metro.AppScope
-import kotlinx.cinterop.ExperimentalForeignApi
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import io.github.droidkaigi.confsched.core.common.CrashReporter
 import io.github.droidkaigi.confsched.core.common.CrashReporterDefaults
+import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
 import platform.Foundation.NSLocalizedDescriptionKey
+import swiftPMImport.conference.app.`2026`.app.shared.FIRApp
+import swiftPMImport.conference.app.`2026`.app.shared.FIRCrashlytics
 
 @ContributesTo(AppScope::class, replaces = [CrashReporterDefaults::class])
 interface IosCrashReporterBindings {

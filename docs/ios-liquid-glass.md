@@ -33,11 +33,11 @@ Scroll-driven bar behaviors (`tabBarMinimizeBehavior`, scroll-edge reactions) ar
 
 ## Cross-renderer compositing
 
-The Liquid Glass bar refracts and tints the CMP (Skia/Metal) backdrop behind it: the glass samples the live Compose Metal layer, so as content scrolls the glass tracks the CMP colors underneath. The native `TabView` bar relies on this compositing; `GlassSpikeViewController` (`app-shared/src/iosMain`) renders colorful scroll content for exercising it, targeting iOS 26.
+The Liquid Glass bar refracts and tints the CMP (Skia/Metal) backdrop behind it: the glass samples the live Compose Metal layer, so as content scrolls the glass tracks the CMP colors underneath. The native `TabView` bar relies on this compositing, which requires iOS 26.
 
 ![iOS 26 Liquid Glass refracting and tinting the CMP (Skia/Metal) content behind the top bar and bottom tab capsule](./images/ios-liquid-glass-cmp-backdrop.png)
 
-The screenshot shows a hand-built `.glassEffect` host over the spike content, demonstrating the compositing the `TabView` bar relies on. The top bar picks up the red card behind it and is tinted red, while the bottom floating tab capsule refracts the text behind it through glass. Captured on the iOS 26.2 simulator in light mode.
+The screenshot shows a hand-built `.glassEffect` host over colorful scroll content, demonstrating the compositing the `TabView` bar relies on. The top bar picks up the red card behind it and is tinted red, while the bottom floating tab capsule refracts the text behind it through glass. Captured on the iOS 26.2 simulator in light mode.
 
 CMP requires `CADisableMinimumFrameDurationOnPhone=true` in `Info.plist`, or it aborts on launch at `PlistSanityCheck`.
 

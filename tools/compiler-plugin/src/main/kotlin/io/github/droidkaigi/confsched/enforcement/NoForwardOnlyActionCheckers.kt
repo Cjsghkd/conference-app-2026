@@ -50,6 +50,7 @@ internal object NoForwardOnlyActionChecker : FirFunctionCallChecker(MppCheckerKi
                     reporter.reportOn(branchStatement.source, NoForwardOnlyActionErrors.NO_FORWARD_ONLY_ACTION, context)
                 }
             }
+
             else -> if (single.isScreenChannelEmit()) {
                 reporter.reportOn(single.source, NoForwardOnlyActionErrors.NO_FORWARD_ONLY_ACTION, context)
             }
@@ -79,6 +80,7 @@ object NoForwardOnlyActionErrors : KtDiagnosticsContainer() {
 }
 
 object NoForwardOnlyActionErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("NoForwardOnlyAction") { map ->
         map.put(
             NoForwardOnlyActionErrors.NO_FORWARD_ONLY_ACTION,
@@ -87,4 +89,3 @@ object NoForwardOnlyActionErrorMessages : BaseDiagnosticRendererFactory() {
         )
     }
 }
-

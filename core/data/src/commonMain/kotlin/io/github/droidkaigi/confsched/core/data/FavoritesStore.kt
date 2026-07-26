@@ -1,8 +1,8 @@
 package io.github.droidkaigi.confsched.core.data
 
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import dev.zacsweers.metro.AppScope
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf

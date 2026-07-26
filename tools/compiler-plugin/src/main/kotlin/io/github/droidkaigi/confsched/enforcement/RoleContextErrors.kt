@@ -19,6 +19,7 @@ object RoleContextErrors : KtDiagnosticsContainer() {
 }
 
 object RoleContextErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("RoleContext") { map ->
         map.put(
             RoleContextErrors.PRESENTER_DECLARES_SCREEN_CONTEXT,

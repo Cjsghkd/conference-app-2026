@@ -9,9 +9,9 @@ import io.github.droidkaigi.confsched.core.data.FakeTimetableApi
 import io.github.droidkaigi.confsched.core.data.KtorfitFactory
 import io.github.droidkaigi.confsched.core.data.ServerEnvironment
 import io.github.droidkaigi.confsched.core.data.ServerEnvironmentStore
-import io.github.droidkaigi.confsched.core.data.TimetableResponse
 import io.github.droidkaigi.confsched.core.data.TimetableApi
 import io.github.droidkaigi.confsched.core.data.TimetableApiProvider
+import io.github.droidkaigi.confsched.core.data.TimetableResponse
 import io.github.droidkaigi.confsched.core.data.createTimetableApi
 
 @Inject

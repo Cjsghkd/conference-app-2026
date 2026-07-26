@@ -66,6 +66,7 @@ object PreviewRequiresWrapperErrors : KtDiagnosticsContainer() {
 }
 
 object PreviewRequiresWrapperErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("PreviewRequiresWrapper") { map ->
         map.put(
             PreviewRequiresWrapperErrors.PREVIEW_WITHOUT_WRAPPER,
@@ -75,4 +76,3 @@ object PreviewRequiresWrapperErrorMessages : BaseDiagnosticRendererFactory() {
         )
     }
 }
-

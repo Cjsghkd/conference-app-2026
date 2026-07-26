@@ -3,8 +3,8 @@ package io.github.droidkaigi.confsched.feature.debug
 import androidx.compose.runtime.Composable
 import io.github.droidkaigi.confsched.core.common.context
 
-context(screenContext: SoilErrorsScreenContext)
 @Composable
+context(screenContext: SoilErrorsScreenContext)
 fun SoilErrorsScreenRoot(
     onNavigateBack: () -> Unit,
 ) {

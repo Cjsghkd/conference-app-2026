@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveKmpCompose)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.metro)
+    alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
 val includeDebugFeature = (project.findProperty("includeDebugFeature") as String?)?.toBoolean() ?: true

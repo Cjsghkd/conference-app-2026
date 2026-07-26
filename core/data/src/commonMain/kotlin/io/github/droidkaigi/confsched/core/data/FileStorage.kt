@@ -7,4 +7,3 @@ interface FileStorage {
 
     suspend fun clear()
 }
-

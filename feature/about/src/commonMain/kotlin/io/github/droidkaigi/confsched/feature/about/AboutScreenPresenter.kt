@@ -3,8 +3,8 @@ package io.github.droidkaigi.confsched.feature.about
 import androidx.compose.runtime.Composable
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 
-context(presenterContext: AboutPresenterContext)
 @Composable
+context(presenterContext: AboutPresenterContext)
 fun aboutScreenPresenter(): AboutScreenUiState {
     return AboutScreenUiState(
         title = "About DroidKaigi 2026",

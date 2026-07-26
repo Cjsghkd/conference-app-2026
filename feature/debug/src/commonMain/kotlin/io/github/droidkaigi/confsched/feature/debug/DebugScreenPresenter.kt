@@ -10,8 +10,8 @@ import io.github.droidkaigi.confsched.core.common.ActionEffect
 import io.github.droidkaigi.confsched.core.common.ScreenChannel
 import soil.query.compose.rememberMutation
 
-context(presenterContext: DebugPresenterContext)
 @Composable
+context(presenterContext: DebugPresenterContext)
 fun debugScreenPresenter(
     screenChannel: ScreenChannel<DebugScreenAction, DebugScreenActionResult>,
 ): DebugScreenUiState {
@@ -27,6 +27,7 @@ fun debugScreenPresenter(
                 presenterContext.persistedDataResetter.clearAll()
                 dataCleared = true
             }
+
             is DebugScreenAction.SetSoilErrorOverlayEnabled ->
                 soilErrorOverlayMutation.mutateAsync(action.enabled)
         }

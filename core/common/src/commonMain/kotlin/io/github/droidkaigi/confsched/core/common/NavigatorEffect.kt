@@ -16,7 +16,9 @@ fun NavigatorEffect(navigator: AppNavigator, backStack: NavBackStack<NavKey>, lo
                     }
                     backStack.add(command.key)
                 }
+
                 NavCommand.Pop -> if (backStack.size > 1) backStack.removeLastOrNull()
+
                 is NavCommand.MoveToTop -> if (backStack.lastOrNull() != command.key) {
                     backStack.remove(command.key)
                     backStack.add(command.key)

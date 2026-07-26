@@ -9,8 +9,8 @@ import io.github.droidkaigi.confsched.core.ui.SoilDataBoundary
 import soil.query.compose.rememberQuery
 import soil.query.compose.rememberSubscription
 
-context(screenContext: TimetableItemDetailScreenContext)
 @Composable
+context(screenContext: TimetableItemDetailScreenContext)
 fun TimetableItemDetailScreenRoot(
     onNavigateBack: () -> Unit,
 ) {

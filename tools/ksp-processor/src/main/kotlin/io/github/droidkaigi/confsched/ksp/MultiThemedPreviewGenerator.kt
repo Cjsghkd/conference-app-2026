@@ -69,6 +69,7 @@ class MultiThemedPreviewGenerator(
     private companion object {
         const val MULTI_THEMED_PREVIEW_FQ_NAME =
             "io.github.droidkaigi.confsched.core.preview.MultiThemedPreview"
+
         // androidx.* is the current common Preview home; the org.jetbrains.compose.* one is deprecated.
         const val COMPOSE_PREVIEW_PACKAGE = "androidx.compose.ui.tooling.preview"
         const val COMPOSE_RUNTIME_PACKAGE = "androidx.compose.runtime"

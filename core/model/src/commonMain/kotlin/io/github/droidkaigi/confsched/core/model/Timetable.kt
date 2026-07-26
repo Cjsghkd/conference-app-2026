@@ -4,9 +4,8 @@ import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
-import kotlin.jvm.JvmInline
 import kotlinx.serialization.Serializable
-
+import kotlin.jvm.JvmInline
 
 @Serializable
 @JvmInline

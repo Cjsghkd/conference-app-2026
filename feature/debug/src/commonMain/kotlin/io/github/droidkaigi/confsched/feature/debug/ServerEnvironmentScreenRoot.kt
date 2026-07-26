@@ -6,8 +6,8 @@ import io.github.droidkaigi.confsched.core.common.ActionResultEffect
 import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.common.retainScreenChannel
 
-context(screenContext: ServerEnvironmentScreenContext)
 @Composable
+context(screenContext: ServerEnvironmentScreenContext)
 fun ServerEnvironmentScreenRoot(
     onNavigateToTimetable: () -> Unit,
 ) {

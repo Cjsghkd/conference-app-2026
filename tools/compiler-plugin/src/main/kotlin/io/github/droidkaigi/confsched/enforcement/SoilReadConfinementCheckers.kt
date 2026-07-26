@@ -2,13 +2,13 @@ package io.github.droidkaigi.confsched.enforcement
 
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
-import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.error0
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.reportOn
+import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
@@ -56,7 +56,9 @@ internal object SoilReadConfinementChecker : FirFunctionCallChecker(MppCheckerKi
             SoilReadConfinementNames.REMEMBER_QUERY,
             SoilReadConfinementNames.REMEMBER_SUBSCRIPTION,
             -> RoleContextNames.SCREEN_CONTEXT_ID
+
             SoilReadConfinementNames.REMEMBER_MUTATION -> RoleContextNames.PRESENTER_CONTEXT_ID
+
             else -> return
         }
 
@@ -122,6 +124,7 @@ object SoilReadConfinementErrors : KtDiagnosticsContainer() {
 }
 
 object SoilReadConfinementErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("SoilReadConfinement") { map ->
         map.put(
             SoilReadConfinementErrors.QUERY_READ_OUTSIDE_SCREEN_CONTEXT,
@@ -142,4 +145,3 @@ object SoilReadConfinementErrorMessages : BaseDiagnosticRendererFactory() {
         )
     }
 }
-

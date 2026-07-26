@@ -1,5 +1,6 @@
 package io.github.droidkaigi.confsched.enforcement
 
+import org.jetbrains.kotlin.KtRealSourceElementKind
 import org.jetbrains.kotlin.builtins.functions.FunctionTypeKind
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
@@ -30,7 +31,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.functionTypeKind
-import org.jetbrains.kotlin.KtRealSourceElementKind
 
 // Flags a lambda whose entire body is one call forwarding the lambda parameters unchanged and in
 // order — the lambda can be replaced with a callable reference. Deliberately conservative: any
@@ -81,8 +81,11 @@ internal object LambdaCanBeCallableReferenceChecker : FirAnonymousFunctionChecke
     // read of immutable state — `this`, an object, or a chain of val/parameter accesses.
     private fun FirExpression?.isStableReferenceReceiver(): Boolean = when (this) {
         null -> true
+
         is FirThisReceiverExpression -> true
+
         is FirResolvedQualifier -> true
+
         is FirPropertyAccessExpression -> {
             when (val symbol = calleeReference.toResolvedCallableSymbol()) {
                 is FirValueParameterSymbol -> explicitReceiver.isStableReferenceReceiver()
@@ -90,6 +93,7 @@ internal object LambdaCanBeCallableReferenceChecker : FirAnonymousFunctionChecke
                 else -> false
             }
         }
+
         else -> false
     }
 }
@@ -101,6 +105,7 @@ object CallableReferenceErrors : KtDiagnosticsContainer() {
 }
 
 object CallableReferenceErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("CallableReference") { map ->
         map.put(
             CallableReferenceErrors.LAMBDA_CAN_BE_CALLABLE_REFERENCE,
@@ -109,4 +114,3 @@ object CallableReferenceErrorMessages : BaseDiagnosticRendererFactory() {
         )
     }
 }
-

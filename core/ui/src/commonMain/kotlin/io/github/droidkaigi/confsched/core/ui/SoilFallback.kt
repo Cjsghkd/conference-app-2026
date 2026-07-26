@@ -41,14 +41,14 @@ private class Custom(
     override val errorFallback: @Composable context(SoilErrorContext) BoxScope.() -> Unit,
 ) : SoilFallback
 
-const val DefaultSuspenseFallbackContentTestTag = "DefaultSuspenseFallbackContentTestTag"
+const val DEFAULT_SUSPENSE_FALLBACK_CONTENT_TEST_TAG = "DefaultSuspenseFallbackContentTestTag"
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 context(_: SoilSuspenseContext)
 fun DefaultSuspenseFallbackContent(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.fillMaxSize().testTag(DefaultSuspenseFallbackContentTestTag),
+        modifier = modifier.fillMaxSize().testTag(DEFAULT_SUSPENSE_FALLBACK_CONTENT_TEST_TAG),
         contentAlignment = Alignment.Center,
     ) {
         CircularWavyProgressIndicator()

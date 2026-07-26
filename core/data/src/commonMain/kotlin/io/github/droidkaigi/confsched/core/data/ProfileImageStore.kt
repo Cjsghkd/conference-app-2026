@@ -1,8 +1,8 @@
 package io.github.droidkaigi.confsched.core.data
 
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import dev.zacsweers.metro.AppScope
 
 @Inject
 @SingleIn(AppScope::class)

@@ -8,6 +8,14 @@ plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.spotless)
+}
+
+spotless {
+    kotlinGradle {
+        target("*.gradle.kts")
+        ktlint(libs.versions.ktlint.get())
+    }
 }
 
 subprojects {

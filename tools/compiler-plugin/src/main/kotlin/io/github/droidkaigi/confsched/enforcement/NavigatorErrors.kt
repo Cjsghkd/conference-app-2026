@@ -15,6 +15,7 @@ object NavigatorErrors : KtDiagnosticsContainer() {
 }
 
 object NavigatorErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("Navigator") { map ->
         map.put(
             NavigatorErrors.NAVIGATOR_NOT_CONFINED,

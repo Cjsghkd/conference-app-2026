@@ -156,6 +156,7 @@ object ThemeSensitiveErrors : KtDiagnosticsContainer() {
 }
 
 object ThemeSensitiveErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("ThemeSensitive") { map ->
         map.put(
             ThemeSensitiveErrors.THEME_SENSITIVE_PREVIEW_REQUIRES_MULTI_THEME,

@@ -81,6 +81,7 @@ object MutationEffectResetErrors : KtDiagnosticsContainer() {
 }
 
 object MutationEffectResetErrorMessages : BaseDiagnosticRendererFactory() {
+    @Suppress("ktlint:standard:property-naming")
     override val MAP by KtDiagnosticFactoryToRendererMap("MutationEffectReset") { map ->
         map.put(
             MutationEffectResetErrors.MUTATION_EFFECT_MUST_RESET,
@@ -90,4 +91,3 @@ object MutationEffectResetErrorMessages : BaseDiagnosticRendererFactory() {
         )
     }
 }
-

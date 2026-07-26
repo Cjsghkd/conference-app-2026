@@ -13,8 +13,8 @@ import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.Timetable
 import soil.query.compose.rememberMutation
 
-context(presenterContext: TimetablePresenterContext)
 @Composable
+context(presenterContext: TimetablePresenterContext)
 fun timetableScreenPresenter(
     screenChannel: ScreenChannel<TimetableScreenAction, TimetableScreenActionResult>,
     timetable: Timetable,

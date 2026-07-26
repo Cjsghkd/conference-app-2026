@@ -48,6 +48,7 @@ class SoilIdsGenerator(
                             .build(),
                     )
                 }
+
                 SoilKeyKind.MUTATION -> {
                     val idType = key.kind.idClass.parameterizedBy(key.typeArguments)
                     objectBuilder.addFunction(

@@ -10,8 +10,8 @@ import soil.plant.compose.reacty.Suspense
 import soil.query.compose.util.rememberQueriesErrorReset
 import soil.query.core.DataModel
 
-context(_: SoilDataContext)
 @Composable
+context(_: SoilDataContext)
 fun <T> SoilDataBoundary(
     state: DataModel<T>,
     modifier: Modifier = Modifier,
@@ -29,8 +29,8 @@ fun <T> SoilDataBoundary(
     }
 }
 
-context(_: SoilDataContext)
 @Composable
+context(_: SoilDataContext)
 fun <T1, T2> SoilDataBoundary(
     state1: DataModel<T1>,
     state2: DataModel<T2>,

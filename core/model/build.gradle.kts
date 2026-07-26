@@ -3,7 +3,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 plugins {
     alias(libs.plugins.droidkaigiPrimitiveKmp)
     alias(libs.plugins.kotlinxSerialization)
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
 kotlin {
