@@ -27,7 +27,7 @@ When you open the repository, the sync will start. Please wait for the Gradle sy
 
 Build and run the `app-android` module. Click the run button in Android Studio.
 
-![image](https://github.com/user-attachments/assets/66f3f0c8-ee18-4961-9c3b-7a808cd2a3b4)
+![image](assets/contributing/how-to-run-app.png)
 
 ### 3. Find a Task
 

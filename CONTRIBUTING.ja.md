@@ -27,7 +27,7 @@ Android Studioを開いて、"Open"からダウンロードしたリポジトリ
 
 `app-android` モジュールをビルドして実行します。Android Studio上の実行ボタンをクリックしてください。
 
-![image](https://github.com/user-attachments/assets/66f3f0c8-ee18-4961-9c3b-7a808cd2a3b4)
+![image](assets/contributing/how-to-run-app.png)
 
 ### 3. タスクを見つける
 
