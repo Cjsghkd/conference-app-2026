@@ -14,7 +14,7 @@
 そのあと、以下のコマンドを実行してください。
 
 ```bash
-git clone https://github.com/[あなたのアカウント]/conference-app-2025
+git clone https://github.com/[あなたのアカウント]/conference-app-2026
 ```
 
 これでリポジトリがあなたのPCにダウンロードされます。
@@ -31,7 +31,7 @@ Android Studioを開いて、"Open"からダウンロードしたリポジトリ
 
 ### 3. タスクを見つける
 
-タスク管理にGitHub Issueを使っています。こちらでコントリビュートしたいIssueをお探しください。[`contributions welcome` または `easy`のラベルがついているIssue](https://github.com/DroidKaigi/conference-app-2025/issues?q=is%3Aissue+is%3Aopen+label%3A%22difficulty%3Aeasy+%F0%9F%8C%B1%22+label%3A%22contributions+welcome%22+)は、初めてのコントリビュートにおすすめです。
+タスク管理にGitHub Issueを使っています。こちらでコントリビュートしたいIssueをお探しください。[`contributions welcome` または `easy`のラベルがついているIssue](https://github.com/DroidKaigi/conference-app-2026/issues?q=is%3Aissue+is%3Aopen+label%3A%22difficulty%3Aeasy+%F0%9F%8C%B1%22+label%3A%22contributions+welcome%22+)は、初めてのコントリビュートにおすすめです。
 
 IssueがないPull Requestでも大丈夫です。その場合はPull Requestに理由、原因、解決策などの詳細をご記入ください。
 
@@ -56,7 +56,7 @@ https://developer.android.com/courses/jetpack-compose/course
 ### 6. プルリクエストを作成する
 
 変更が完了したら、プルリクエストを作成してください。
-gitのコミットとプッシュを行い、GitHubのUI ( https://github.com/[あなたのアカウント]/conference-app-2025 )からプルリクエストを作成します。
+gitのコミットとプッシュを行い、GitHubのUI ( https://github.com/[あなたのアカウント]/conference-app-2026 )からプルリクエストを作成します。
 
 私たちはIssue、コメント、レビューでは英語を使います。
 
