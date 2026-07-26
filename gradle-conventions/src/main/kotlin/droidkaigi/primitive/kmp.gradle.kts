@@ -14,7 +14,6 @@ kotlin {
         optIn.add("soil.query.annotation.ExperimentalSoilQueryApi")
     }
 
-
     jvm()
 
     android {

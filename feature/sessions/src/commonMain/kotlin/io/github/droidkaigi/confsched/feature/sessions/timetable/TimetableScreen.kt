@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
+import io.github.droidkaigi.confsched.core.preview.MultiThemedPreview
 import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.core.ui.safeClickable
-import io.github.droidkaigi.confsched.core.preview.MultiThemedPreview
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 

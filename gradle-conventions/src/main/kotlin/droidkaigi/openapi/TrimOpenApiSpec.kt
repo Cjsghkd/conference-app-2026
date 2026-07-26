@@ -30,9 +30,12 @@ internal fun trimOpenApiSpec(specFile: File, eventName: String): TrimResult {
         keptPaths.entries.mapValues { (pathKey, pathItem) ->
             val resource = pathKey.content.removePrefix(pathPrefix).substringBefore('/')
             val tag = resource.replaceFirstChar(Char::uppercaseChar)
-            if (pathItem !is YamlMap) pathItem
-            else pathItem.mapMapValues { operation ->
-                operation.set("tags", YamlList(listOf(YamlScalar(tag, operation.path)), operation.path))
+            if (pathItem !is YamlMap) {
+                pathItem
+            } else {
+                pathItem.mapMapValues { operation ->
+                    operation.set("tags", YamlList(listOf(YamlScalar(tag, operation.path)), operation.path))
+                }
             }
         },
         keptPaths.path,

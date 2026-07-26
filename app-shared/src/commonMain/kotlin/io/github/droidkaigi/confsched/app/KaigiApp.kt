@@ -21,9 +21,9 @@ import io.github.droidkaigi.confsched.core.ui.SoilDataBoundary
 import soil.query.compose.SwrClientProvider
 import soil.query.compose.rememberSubscription
 
-context(appGraph: AppGraph)
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
+context(appGraph: AppGraph)
 fun KaigiApp() {
     val uiGraph = retain { appGraph.uiGraph }
     val backStack = context(uiGraph) { rememberKaigiBackStack() }
@@ -61,13 +61,13 @@ fun KaigiApp() {
                         sceneStrategies = listOf(
                             rememberRootSceneStrategy(),
                             rememberListDetailSceneStrategy(),
-                            SinglePaneSceneStrategy()
+                            SinglePaneSceneStrategy(),
                         ),
                         sceneDecoratorStrategies = listOf(
                             rememberRootTabSceneDecorator(
                                 currentKey = backStack::lastOrNull,
                                 onSelectTab = { tab -> uiGraph.appNavigator.moveToTop(tab.key) },
-                            )
+                            ),
                         ),
                         entryProvider = uiGraph.appEntryProvider.entryProvider,
                     )

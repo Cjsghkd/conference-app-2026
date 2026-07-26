@@ -5,10 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import io.github.droidkaigi.confsched.core.common.ScreenContext
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
+import io.github.droidkaigi.confsched.core.common.ScreenContext
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.FavoriteTimetableItemIdMutationKey
 import io.github.droidkaigi.confsched.core.model.Timetable
@@ -115,8 +115,8 @@ class TimetableScreenPresenterTest {
         }
     }
 
-    context(_: ScreenContext)
     @Composable
+    context(_: ScreenContext)
     private fun rememberProbeQueryReply(key: TimetableQueryKey): Reply<Timetable> =
         rememberQuery(key).reply
 }

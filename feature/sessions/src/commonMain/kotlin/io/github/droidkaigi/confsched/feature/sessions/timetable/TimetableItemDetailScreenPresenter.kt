@@ -8,8 +8,8 @@ import io.github.droidkaigi.confsched.core.common.toUserMessage
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import soil.query.compose.rememberMutation
 
-context(presenterContext: TimetableItemDetailPresenterContext)
 @Composable
+context(presenterContext: TimetableItemDetailPresenterContext)
 fun timetableItemDetailScreenPresenter(
     screenChannel: ScreenChannel<TimetableItemDetailScreenAction, TimetableItemDetailScreenActionResult>,
     item: TimetableItem,

@@ -8,8 +8,8 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.savedstate.serialization.SavedStateConfiguration
 import io.github.droidkaigi.confsched.feature.sessions.timetable.TimetableNavKey
 
-context(uiGraph: UiGraph)
 @Composable
+context(uiGraph: UiGraph)
 internal fun rememberKaigiBackStack(): NavBackStack<NavKey> = rememberNavBackStack(
     configuration = remember(uiGraph.navKeySerializersProvider) {
         SavedStateConfiguration {

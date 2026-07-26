@@ -13,8 +13,8 @@ import io.github.droidkaigi.confsched.core.common.ScreenChannel
 import io.github.droidkaigi.confsched.core.data.ServerEnvironmentSelection
 import soil.query.compose.rememberMutation
 
-context(presenterContext: ServerEnvironmentPresenterContext)
 @Composable
+context(presenterContext: ServerEnvironmentPresenterContext)
 fun serverEnvironmentScreenPresenter(
     screenChannel: ScreenChannel<ServerEnvironmentScreenAction, ServerEnvironmentScreenActionResult>,
 ): ServerEnvironmentScreenUiState {
@@ -34,6 +34,7 @@ fun serverEnvironmentScreenPresenter(
     ActionEffect(screenChannel) { action ->
         when (action) {
             is ServerEnvironmentScreenAction.SetSkipNextLaunch -> skipNextLaunch = action.enabled
+
             is ServerEnvironmentScreenAction.SelectServer -> selectionMutation.mutateAsync(
                 ServerEnvironmentSelection(
                     environment = action.environment,

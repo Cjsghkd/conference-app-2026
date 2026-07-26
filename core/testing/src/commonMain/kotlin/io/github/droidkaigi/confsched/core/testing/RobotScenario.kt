@@ -1,6 +1,5 @@
 package io.github.droidkaigi.confsched.core.testing
 
-
 @DslMarker
 annotation class RobotScenarioDsl
 
@@ -44,11 +43,13 @@ internal fun <R> List<Node<R>>.flatten(
     for (node in this) {
         when (node) {
             is Node.Setup -> acc = acc + node.block
+
             is Node.Check -> leaves += ScenarioLeaf(
                 name = joinName(prefix, node.description),
                 setups = acc,
                 check = node.block,
             )
+
             is Node.Group -> leaves += node.children.flatten(
                 prefix = joinName(prefix, node.description),
                 setups = acc,

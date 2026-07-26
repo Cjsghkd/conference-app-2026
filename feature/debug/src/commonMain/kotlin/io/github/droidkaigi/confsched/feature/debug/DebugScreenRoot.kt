@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.common.retainScreenChannel
 
-context(screenContext: DebugScreenContext)
 @Composable
+context(screenContext: DebugScreenContext)
 fun DebugScreenRoot(
     onNavigateToSoilErrors: () -> Unit,
     onNavigateBack: () -> Unit,
