@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidKotlinMultiplatformLibrary) apply false
     alias(libs.plugins.ksp) apply false
-    // Not the convention plugin: on the root classpath it breaks the other convention plugins.
     alias(libs.plugins.spotless)
 }
 
