@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.droidkaigiConventionKmpFeature)
+    alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
 kotlin {

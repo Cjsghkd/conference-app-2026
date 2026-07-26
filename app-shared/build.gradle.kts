@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveBuildkonfig)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.metro)
+    alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
 // Xcode exports CONFIGURATION=Debug/Release, so the iOS default excludes the debug feature only for Release.

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveKmp)
     alias(libs.plugins.kotlinxSerialization)
     id("com.google.devtools.ksp")
+    alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
 kotlin {

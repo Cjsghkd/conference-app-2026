@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.ktorfit)
     alias(libs.plugins.droidkaigiPrimitiveOpenapi)
     id("com.google.devtools.ksp")
+    alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
 kotlin {
