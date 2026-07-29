@@ -1,6 +1,9 @@
 ---
 name: new-screen
-description: Scaffold every file a new screen needs (ScreenContext, PresenterContext, ScreenRoot, Screen, Action, ActionResult, UiState, Presenter, NavKey, NavEntryProvider, ScreenNavigator, per-screen Graph, scope marker, Default navigator) across core:model / feature / app-shared. Use when the user asks to add or scaffold a new screen or feature module. Args: feature module name (lowercase) and screen name (PascalCase).
+description: Scaffold every file a new screen needs (ScreenContext, PresenterContext, ScreenRoot, Screen, Action, ActionResult, UiState, Presenter, NavKey, NavEntryProvider, ScreenNavigator, per-screen Graph, scope marker, Default navigator) across core:model / feature / app-shared. Use when the user asks to add or scaffold a new screen or feature module. 
+arguments:
+  - feature
+  - ScreenName
 ---
 
 # new-screen
