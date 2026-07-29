@@ -9,7 +9,7 @@
 まずリポジトリをローカルにダウンロードして実行することで、アプリを試してみましょう。アプリの使い方や機能を理解するのに役立ちます。
 リポジトリの右上にある `Fork` ボタンをクリックしてください。これであなたのアカウントにリポジトリがコピーされます。
 
-![image](assets/contributing/how-to-fork-repository.png)
+![リポジトリページのForkボタン](assets/contributing/how-to-fork-repository.png)
 
 そのあと、以下のコマンドを実行してください。
 
@@ -27,7 +27,7 @@ Android Studioを開いて、"Open"からダウンロードしたリポジトリ
 
 `app-android` モジュールをビルドして実行します。Android Studio上の実行ボタンをクリックしてください。
 
-![image](assets/contributing/how-to-run-app.png)
+![Android Studioの実行ボタン](assets/contributing/how-to-run-app.png)
 
 ### 3. タスクを見つける
 

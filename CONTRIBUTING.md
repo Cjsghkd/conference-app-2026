@@ -9,7 +9,7 @@ We welcome your contributions!
 First, download the repository locally and try out the app. This will help you understand how the app works and its features.
 Click the `Fork` button at the top right of the repository. This will create a copy of the repository in your account.
 
-![image](assets/contributing/how-to-fork-repository.png)
+![The Fork button on the repository page](assets/contributing/how-to-fork-repository.png)
 
 Then, run the following command:
 
@@ -27,7 +27,7 @@ When you open the repository, the sync will start. Please wait for the Gradle sy
 
 Build and run the `app-android` module. Click the run button in Android Studio.
 
-![image](assets/contributing/how-to-run-app.png)
+![The run button in Android Studio](assets/contributing/how-to-run-app.png)
 
 ### 3. Find a Task
 
