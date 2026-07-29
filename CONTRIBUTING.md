@@ -40,7 +40,7 @@ Pull Requests without an Issue are also welcome. In that case, please include de
 If you've found a task you'd like to work on, please comment on the Issue with ":raising_hand:" or similar to avoid duplicate work. We will then assign the Issue to you.
 We'll try to respond to your comment as soon as possible, but feel free to start working on the task after commenting on the Issue!
 
-From this year, we assign one Issue to each contributor at a time, so that as many people as possible can take part in open source. Once your Issue is closed, you are very welcome to pick up the next one.
+From this year, we assign one Issue to each contributor at a time, so that as many people as possible have a chance to take part in open source. Once your Issue is closed, you are very welcome to pick up the next one.
 
 If an Issue assigned to you stays quiet for a while, we may release the assignment so that someone else can pick it up. We aim to leave a comment on the Issue before doing so. Commenting on the Issue keeps the assignment with you, and so does having an open Pull Request linked to it — a draft is fine too.
 
