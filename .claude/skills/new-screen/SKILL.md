@@ -1,6 +1,9 @@
 ---
 name: new-screen
-description: Scaffold every file a new screen needs (ScreenContext, PresenterContext, ScreenRoot, Screen, Action, ActionResult, UiState, Presenter, NavKey, NavEntryProvider, ScreenNavigator, per-screen Graph, scope marker, Default navigator) across core:model / feature / app-shared. Use when the user asks to add or scaffold a new screen or feature module. Args: feature module name (lowercase) and screen name (PascalCase).
+description: Scaffold every file a new screen needs (ScreenContext, PresenterContext, ScreenRoot, Screen, Action, ActionResult, UiState, Presenter, NavKey, NavEntryProvider, ScreenNavigator, per-screen Graph, scope marker, Default navigator) across core:model / feature / app-shared. Use when the user asks to add or scaffold a new screen or feature module. 
+arguments:
+  - feature
+  - ScreenName
 ---
 
 # new-screen
@@ -9,11 +12,11 @@ Scaffolds a complete screen following docs/building-a-screen.md.
 
 ## Steps
 
-1. Determine the feature module (lowercase, e.g. `sponsors`) and the screen name (PascalCase, e.g. `Sponsors`) from the user's request. If either is ambiguous, ask.
+1. Determine the feature module name (lowercase, e.g. `sponsors`) and the screen name (PascalCase, e.g. `Sponsors`) from the user's request. If either is ambiguous, ask.
 2. Run from the repo root:
 
    ```
-   scripts/new-screen.sh --feature <feature> --screen <ScreenName>
+   scripts/new-screen.sh --feature $feature --screen $ScreenName
    ```
 
    The script prints a summary of created/skipped files. It never overwrites existing files. If the feature module does not exist, the script stops and asks for `--create-module`; confirm with the user that a new Gradle module is intended, then re-run with the flag (it scaffolds build.gradle.kts, the settings include, and the app-shared dependency).
