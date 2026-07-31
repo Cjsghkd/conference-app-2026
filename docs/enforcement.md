@@ -33,7 +33,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | `@Preview` requires a sanctioned wrapper | FIR `PreviewRequiresWrapper` |
 | Nav callbacks flow through the UI debounce | FIR `NavLambdaMustFlowToSafeClick` |
 | Nav-only click not routed through the presenter | FIR `NoForwardOnlyAction` |
-| Theme-dependent previews use `@PreviewParameter`/`@MultiThemedPreview` | FIR read + IR `@ThemeSensitive` metadata |
+| Theme-dependent previews use `@PreviewParameter` | FIR read + IR `@ThemeSensitive` metadata |
 | Argument-forwarding lambdas use callable references | FIR `LambdaCanBeCallableReference` |
 | Mutation effect handlers call `reset()` | FIR `MutationEffectMustReset` |
 | Platform-confined common declarations carry a platform prefix | FIR `PlatformOnlyNaming` |
@@ -130,7 +130,7 @@ private fun SearchScreenPreview() {
 }
 ```
 
-Why: every `@Preview` (JetBrains or AndroidX) must render inside `KaigiTheme` with the preview image resolver. The checker accepts either route — annotate the function with `@PreviewWrapper(wrapper = KaigiPreviewWrapper::class)`, or make `MultiThemedPreviewTheme { … }` the body's top-level statement (for theme-sensitive previews).
+Why: every `@Preview` (JetBrains or AndroidX) must render inside `KaigiTheme` with the preview image resolver, which the wrapper supplies — annotate the function with `@PreviewWrapper(wrapper = KaigiPreviewWrapper::class)`, or make `KaigiPreviewTheme(colorScheme) { … }` the body's top-level statement when the preview picks its own colour scheme. Both checkers read the annotations through one level of meta-annotation, so a multi-preview annotation carrying them counts. See [Preview & sample assets](./preview.md).
 
 ### `NavLambdaMustFlowToSafeClick`
 

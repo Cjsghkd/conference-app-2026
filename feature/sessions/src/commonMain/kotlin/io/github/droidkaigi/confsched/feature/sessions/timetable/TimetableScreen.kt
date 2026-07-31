@@ -20,11 +20,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
+import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
-import io.github.droidkaigi.confsched.core.preview.MultiThemedPreview
+import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.core.ui.safeClickable
 import kotlinx.collections.immutable.persistentListOf
@@ -90,20 +94,24 @@ private fun TimetableCard(
     }
 }
 
-@MultiThemedPreview
+@Preview
 @Composable
-fun TimetableScreenPreview() {
-    TimetableScreen(
-        uiState = TimetableScreenUiState(
-            day = DroidKaigi2026Day.Day1,
-            sessions = persistentListOf(
-                TimetableItem(TimetableItemId("d1a"), "Compose Multiplatform in Practice", "Room1", "Sp1", DroidKaigi2026Day.Day1, "10:00", "10:40"),
-                TimetableItem(TimetableItemId("d1b"), "KSP-driven previews", "Room2", "Sp2", DroidKaigi2026Day.Day1, "11:00", "11:40"),
+fun TimetableScreenPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        TimetableScreen(
+            uiState = TimetableScreenUiState(
+                day = DroidKaigi2026Day.Day1,
+                sessions = persistentListOf(
+                    TimetableItem(TimetableItemId("d1a"), "Compose Multiplatform in Practice", "Room1", "Sp1", DroidKaigi2026Day.Day1, "10:00", "10:40"),
+                    TimetableItem(TimetableItemId("d1b"), "Themed previews without codegen", "Room2", "Sp2", DroidKaigi2026Day.Day1, "11:00", "11:40"),
+                ),
+                bookmarks = persistentSetOf(TimetableItemId("d1a")),
             ),
-            bookmarks = persistentSetOf(TimetableItemId("d1a")),
-        ),
-        onBookmarkClick = {},
-        onDayClick = {},
-        onItemClick = {},
-    )
+            onBookmarkClick = {},
+            onDayClick = {},
+            onItemClick = {},
+        )
+    }
 }
