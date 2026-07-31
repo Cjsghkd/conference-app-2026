@@ -6,8 +6,14 @@ import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.PersistentSet
 
+data class TimetableTimeSlot(
+    val startsAt: String,
+    val endsAt: String,
+    val items: PersistentList<TimetableItem>,
+)
+
 data class TimetableScreenUiState(
     val day: DroidKaigi2026Day,
-    val sessions: PersistentList<TimetableItem>,
+    val timeSlots: PersistentList<TimetableTimeSlot>,
     val bookmarks: PersistentSet<TimetableItemId>,
 )

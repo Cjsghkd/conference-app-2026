@@ -11,6 +11,9 @@ import io.github.droidkaigi.confsched.core.common.ScreenChannel
 import io.github.droidkaigi.confsched.core.common.toUserMessage
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.Timetable
+import io.github.droidkaigi.confsched.core.model.TimetableItem
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import soil.query.compose.rememberMutation
 
 @Composable
@@ -36,7 +39,14 @@ fun timetableScreenPresenter(
 
     return TimetableScreenUiState(
         day = selectedDay,
-        sessions = timetable.itemsOn(selectedDay),
+        timeSlots = timetable.itemsOn(selectedDay).toTimeSlots(),
         bookmarks = timetable.bookmarks,
     )
 }
+
+private fun PersistentList<TimetableItem>.toTimeSlots(): PersistentList<TimetableTimeSlot> =
+    groupBy { it.startsAt to it.endsAt }
+        .map { (time, items) ->
+            TimetableTimeSlot(startsAt = time.first, endsAt = time.second, items = items.toPersistentList())
+        }
+        .toPersistentList()

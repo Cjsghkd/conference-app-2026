@@ -14,6 +14,8 @@ import soil.query.compose.rememberSubscription
 context(screenContext: TimetableScreenContext)
 fun TimetableScreenRoot(
     onNavigateToDetail: (TimetableItemId) -> Unit,
+    onNavigateToSearch: () -> Unit,
+    onSwitchToGridView: () -> Unit,
 ) {
     SoilDataBoundary(
         state1 = rememberQuery(screenContext.timetableQueryKey),
@@ -41,6 +43,8 @@ fun TimetableScreenRoot(
             onBookmarkClick = { screenChannel.send(TimetableScreenAction.Bookmark(it)) },
             onDayClick = { screenChannel.send(TimetableScreenAction.SelectDay(it)) },
             onItemClick = onNavigateToDetail,
+            onSearchClick = onNavigateToSearch,
+            onUiTypeChangeClick = onSwitchToGridView,
         )
     }
 }

@@ -57,16 +57,40 @@ class TimetableScreenPresenterTest {
         ) {
             val initial = uiStates.awaitItem()
             assertEquals(DroidKaigi2026Day.Day1, initial.day)
-            assertEquals(listOf("d1a", "d1b"), initial.sessions.map { it.id.value })
+            assertEquals(listOf("d1a", "d1b"), initial.timeSlots.flatMap { slot -> slot.items.map { it.id.value } })
             assertEquals(setOf(TimetableItemId("d1a")), initial.bookmarks)
 
             send(TimetableScreenAction.SelectDay(DroidKaigi2026Day.Day2))
             val onDay2 = uiStates.awaitItem()
             assertEquals(DroidKaigi2026Day.Day2, onDay2.day)
-            assertEquals(listOf("d2a"), onDay2.sessions.map { it.id.value })
+            assertEquals(listOf("d2a"), onDay2.timeSlots.flatMap { slot -> slot.items.map { it.id.value } })
 
             send(TimetableScreenAction.Bookmark(TimetableItemId("d2a")))
             assertEquals(TimetableItemId("d2a"), mutateInvocations.receive())
+        }
+    }
+
+    @Test
+    fun sessions_sharing_a_time_are_grouped_into_one_slot() {
+        val favoriteKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
+            id = MutationId("test-favorite-slots"),
+            mutate = { },
+        )
+        val concurrent = Timetable(
+            items = persistentListOf(
+                TimetableItem(TimetableItemId("d1a"), "Day1 A", "Room1", "Sp1", DroidKaigi2026Day.Day1, "10:00", "10:40"),
+                TimetableItem(TimetableItemId("d1b"), "Day1 B", "Room2", "Sp2", DroidKaigi2026Day.Day1, "10:00", "10:40"),
+                TimetableItem(TimetableItemId("d1c"), "Day1 C", "Room1", "Sp3", DroidKaigi2026Day.Day1, "11:00", "11:40"),
+            ),
+        )
+        runPresenterTest(
+            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey),
+            presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = concurrent) },
+        ) {
+            val slots = uiStates.awaitItem().timeSlots
+            assertEquals(listOf("10:00" to "10:40", "11:00" to "11:40"), slots.map { it.startsAt to it.endsAt })
+            assertEquals(listOf("d1a", "d1b"), slots[0].items.map { it.id.value })
+            assertEquals(listOf("d1c"), slots[1].items.map { it.id.value })
         }
     }
 
