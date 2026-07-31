@@ -6,7 +6,7 @@ Compose `@Preview`s need sample data and images, but those assets must **not shi
 
 - `:core:preview:api` — the pure contract: a type-safe `PreviewImage` enum, the `PreviewImageResolver` interface, `LocalPreviewImageResolver` (default `null`), the `PreviewScope` marker, and `NoopPreviewImageResolver` (the `@ContributesBinding(PreviewScope)` default, which resolves nothing). No image binaries.
 - `:core:preview:impl` — the image binaries (Compose Resources) and `DefaultPreviewImageResolver`, contributed with `@ContributesBinding(PreviewScope, replaces = [NoopPreviewImageResolver::class])` so it overrides the no-op default wherever `:impl` is on the classpath.
-- `:core:preview:wrapper` — the Metro `PreviewGraph` (`@DependencyGraph(PreviewScope)`) and `KaigiPreviewWrapper`, the wrapper features attach to their previews.
+- `:core:preview:wrapper` — the Metro `PreviewGraph` (`@DependencyGraph(PreviewScope)`), `KaigiPreviewTheme`, and the wrapper features attach to their previews.
 
 ```text
 core/preview/
@@ -22,16 +22,19 @@ core/preview/
 │         *.png                            # the image binaries
 └─ wrapper/src/commonMain/kotlin/.../preview/wrapper/
      PreviewGraph.kt                  # @DependencyGraph(PreviewScope)
-     KaigiPreviewWrapper.kt           # builds the resolver via createGraph<PreviewGraph>()
+     KaigiPreviewTheme.kt             # KaigiTheme + the resolver, for any preview to call
+     KaigiPreviewWrapper.kt           # applies it under one fixed colour scheme
 ```
 
-`KaigiPreviewWrapper` and `PreviewGraph` live in `:wrapper`, not `:impl` or `:api`. The wrapper takes `:core:preview:impl` as a `compileOnly` dependency: Metro aggregates the contributed `DefaultPreviewImageResolver` binding at the wrapper's compile time, while `:impl` stays off production classpaths. Kotlin/Native and wasm rely on partial linkage to tolerate the dangling reference, and `Wrap` never runs in production. Keeping the graph out of `:api` also avoids a cycle: `:api -> :impl` would clash with `:impl -> :api`.
+`KaigiPreviewTheme` and `PreviewGraph` live in `:wrapper`, not `:impl` or `:api`. The wrapper takes `:core:preview:impl` as a `compileOnly` dependency: Metro aggregates the contributed `DefaultPreviewImageResolver` binding at the wrapper's compile time, while `:impl` stays off production classpaths. Kotlin/Native and wasm rely on partial linkage to tolerate the dangling reference, and neither ever runs in production. Keeping the graph out of `:api` also avoids a cycle: `:api -> :impl` would clash with `:impl -> :api`.
 
 Production depends on `:core:preview:wrapper` (through the feature convention, see below) but never on `:core:preview:impl`, so the image binaries are physically excluded from release. Only preview / test builds put `:impl` on the classpath, sharing the same sample data with screenshot tests and fake builds.
 
-## Preview wrapper
+## Preview wrappers
 
-Each `@Preview` carries `@PreviewWrapper(KaigiPreviewWrapper::class)` (both from `androidx.compose.ui.tooling.preview`). `KaigiPreviewWrapper` implements `PreviewWrapperProvider`, and its `Wrap` applies `KaigiTheme` (fixed `KaigiColorScheme.MorningMist`) and provides the `PreviewImageResolver` — created lazily via `createGraph<PreviewGraph>().previewImageResolver` — through `LocalPreviewImageResolver`, so `RemoteImage` resolves `preview://` URLs to local drawables. (`@PreviewWrapper` targets functions only, so it cannot be placed on a multi-preview meta-annotation.)
+`KaigiPreviewTheme` is the envelope every preview renders inside: it applies `KaigiTheme` under the given colour scheme and provides the `PreviewImageResolver` — created lazily via `createGraph<PreviewGraph>().previewImageResolver` — through `LocalPreviewImageResolver`, so `RemoteImage` resolves `preview://` URLs to local drawables.
+
+A preview reaches it one of two ways. Most previews take one fixed scheme, so `KaigiPreviewWrapper` supplies it and the preview carries only an annotation (`@PreviewWrapper`, also from `androidx.compose.ui.tooling.preview`):
 
 ```kotlin
 @PreviewWrapper(KaigiPreviewWrapper::class)
@@ -42,35 +45,33 @@ fun AboutScreenPreview() {
 }
 ```
 
-Theme-sensitive previews take the other route: they omit `@PreviewWrapper` and make `MultiThemedPreviewTheme { … }` the body's top-level call (see [Multi-theme previews](#multi-theme-previews)). The `PreviewRequiresWrapperChecker` FIR checker accepts either form.
+A preview that chooses its own scheme cannot receive it through the wrapper, so it opens `KaigiPreviewTheme` itself (see [Multi-theme previews](#multi-theme-previews)). The `PreviewRequiresWrapperChecker` FIR checker accepts either form and rejects everything else — including a body that opens plain `KaigiTheme`, which would render without the resolver.
 
 ## Multi-theme previews
 
-`@MultiThemedPreview` (in `:core:preview:api`) marks a **top-level, argument-less `@Composable`** preview body. `:tools:ksp-processor` (the second processor, alongside the [NavKey serializer](./navigation-navkey-serializers.md) one — same `kspCommonMainMetadata` wiring) expands each annotated function into **one** generated `@Preview` that takes `@PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme` and wraps a call to the body in `MultiThemedPreviewTheme(colorScheme)`. Because `PreviewParameterProvider` yields one render per value, the tooling produces one tile per `KaigiColorScheme` (the parameter type must be an enum, not an inline value class).
+A preview whose content is `@ThemeSensitive` takes its colour scheme through `@PreviewParameter(KaigiSchemeProvider::class)` and passes it to `KaigiPreviewTheme`:
 
 ```kotlin
-// hand-written (feature:sessions/commonMain)
-@MultiThemedPreview
-@Composable
-fun TimetableScreenPreview() {
-    TimetableScreen(uiState = /* sample */, onBookmarkClick = {}, /* … */)
-}
-
-// GENERATED into build/generated/ksp/metadata/commonMain — one @Preview, N themed tiles
 @Preview
 @Composable
-public fun TimetableScreenPreviewMultiThemed(
-    @PreviewParameter(provider = KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+fun TimetableScreenPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
-    MultiThemedPreviewTheme(colorScheme) { TimetableScreenPreview() }
+    KaigiPreviewTheme(colorScheme) {
+        TimetableScreen(uiState = /* sample */, onBookmarkClick = {}, /* … */)
+    }
 }
 ```
 
-The theme envelope (`MultiThemedPreviewTheme`, applying `KaigiTheme`) lives in `:core:preview:api`, not `:impl`, so the generated code — which lands in each feature's `commonMain` — depends only on production-safe modules; the preview **image resolver** stays an `:impl` (test-only) concern. The type-safe preview-image enum is generated separately — see [Preview image enum generation](./preview-image-enum.md).
+`PreviewParameterProvider` yields one render per value, so the tooling produces one full-size tile per `KaigiColorScheme` and lays the tiles out itself. Nothing declares a preview size: a render surface shrinks to its content but never grows past the device it renders on, so a single render holding every theme side by side would have to name a fixed width, while separate tiles each stay device-sized. `KaigiSchemeProvider` lives in `:core:preview:api`; the parameter type must be an enum, not an inline value class.
+
+The `ThemeSensitivePreviewChecker` FIR checker rejects a theme-sensitive preview that takes no such parameter — see [Enforcement](./enforcement.md).
+
+The type-safe preview-image enum is generated separately — see [Preview image enum generation](./preview-image-enum.md).
 
 ## Wiring (production stays asset-free)
 
-The `droidkaigi.convention.kmp-feature` plugin gives every feature `implementation(project(":core:preview:wrapper"))` in `commonMain`, so `KaigiPreviewWrapper` is referenceable next to each `@Preview`. The wrapper carries `:core:preview:impl` only as `compileOnly`, so the image binaries and `DefaultPreviewImageResolver` never reach production runtime classpaths; where `:impl` is absent, the Metro graph falls back to `NoopPreviewImageResolver` and previews would render blank (which never happens in production, since `Wrap` runs only on preview / screenshot classpaths).
+The `droidkaigi.convention.kmp-feature` plugin gives every feature `implementation(project(":core:preview:wrapper"))` in `commonMain`, so `KaigiPreviewWrapper` is referenceable next to each `@Preview`. The wrapper carries `:core:preview:impl` only as `compileOnly`, so the image binaries and `DefaultPreviewImageResolver` never reach production runtime classpaths; where `:impl` is absent, the Metro graph falls back to `NoopPreviewImageResolver` and previews would render blank (which never happens in production, since previews render only on preview / screenshot classpaths).
 
 `:core:preview:impl` still has to be on the classpath that *renders* previews, yet it is absent from `releaseRuntimeClasspath`. The non-production paths that pull it in:
 

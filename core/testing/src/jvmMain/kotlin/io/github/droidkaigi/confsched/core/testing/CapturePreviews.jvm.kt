@@ -10,7 +10,7 @@ import io.github.takahirom.roborazzi.captureRoboImage
 actual fun capturePreviews(previews: List<RegisteredPreview>) {
     for (preview in previews) {
         runComposeUiTest {
-            setContent { PreviewCaptureEnvironment { preview.content() } }
+            setContent { preview.content() }
             onRoot().captureRoboImage(filePath = "screenshots/desktop/${preview.name}.png")
         }
     }

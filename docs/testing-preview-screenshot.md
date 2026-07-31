@@ -1,6 +1,6 @@
 # Preview screenshot tests
 
-Compose `@Preview`s double as screenshot tests. **ComposablePreviewScanner** discovers every `@Preview` (honouring `@PreviewParameter`), and **Roborazzi** renders each one through Robolectric and compares it to a recorded golden image. The pipeline runs as an **Android host (unit) test** — no device or emulator.
+Compose `@Preview`s double as screenshot tests. **ComposablePreviewScanner** discovers every `@Preview`, and **Roborazzi** renders each one through Robolectric and compares it to a recorded golden image. The pipeline runs as an **Android host (unit) test** — no device or emulator.
 
 ## How it is wired
 
@@ -63,15 +63,13 @@ class KaigiComposePreviewTester : ComposePreviewTester<JUnit4TestParameter<Commo
 
 ### Why `CommonComposablePreviewScanner`
 
-The multi-theme previews are generated into `commonMain`, and `CommonComposablePreviewScanner` (the `:common` ComposablePreviewScanner artifact) discovers them. The `:common` artifact is marked `@Deprecated` upstream, slated for removal in 0.10.0.
+Previews live in `commonMain`, and `CommonComposablePreviewScanner` (the `:common` ComposablePreviewScanner artifact) discovers them. The `:common` artifact is marked `@Deprecated` upstream, slated for removal in 0.10.0.
 
-`ComposablePreviewScanner` is ClassGraph-based, so it scans **compiled classes** on the JVM classpath. The `androidHostTest` classpath includes the Android target's compiled output, which contains both `commonMain` and the KSP-generated code, so `commonMain` previews are visible without a source-set visibility workaround.
+`ComposablePreviewScanner` is ClassGraph-based, so it scans **compiled classes** on the JVM classpath. The `androidHostTest` classpath includes the Android target's compiled output, which contains `commonMain`, so `commonMain` previews are visible without a source-set visibility workaround.
 
 ## `@PreviewParameter` expansion
 
-`TimetableScreenPreview` carries `@MultiThemedPreview`; KSP generates `TimetableScreenPreviewMultiThemed(@PreviewParameter(KaigiSchemeProvider::class) …)` (see [Preview & sample assets](./preview.md)). The scanner honours `@PreviewParameter` and expands that single `@Preview` into **one `ComposablePreview` per `KaigiColorScheme`** — five parameterized Robolectric cases, producing five goldens (`…TimetableScreenPreviewMultiThemed_0.png` … `_4.png`).
-
-> Note: with the current palette the five goldens are pixel-identical. `KaigiColorScheme` only overrides Material `primary`/`secondary`, and the timetable sample renders on surface/neutral colors that do not differ across schemes — so the *expansion* is real (five distinct test cases) even though the *pixels* coincide. A screen that uses the primary color would show five visibly different tiles.
+`TimetableScreenPreview` takes a `@PreviewParameter(KaigiSchemeProvider::class)` colour scheme (see [Preview & sample assets](./preview.md)). The scanner honours `@PreviewParameter` and expands that single `@Preview` into **one `ComposablePreview` per `KaigiColorScheme`** — five parameterized cases, producing five goldens (`…TimetableScreenPreview_0.png` … `_4.png`).
 
 ## Tasks
 
@@ -85,7 +83,7 @@ Goldens are written to `feature/sessions/screenshots/` but no longer committed (
 
 ## Desktop and iOS
 
-The same previews are captured on desktop and iOS. Classpath scanning does not exist off the JVM, so `:tools:ksp-processor` generates a per-module **`PreviewRegistry`** — an object enumerating every zero-parameter `@Preview` function plus each `@MultiThemedPreview` expanded across `KaigiSchemeProvider`, with names matching the JVM scanner's screenshot ids so goldens are comparable across platforms. The `screenshot-test` plugin generates a single `PreviewScreenshotTest` into `commonTest`; it calls `capturePreviews` (`:core:testing`), an expect/actual function whose desktop and iOS actuals render every registry entry through `runComposeUiTest` and capture it with Roborazzi's `roborazzi-compose-desktop` / `roborazzi-compose-ios` artifacts. The Android and wasmJs actuals are no-ops.
+The same previews are captured on desktop and iOS. Classpath scanning does not exist off the JVM, so `:tools:ksp-processor` generates a per-module **`PreviewRegistry`** — an object enumerating every `@Preview` function (following meta-annotations) as a composable lambda that applies the function's `@PreviewWrapper` and expands its `@PreviewParameter` across the provider's values, with names matching the JVM scanner's screenshot ids so goldens are comparable across platforms. The `screenshot-test` plugin generates a single `PreviewScreenshotTest` into `commonTest`; it calls `capturePreviews` (`:core:testing`), an expect/actual function whose desktop and iOS actuals render every registry entry through `runComposeUiTest` and capture it with Roborazzi's `roborazzi-compose-desktop` / `roborazzi-compose-ios` artifacts. The Android and wasmJs actuals are no-ops.
 
 | Task | Output |
 | --- | --- |

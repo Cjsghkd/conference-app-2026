@@ -15,10 +15,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionC
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirNamedFunction
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
-import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
+import org.jetbrains.kotlin.fir.declarations.toAnnotationClassId
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
-import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
-import org.jetbrains.kotlin.fir.expressions.FirStatement
 import org.jetbrains.kotlin.fir.expressions.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
@@ -34,8 +32,6 @@ internal object ThemeSensitiveNames {
         Name.identifier("ThemeSensitive"),
     )
     val THEME_SENSITIVE_FQN = THEME_SENSITIVE_CLASS_ID.asSingleFqName()
-
-    const val MULTI_THEMED_PREVIEW_THEME = "MultiThemedPreviewTheme"
 
     // Reading any of these MaterialTheme members makes a function inherently theme-sensitive,
     // so such reads are automatic roots of the transitive detection (no annotation required).
@@ -59,17 +55,21 @@ internal object ThemeSensitivePreviewChecker : FirSimpleFunctionChecker(MppCheck
         val session = context.session
         val symbol = declaration.symbol
         if (!symbol.hasAnnotation(PreviewWrapperNames.COMPOSABLE_ID, session)) return
-        val isPreview = symbol.hasAnnotation(PreviewWrapperNames.JETBRAINS_PREVIEW_ID, session) ||
-            symbol.hasAnnotation(PreviewWrapperNames.ANDROIDX_PREVIEW_ID, session)
-        if (!isPreview) return
+        val preview = symbol.previewAnnotations(session)
+        if (!preview.isPreview) return
 
         val body = declaration.body ?: return
         if (!body.referencesThemeSensitive(cache = HashMap(), visiting = HashSet())) return
 
-        val topLevelCall = body.statements.firstOrNull()?.unwrapReturn() as? FirFunctionCall
-        val wrapsMultiThemed = topLevelCall?.toResolvedCallableSymbol()?.name?.asString() ==
-            ThemeSensitiveNames.MULTI_THEMED_PREVIEW_THEME
-        if (!wrapsMultiThemed) {
+        val rendersEveryScheme = declaration.valueParameters.any { parameter ->
+            parameter.symbol.resolvedCompilerAnnotationsWithClassIds
+                .firstOrNull {
+                    it.toAnnotationClassId(session) == PreviewWrapperNames.PREVIEW_PARAMETER_ANNOTATION_ID
+                }
+                ?.classArgument(PreviewWrapperNames.PROVIDER_ARGUMENT_NAME) ==
+                PreviewWrapperNames.KAIGI_SCHEME_PROVIDER_ID
+        }
+        if (!rendersEveryScheme) {
             reporter.reportOn(
                 declaration.source,
                 ThemeSensitiveErrors.THEME_SENSITIVE_PREVIEW_REQUIRES_MULTI_THEME,
@@ -144,9 +144,6 @@ internal object ThemeSensitivePreviewChecker : FirSimpleFunctionChecker(MppCheck
         cache[symbol] = result
         return result
     }
-
-    private fun FirStatement.unwrapReturn(): FirStatement =
-        if (this is FirReturnExpression) result else this
 }
 
 object ThemeSensitiveErrors : KtDiagnosticsContainer() {
@@ -161,8 +158,8 @@ object ThemeSensitiveErrorMessages : BaseDiagnosticRendererFactory() {
         map.put(
             ThemeSensitiveErrors.THEME_SENSITIVE_PREVIEW_REQUIRES_MULTI_THEME,
             "This preview renders @ThemeSensitive content, so it must be previewed under every " +
-                "theme: the body's top-level statement must be a `MultiThemedPreviewTheme { ... }` " +
-                "call (annotate the previewed composable with @MultiThemedPreview to generate it).",
+                "theme: give it a `@PreviewParameter(KaigiSchemeProvider::class) colorScheme: " +
+                "KaigiColorScheme` parameter and open `KaigiPreviewTheme(colorScheme) { … }` in the body.",
         )
     }
 }
