@@ -11,6 +11,10 @@ import io.github.droidkaigi.confsched.core.common.ScreenChannel
 import io.github.droidkaigi.confsched.core.common.toUserMessage
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.Timetable
+import io.github.droidkaigi.confsched.core.model.TimetableItem
+import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableListSectionUiState
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import soil.query.compose.rememberMutation
 
 @Composable
@@ -25,7 +29,11 @@ fun timetableScreenPresenter(
     ActionEffect(screenChannel) { action ->
         when (action) {
             is TimetableScreenAction.Bookmark -> favoriteMutation.mutateAsync(action.id)
+
             is TimetableScreenAction.SelectDay -> selectedDay = action.day
+
+            is TimetableScreenAction.SwitchToGridView ->
+                presenterContext.logger.debug { "TODO: render the grid view" }
         }
     }
 
@@ -36,7 +44,20 @@ fun timetableScreenPresenter(
 
     return TimetableScreenUiState(
         day = selectedDay,
-        sessions = timetable.itemsOn(selectedDay),
-        bookmarks = timetable.bookmarks,
+        timetableListSection = TimetableListSectionUiState(
+            timeSlots = timetable.itemsOn(selectedDay).toTimeSlots(),
+            bookmarks = timetable.bookmarks,
+        ),
     )
 }
+
+private fun PersistentList<TimetableItem>.toTimeSlots(): PersistentList<TimetableListSectionUiState.TimeSlot> =
+    groupBy { it.startsAt to it.endsAt }
+        .map { (time, items) ->
+            TimetableListSectionUiState.TimeSlot(
+                startsAt = time.first,
+                endsAt = time.second,
+                items = items.toPersistentList(),
+            )
+        }
+        .toPersistentList()

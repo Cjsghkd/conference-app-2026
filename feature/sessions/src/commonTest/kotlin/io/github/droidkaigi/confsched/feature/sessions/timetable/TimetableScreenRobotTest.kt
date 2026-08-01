@@ -29,9 +29,13 @@ class TimetableScreenRobotTest {
             doIt {
                 setupContent(sampleTimetable)
             }
-            itShould("show Day1 sessions") {
+            itShould("show Day1 sessions under their time slot") {
                 checkSessionDisplayed("Day1 A")
                 checkSessionDoesNotExist("Day2 A")
+                checkTimeSlotDisplayed("10:00", "10:40")
+            }
+            itShould("offer the search and grid view actions") {
+                checkTopBarActionsDisplayed()
             }
             describe("and the Day2 tab is tapped") {
                 doIt {
