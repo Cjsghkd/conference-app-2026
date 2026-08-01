@@ -57,13 +57,13 @@ class TimetableScreenPresenterTest {
         ) {
             val initial = uiStates.awaitItem()
             assertEquals(DroidKaigi2026Day.Day1, initial.day)
-            assertEquals(listOf("d1a", "d1b"), initial.timeSlots.flatMap { slot -> slot.items.map { it.id.value } })
-            assertEquals(setOf(TimetableItemId("d1a")), initial.bookmarks)
+            assertEquals(listOf("d1a", "d1b"), initial.timetableListSection.timeSlots.flatMap { slot -> slot.items.map { it.id.value } })
+            assertEquals(setOf(TimetableItemId("d1a")), initial.timetableListSection.bookmarks)
 
             send(TimetableScreenAction.SelectDay(DroidKaigi2026Day.Day2))
             val onDay2 = uiStates.awaitItem()
             assertEquals(DroidKaigi2026Day.Day2, onDay2.day)
-            assertEquals(listOf("d2a"), onDay2.timeSlots.flatMap { slot -> slot.items.map { it.id.value } })
+            assertEquals(listOf("d2a"), onDay2.timetableListSection.timeSlots.flatMap { slot -> slot.items.map { it.id.value } })
 
             send(TimetableScreenAction.Bookmark(TimetableItemId("d2a")))
             assertEquals(TimetableItemId("d2a"), mutateInvocations.receive())
@@ -87,7 +87,7 @@ class TimetableScreenPresenterTest {
             presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey),
             presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = concurrent) },
         ) {
-            val slots = uiStates.awaitItem().timeSlots
+            val slots = uiStates.awaitItem().timetableListSection.timeSlots
             assertEquals(listOf("10:00" to "10:40", "11:00" to "11:40"), slots.map { it.startsAt to it.endsAt })
             assertEquals(listOf("d1a", "d1b"), slots[0].items.map { it.id.value })
             assertEquals(listOf("d1c"), slots[1].items.map { it.id.value })
