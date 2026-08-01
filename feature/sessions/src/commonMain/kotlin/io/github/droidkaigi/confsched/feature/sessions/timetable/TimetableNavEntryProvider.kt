@@ -28,9 +28,8 @@ class TimetableNavEntryProvider(
             context(graph.screenContext) {
                 TimetableScreenRoot(
                     onNavigateToDetail = graph.screenNavigator::openSessionDetail,
-                    // Neither the search screen nor the grid view exists yet; wire these up once they land.
+                    // The search screen does not exist yet; route this to the navigator once it lands.
                     onNavigateToSearch = {},
-                    onSwitchToGridView = {},
                 )
             }
         }

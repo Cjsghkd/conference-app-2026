@@ -15,7 +15,6 @@ context(screenContext: TimetableScreenContext)
 fun TimetableScreenRoot(
     onNavigateToDetail: (TimetableItemId) -> Unit,
     onNavigateToSearch: () -> Unit,
-    onSwitchToGridView: () -> Unit,
 ) {
     SoilDataBoundary(
         state1 = rememberQuery(screenContext.timetableQueryKey),
@@ -44,7 +43,7 @@ fun TimetableScreenRoot(
             onDayClick = { screenChannel.send(TimetableScreenAction.SelectDay(it)) },
             onItemClick = onNavigateToDetail,
             onSearchClick = onNavigateToSearch,
-            onUiTypeChangeClick = onSwitchToGridView,
+            onUiTypeChangeClick = { screenChannel.send(TimetableScreenAction.SwitchToGridView) },
         )
     }
 }

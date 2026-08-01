@@ -29,7 +29,11 @@ fun timetableScreenPresenter(
     ActionEffect(screenChannel) { action ->
         when (action) {
             is TimetableScreenAction.Bookmark -> favoriteMutation.mutateAsync(action.id)
+
             is TimetableScreenAction.SelectDay -> selectedDay = action.day
+
+            is TimetableScreenAction.SwitchToGridView ->
+                presenterContext.logger.debug { "TODO: render the grid view" }
         }
     }
 

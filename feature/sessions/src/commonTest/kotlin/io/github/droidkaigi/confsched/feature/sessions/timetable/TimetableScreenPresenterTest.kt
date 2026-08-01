@@ -52,7 +52,7 @@ class TimetableScreenPresenterTest {
             mutate = { id -> mutateInvocations.trySend(id) },
         )
         runPresenterTest(
-            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey),
+            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey, logger = FakeKaigiLogger()),
             presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
         ) {
             val initial = uiStates.awaitItem()
@@ -84,7 +84,7 @@ class TimetableScreenPresenterTest {
             ),
         )
         runPresenterTest(
-            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey),
+            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey, logger = FakeKaigiLogger()),
             presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = concurrent) },
         ) {
             val slots = uiStates.awaitItem().timetableListSection.timeSlots
@@ -95,13 +95,31 @@ class TimetableScreenPresenterTest {
     }
 
     @Test
+    fun switching_to_the_grid_view_only_logs_until_the_grid_exists() {
+        val favoriteKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
+            id = MutationId("test-favorite-grid"),
+            mutate = { },
+        )
+        val logger = FakeKaigiLogger()
+        runPresenterTest(
+            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey, logger = logger),
+            presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
+        ) {
+            uiStates.awaitItem()
+
+            send(TimetableScreenAction.SwitchToGridView)
+            assertEquals("TODO: render the grid view", logger.debugMessages.receive())
+        }
+    }
+
+    @Test
     fun mutation_failure_surfaces_ShowMessage_on_channel() {
         val failingKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
             id = MutationId("test-failing"),
             mutate = { _ -> error("boom") },
         )
         runPresenterTest(
-            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = failingKey),
+            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = failingKey, logger = FakeKaigiLogger()),
             presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
         ) {
             uiStates.awaitItem()

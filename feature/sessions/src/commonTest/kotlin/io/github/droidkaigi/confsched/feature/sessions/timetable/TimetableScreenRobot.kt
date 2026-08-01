@@ -57,7 +57,7 @@ class TimetableScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) 
         val screenContext = TimetableScreenContext(
             timetableQueryKey = queryKey,
             favoriteTimetableIdsSubscriptionKey = subscriptionKey,
-            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = mutationKey),
+            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = mutationKey, logger = FakeKaigiLogger()),
         )
         val client = SwrCachePlus(CoroutineScope(SupervisorJob() + Dispatchers.Unconfined))
 
@@ -68,7 +68,7 @@ class TimetableScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) 
                     LocalSafeClickInvoker provides SafeClickInvoker(interval = Duration.ZERO),
                 ) {
                     context(screenContext) {
-                        TimetableScreenRoot(onNavigateToDetail = {}, onNavigateToSearch = {}, onSwitchToGridView = {})
+                        TimetableScreenRoot(onNavigateToDetail = {}, onNavigateToSearch = {})
                     }
                 }
             }
