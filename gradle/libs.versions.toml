@@ -27,8 +27,11 @@ buildkonfig = "0.22.0"
 # Coil 3's network fetcher artifact (coil-network-ktor3) is only published at 3.2.0 in this stack, so
 # pin every Coil module to 3.2.0 to keep coil-core consistent across compose + network artifacts.
 coil = "3.2.0"
-# Ktor 3.2.1 is the single version whose cio/okhttp/js/darwin engines are all resolvable here.
-ktor = "3.2.1"
+ktor = "3.5.1"
+# Debug agent, wired into dev builds only. The Nav3 and Compose Semantics agents have no Maven
+# Central release yet, so every JetWhale artifact resolves to the matching snapshot from the
+# repository declared in settings.gradle.kts. Drop the suffix once alpha11 is published.
+jetwhale = "1.0.0-alpha11-SNAPSHOT"
 # Single source of truth for the app version; flows to common Kotlin via the generated BuildKonfig.
 droidkaigiApp = "0.1.0"
 # KMP logger with platform-native writers (Logcat / os_log / SLF4J / console), wasmJs-capable.
@@ -100,6 +103,11 @@ ktorSerializationKotlinxJson = { module = "io.ktor:ktor-serialization-kotlinx-js
 ktorfitLib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
 ktorfitKsp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+jetwhaleAgentRuntime = { module = "com.kitakkun.jetwhale:jetwhale-agent-runtime", version.ref = "jetwhale" }
+jetwhaleNav3Agent = { module = "com.kitakkun.jetwhale:jetwhale-nav3-agent", version.ref = "jetwhale" }
+# Carries the network agent core (JetWhaleNetworkAgentPlugin) as an api dependency.
+jetwhaleNetworkInspectorAgentKtor = { module = "com.kitakkun.jetwhale:jetwhale-network-inspector-agent-ktor", version.ref = "jetwhale" }
+jetwhaleComposeSemanticsInspectorAgent = { module = "com.kitakkun.jetwhale:jetwhale-compose-semantics-inspector-agent", version.ref = "jetwhale" }
 firebaseCrashlytics = { module = "com.google.firebase:firebase-crashlytics", version = "20.1.0" }
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazziCompose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
