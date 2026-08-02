@@ -19,6 +19,7 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             MutationEffectResetErrors,
             PlatformOnlyErrors,
             ThemeSensitiveErrors,
+            ScreenFileErrors,
         )
     }
 }
