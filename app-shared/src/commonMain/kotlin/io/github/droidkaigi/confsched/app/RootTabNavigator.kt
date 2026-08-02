@@ -7,7 +7,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 
 // Bridges the root tab bar to shells outside the Compose tree (the iOS app). Swift consumes
@@ -17,8 +16,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 @SingleIn(AppScope::class)
 class RootTabNavigator {
 
-    private val mutableCurrentTab = MutableStateFlow<RootTab?>(RootTab.entries.first())
-    val currentTab: StateFlow<RootTab?> = mutableCurrentTab.asStateFlow()
+    val currentTab: StateFlow<RootTab?>
+        field = MutableStateFlow<RootTab?>(RootTab.entries.first())
 
     private val selectionChannel = Channel<RootTab>(Channel.BUFFERED)
     internal val selections: Flow<RootTab> = selectionChannel.receiveAsFlow()
@@ -28,6 +27,6 @@ class RootTabNavigator {
     }
 
     internal fun updateCurrentTab(tab: RootTab?) {
-        mutableCurrentTab.value = tab
+        currentTab.value = tab
     }
 }

@@ -5,15 +5,14 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 @Inject
 @SingleIn(AppScope::class)
 class ServerEnvironmentStore {
-    private val mutableEnvironment = MutableStateFlow(ServerEnvironment.Staging)
-    val environment: StateFlow<ServerEnvironment> = mutableEnvironment.asStateFlow()
+    val environment: StateFlow<ServerEnvironment>
+        field = MutableStateFlow(ServerEnvironment.Staging)
 
     fun select(environment: ServerEnvironment) {
-        mutableEnvironment.value = environment
+        this.environment.value = environment
     }
 }
