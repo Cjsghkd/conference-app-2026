@@ -38,6 +38,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Mutation effect handlers call `reset()` | FIR `MutationEffectMustReset` |
 | Platform-confined common declarations carry a platform prefix | FIR `PlatformOnlyNaming` |
 | A screen-level composable is the only component in its file | FIR `ScreenIsSoleComponentInFile` |
+| Content lambdas nest at most four levels deep | FIR `ComposableNestingDepth` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -219,6 +220,29 @@ TimetableScreenRoot(
 ```
 
 Why: a lambda whose entire body is one call forwarding the lambda parameters unchanged is noise — write the callable reference. The checker skips every shape a reference cannot substitute: `suspend` or receiver-typed function types, `@Composable` lambdas, varargs, infix/operator calls, explicit type arguments, and receivers that are not a plain `this`/object/`val` chain (a reference captures its receiver once, so a mutable receiver would change semantics).
+
+### `ComposableNestingDepth`
+
+```kotlin
+@Composable
+fun TimetableScreen(uiState: TimetableScreenUiState) {
+    Scaffold { padding ->                 // 1
+        Column(Modifier.padding(padding)) {   // 2
+            LazyColumn {                  // 3
+                items(uiState.sessions) { item ->  // 4
+                    Card {                // ERROR: 5
+                        Text(item.title)
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+Why: a deeply nested tree hides the structure of the screen. A `@Composable` function may nest content lambdas at most **four** levels deep; the fifth level must move into its own `@Composable` function (`TimetableCard` above). In a screen file, [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) then gives that component its own file.
+
+A lambda counts towards the depth only when its body emits UI, so `onClick`, `remember`, and coroutine bodies are free. Builder lambdas that wrap content — `forEach`, `LazyListScope` — do count, because they add a level of braces the reader has to follow. The error is reported on the call that owns the offending lambda.
 
 ## Review + tests (fuzzy)
 
