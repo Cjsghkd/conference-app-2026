@@ -29,6 +29,11 @@ kotlin {
             implementation(libs.ktorSerializationKotlinxJson)
             implementation(libs.ktorfitLib)
         }
+        commonTest.dependencies {
+            implementation(project(":core:model"))
+            implementation(kotlin("test"))
+            implementation(libs.kotlinxCollectionsImmutable)
+        }
         jvmMain.dependencies {
             implementation(libs.ktorClientCio)
         }

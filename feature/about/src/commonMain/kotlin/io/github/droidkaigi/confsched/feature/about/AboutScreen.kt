@@ -26,6 +26,8 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 fun AboutScreen(
     uiState: AboutScreenUiState,
     onOpenFeaturedSession: (TimetableItemId) -> Unit,
+    onOpenSponsors: () -> Unit,
+    onOpenContributors: () -> Unit,
     isDebugMenuAvailable: Boolean,
     onOpenDebug: () -> Unit,
 ) {
@@ -54,6 +56,16 @@ fun AboutScreen(
                     Text("Navigates to the sessions feature through AboutScreenNavigator")
                 },
             )
+            HorizontalDivider()
+            ListItem(
+                modifier = Modifier.safeClickable(onClick = onOpenSponsors),
+                headlineContent = { Text("Sponsors") },
+            )
+            HorizontalDivider()
+            ListItem(
+                modifier = Modifier.safeClickable(onClick = onOpenContributors),
+                headlineContent = { Text("Contributors") },
+            )
             if (isDebugMenuAvailable) {
                 HorizontalDivider()
                 ListItem(
@@ -77,6 +89,8 @@ fun AboutScreenPreview() {
             featuredSessionId = TimetableItemId("s6"),
         ),
         onOpenFeaturedSession = {},
+        onOpenSponsors = {},
+        onOpenContributors = {},
         isDebugMenuAvailable = true,
         onOpenDebug = {},
     )
@@ -93,6 +107,8 @@ fun AboutScreenWithoutDebugMenuPreview() {
             featuredSessionId = TimetableItemId("s6"),
         ),
         onOpenFeaturedSession = {},
+        onOpenSponsors = {},
+        onOpenContributors = {},
         isDebugMenuAvailable = false,
         onOpenDebug = {},
     )

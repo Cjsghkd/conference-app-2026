@@ -21,6 +21,8 @@ class AboutNavEntryProvider(
             context(graph.screenContext) {
                 AboutScreenRoot(
                     onNavigateToSessionDetail = graph.screenNavigator::openSessionDetail,
+                    onNavigateToSponsors = graph.screenNavigator::openSponsors,
+                    onNavigateToContributors = graph.screenNavigator::openContributors,
                     isDebugMenuAvailable = graph.screenNavigator.isDebugMenuAvailable,
                     onNavigateToDebug = graph.screenNavigator::openDebug,
                 )

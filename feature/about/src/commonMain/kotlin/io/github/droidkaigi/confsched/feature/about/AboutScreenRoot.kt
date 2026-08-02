@@ -8,6 +8,8 @@ import io.github.droidkaigi.confsched.core.model.TimetableItemId
 context(screenContext: AboutScreenContext)
 fun AboutScreenRoot(
     onNavigateToSessionDetail: (TimetableItemId) -> Unit,
+    onNavigateToSponsors: () -> Unit,
+    onNavigateToContributors: () -> Unit,
     isDebugMenuAvailable: Boolean,
     onNavigateToDebug: () -> Unit,
 ) {
@@ -17,6 +19,8 @@ fun AboutScreenRoot(
     AboutScreen(
         uiState = uiState,
         onOpenFeaturedSession = onNavigateToSessionDetail,
+        onOpenSponsors = onNavigateToSponsors,
+        onOpenContributors = onNavigateToContributors,
         isDebugMenuAvailable = isDebugMenuAvailable,
         onOpenDebug = onNavigateToDebug,
     )

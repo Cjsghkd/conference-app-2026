@@ -8,7 +8,9 @@ import io.github.droidkaigi.confsched.core.common.DebugNavKeyProvider
 import io.github.droidkaigi.confsched.core.model.AboutScreenScope
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.feature.about.AboutScreenNavigator
+import io.github.droidkaigi.confsched.feature.contributors.ContributorsNavKey
 import io.github.droidkaigi.confsched.feature.sessions.timetable.TimetableItemDetailNavKey
+import io.github.droidkaigi.confsched.feature.sponsors.SponsorsNavKey
 
 @Inject
 @SingleIn(AboutScreenScope::class)
@@ -19,6 +21,14 @@ class DefaultAboutScreenNavigator(
 ) : AboutScreenNavigator {
     override fun openSessionDetail(id: TimetableItemId) {
         appNavigator.goTo(TimetableItemDetailNavKey(id))
+    }
+
+    override fun openSponsors() {
+        appNavigator.goTo(SponsorsNavKey)
+    }
+
+    override fun openContributors() {
+        appNavigator.goTo(ContributorsNavKey)
     }
 
     override val isDebugMenuAvailable: Boolean get() = debugNavKeyProvider.debugNavKey != null
