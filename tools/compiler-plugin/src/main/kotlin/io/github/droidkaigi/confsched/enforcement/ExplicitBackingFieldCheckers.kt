@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirReturnExpression
 import org.jetbrains.kotlin.fir.expressions.FirThisReceiverExpression
+import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.references.toResolvedPropertySymbol
 import org.jetbrains.kotlin.fir.resolve.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
@@ -42,8 +43,8 @@ internal object ExplicitBackingFieldRequiredChecker : FirPropertyChecker(MppChec
         if (!mirrored.isVal) return
         if (mirrored.resolvedStatus.visibility != Visibilities.Private) return
         if (mirrored.getContainingClassSymbol() != containingClass) return
-        // A constructor `val` has no initializer to move into a `field` clause.
-        if (mirrored.fromPrimaryConstructor) return
+        // A computed or constructor property has no initializer to move into a `field` clause.
+        if (!mirrored.hasInitializer || mirrored.fromPrimaryConstructor) return
         if (!mirrored.resolvedReturnType.isSubtypeOf(declaration.symbol.resolvedReturnType, context.session)) return
 
         reporter.reportOn(
@@ -64,8 +65,9 @@ internal object ExplicitBackingFieldRequiredChecker : FirPropertyChecker(MppChec
         val access = when (this) {
             is FirPropertyAccessExpression -> this
 
-            // A converting call such as `mutableFoo.asStateFlow()` still exposes the receiver itself.
-            is FirFunctionCall -> explicitReceiver as? FirPropertyAccessExpression
+            // Only a read-only view of the same instance leaves the exposed property a mirror. A
+            // derived flow (`map`, `combine`) is a different object and stays its own property.
+            is FirFunctionCall -> (explicitReceiver as? FirPropertyAccessExpression)?.takeIf { isReadOnlyView() }
 
             else -> null
         } ?: return null
@@ -73,7 +75,16 @@ internal object ExplicitBackingFieldRequiredChecker : FirPropertyChecker(MppChec
         if (receiver != null && receiver !is FirThisReceiverExpression) return null
         return access.calleeReference.toResolvedPropertySymbol()
     }
+
+    private fun FirFunctionCall.isReadOnlyView(): Boolean {
+        val callableId = calleeReference.toResolvedCallableSymbol()?.callableId ?: return false
+        return callableId.packageName.asString() == COROUTINES_FLOW_PACKAGE &&
+            callableId.callableName.asString() in READ_ONLY_VIEW_CONVERSIONS
+    }
 }
+
+private const val COROUTINES_FLOW_PACKAGE = "kotlinx.coroutines.flow"
+private val READ_ONLY_VIEW_CONVERSIONS = setOf("asStateFlow", "asSharedFlow")
 
 object ExplicitBackingFieldErrors : KtDiagnosticsContainer() {
     val PROPERTY_MUST_USE_EXPLICIT_BACKING_FIELD by error1<PsiElement, String>(

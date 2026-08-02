@@ -40,7 +40,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Platform-confined common declarations carry a platform prefix | FIR `PlatformOnlyNaming` |
 | A screen-level composable is the only component in its file | FIR `ScreenIsSoleComponentInFile` |
 | Content lambdas nest at most four levels deep | FIR `ComposableNestingDepth` |
-| A private property exposed by a wider one is an explicit backing field | FIR `ExplicitBackingFieldRequired` |
+| A private property exposed by a wider one uses an explicit backing field | FIR `ExplicitBackingFieldRequired` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -275,7 +275,7 @@ class ServerEnvironmentStore {
 }
 ```
 
-Why: a private property paired with a wider one that merely re-exposes it duplicates one piece of state under two names, and nothing keeps the pair in sync as the class grows. Kotlin's explicit backing field states the same intent in one declaration — the field type inside the class, the property type outside it. The checker fires only when the rewrite is mechanical: both properties are read-only, the private property's type is already a subtype of the exposed type, and its value comes from an initializer rather than a constructor parameter. A conversion that widens beyond a subtype (`Channel.receiveAsFlow()`) is left alone.
+Why: a private property paired with a wider one that merely re-exposes it duplicates one piece of state under two names, and nothing keeps the pair in sync as the class grows. Kotlin's explicit backing field states the same intent in one declaration — the field type inside the class, the property type outside it. The checker fires only when the rewrite is mechanical: both properties are read-only, the private property's type is already a subtype of the exposed type, and its value comes from an initializer rather than a constructor parameter or a getter. Between the two, either a plain read or a read-only view of the same instance (`asStateFlow` / `asSharedFlow`) qualifies; a conversion that widens beyond a subtype (`Channel.receiveAsFlow()`) and a derived value (`Flow.map`) are left alone.
 
 ## Review + tests (fuzzy)
 
