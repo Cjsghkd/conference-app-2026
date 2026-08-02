@@ -35,9 +35,11 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Nav-only click not routed through the presenter | FIR `NoForwardOnlyAction` |
 | Theme-dependent previews use `@PreviewParameter` | FIR read + IR `@ThemeSensitive` metadata |
 | Argument-forwarding lambdas use callable references | FIR `LambdaCanBeCallableReference` |
+| Pass-through lambdas pass the function value itself | FIR `LambdaCanBePassedDirectly` |
 | Mutation effect handlers call `reset()` | FIR `MutationEffectMustReset` |
 | Platform-confined common declarations carry a platform prefix | FIR `PlatformOnlyNaming` |
 | A screen-level composable is the only component in its file | FIR `ScreenIsSoleComponentInFile` |
+| Content lambdas nest at most four levels deep | FIR `ComposableNestingDepth` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -218,7 +220,46 @@ TimetableScreenRoot(
 )
 ```
 
-Why: a lambda whose entire body is one call forwarding the lambda parameters unchanged is noise — write the callable reference. The checker skips every shape a reference cannot substitute: `suspend` or receiver-typed function types, `@Composable` lambdas, varargs, infix/operator calls, explicit type arguments, and receivers that are not a plain `this`/object/`val` chain (a reference captures its receiver once, so a mutable receiver would change semantics).
+Why: a lambda whose entire body is one call forwarding the lambda parameters unchanged is noise — write the callable reference. The checker skips every shape a reference cannot substitute: `suspend` or receiver-typed function types, varargs, infix/operator calls, explicit type arguments, and receivers that are not a plain `this`/object/`val` chain (a reference captures its receiver once, so a mutable receiver would change semantics).
+
+`@Composable` lambdas are excluded by choice rather than necessity. A composable reference compiles, but `::Title` at a content slot hides the call syntax that marks a composable in Compose code. Forwarding a composable value is covered by `LambdaCanBePassedDirectly` instead.
+
+### `LambdaCanBePassedDirectly`
+
+```kotlin
+Wrapper(content = { content() })                     // ERROR: content = content
+Modifier.safeClickable { onOpenSoilErrors() }        // ERROR: safeClickable(onOpenSoilErrors)
+flow.collect { block(it) }                           // ERROR: collect(block)
+
+RowScopeConsumer(content = { content() })            // OK: adapts () -> Unit to RowScope.() -> Unit
+```
+
+Why: a lambda that does nothing but invoke a function value already in scope is one indirection with no meaning — pass the value. This is not a callable reference, so it stays available where `LambdaCanBeCallableReference` does not apply, including `@Composable` and `suspend` function types.
+
+The lambda's type and the value's type must be equal, which keeps adaptations out: a `@Composable () -> Unit` cannot reach a `@Composable RowScope.() -> Unit` parameter on its own. The value must also be a parameter or a `val`, since a `var` could change between the point the lambda is created and the point it runs.
+
+### `ComposableNestingDepth`
+
+```kotlin
+@Composable
+fun TimetableScreen(uiState: TimetableScreenUiState) {
+    Scaffold { padding ->                 // 1
+        Column(Modifier.padding(padding)) {   // 2
+            LazyColumn {                  // 3
+                items(uiState.sessions) { item ->  // 4
+                    Card {                // ERROR: 5
+                        Text(item.title)
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+Why: a deeply nested tree hides the structure of the screen. A `@Composable` function may nest content lambdas at most **four** levels deep; the fifth level must move into its own `@Composable` function (`TimetableCard` above). In a screen file, [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) then gives that component its own file.
+
+A lambda counts towards the depth only when its body emits UI, so `onClick`, `remember`, and coroutine bodies are free. Builder lambdas that wrap content — `forEach`, `LazyListScope` — do count, because they add a level of braces the reader has to follow. The error is reported on the call that owns the offending lambda.
 
 ## Review + tests (fuzzy)
 

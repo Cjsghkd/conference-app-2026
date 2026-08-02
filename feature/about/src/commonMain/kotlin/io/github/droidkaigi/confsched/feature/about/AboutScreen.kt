@@ -57,7 +57,7 @@ fun AboutScreen(
             if (isDebugMenuAvailable) {
                 HorizontalDivider()
                 ListItem(
-                    modifier = Modifier.safeClickable { onOpenDebug() },
+                    modifier = Modifier.safeClickable(onClick = onOpenDebug),
                     headlineContent = { Text("Debug menu") },
                     supportingContent = { Text("Developer tools (debug builds only)") },
                 )

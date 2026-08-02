@@ -34,8 +34,10 @@ import org.jetbrains.kotlin.fir.types.functionTypeKind
 
 // Flags a lambda whose entire body is one call forwarding the lambda parameters unchanged and in
 // order — the lambda can be replaced with a callable reference. Deliberately conservative: any
-// shape where a reference cannot substitute (suspend or receiver-typed function type, @Composable
-// lambda, varargs, named/reordered arguments, non-trivial receiver expression) is left alone.
+// shape where a reference cannot substitute (suspend or receiver-typed function type, varargs,
+// named/reordered arguments, non-trivial receiver expression) is left alone. @Composable lambdas
+// are excluded by choice, not by necessity: a composable reference compiles, but '::Title' at a
+// content slot hides the call syntax that marks a composable.
 internal object LambdaCanBeCallableReferenceChecker : FirAnonymousFunctionChecker(MppCheckerKind.Platform) {
 
     context(context: CheckerContext, reporter: DiagnosticReporter)

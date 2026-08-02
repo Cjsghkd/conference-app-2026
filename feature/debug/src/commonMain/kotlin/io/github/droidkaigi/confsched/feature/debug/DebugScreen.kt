@@ -68,7 +68,7 @@ fun DebugScreen(
                 },
             )
             ListItem(
-                modifier = Modifier.safeClickable { onOpenSoilErrors() },
+                modifier = Modifier.safeClickable(onClick = onOpenSoilErrors),
                 headlineContent = { Text("Soil errors") },
                 supportingContent = { Text("Errors relayed during this session") },
                 trailingContent = { Text("${uiState.soilErrors.size}") },
@@ -77,7 +77,7 @@ fun DebugScreen(
 
             SectionHeader("Data")
             ListItem(
-                modifier = Modifier.safeClickable { onClearData() },
+                modifier = Modifier.safeClickable(onClick = onClearData),
                 headlineContent = { Text("Clear persisted data") },
                 supportingContent = {
                     Text(
