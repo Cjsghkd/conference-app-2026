@@ -23,6 +23,7 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             ComposableNestingErrors,
             PassThroughLambdaErrors,
             ExplicitBackingFieldErrors,
+            PrivateSetErrors,
         )
     }
 }
