@@ -43,6 +43,7 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
         )
         override val anonymousFunctionCheckers: Set<FirAnonymousFunctionChecker> = setOf(
             LambdaCanBeCallableReferenceChecker,
+            LambdaCanBePassedDirectlyChecker,
         )
         override val basicDeclarationCheckers: Set<FirBasicDeclarationChecker> = setOf(
             PlatformOnlyNamingChecker,

@@ -30,7 +30,7 @@ fun <A, R> retainScreenChannel(): ScreenChannel<A, R> = retain { ScreenChannel()
 context(_: PresenterContext)
 fun <A> ActionEffect(channel: ScreenChannel<A, *>, block: suspend (A) -> Unit) {
     LaunchedEffect(channel) {
-        channel.actions.receiveAsFlow().collect { block(it) }
+        channel.actions.receiveAsFlow().collect(block)
     }
 }
 
@@ -38,6 +38,6 @@ fun <A> ActionEffect(channel: ScreenChannel<A, *>, block: suspend (A) -> Unit) {
 context(_: ScreenContext)
 fun <R> ActionResultEffect(channel: ScreenChannel<*, R>, block: suspend (R) -> Unit) {
     LaunchedEffect(channel) {
-        channel.results.receiveAsFlow().collect { block(it) }
+        channel.results.receiveAsFlow().collect(block)
     }
 }

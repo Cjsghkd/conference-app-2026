@@ -21,6 +21,7 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             ThemeSensitiveErrors,
             ScreenFileErrors,
             ComposableNestingErrors,
+            PassThroughLambdaErrors,
         )
     }
 }
