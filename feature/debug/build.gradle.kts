@@ -10,6 +10,11 @@ kotlin {
             implementation(project(":core:data"))
             implementation(project(":core:ui"))
             implementation(libs.ktorfitLib)
+            implementation(libs.ktorClientCore)
+            implementation(libs.jetwhaleAgentRuntime)
+            implementation(libs.jetwhaleNav3Agent)
+            implementation(libs.jetwhaleNetworkInspectorAgentKtor)
+            implementation(libs.jetwhaleComposeSemanticsInspectorAgent)
             // Dev-only tooling: exempt from cross-feature isolation (never shipped).
             implementation(project(":feature:sessions"))
         }
