@@ -39,7 +39,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import soil.query.core.ErrorRecord
@@ -56,13 +55,13 @@ class DebugSoilErrorMonitor(
 
     // In-memory history of every relayed error, oldest first. Collected in the monitor's own
     // scope so errors accumulate even while the overlay is disabled or not composed.
-    private val mutableErrors = MutableStateFlow<List<ErrorRecord>>(emptyList())
-    val errors: StateFlow<List<ErrorRecord>> = mutableErrors.asStateFlow()
+    val errors: StateFlow<List<ErrorRecord>>
+        field = MutableStateFlow<List<ErrorRecord>>(emptyList())
 
     init {
         monitorScope.launch {
             errorRelay.receiveAsFlow().collect { error ->
-                mutableErrors.update { it + error }
+                errors.update { it + error }
             }
         }
     }

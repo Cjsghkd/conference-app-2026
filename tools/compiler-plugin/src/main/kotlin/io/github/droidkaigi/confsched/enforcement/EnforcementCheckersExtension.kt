@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirAnonymousFuncti
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirBasicDeclarationChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirClassChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFileChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirPropertyChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
@@ -50,6 +51,9 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
         )
         override val fileCheckers: Set<FirFileChecker> = setOf(
             ScreenIsSoleComponentInFileChecker,
+        )
+        override val propertyCheckers: Set<FirPropertyChecker> = setOf(
+            ExplicitBackingFieldRequiredChecker,
         )
     }
 }

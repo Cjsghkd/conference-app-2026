@@ -40,6 +40,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Platform-confined common declarations carry a platform prefix | FIR `PlatformOnlyNaming` |
 | A screen-level composable is the only component in its file | FIR `ScreenIsSoleComponentInFile` |
 | Content lambdas nest at most four levels deep | FIR `ComposableNestingDepth` |
+| A private property exposed by a wider one is an explicit backing field | FIR `ExplicitBackingFieldRequired` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -260,6 +261,21 @@ fun TimetableScreen(uiState: TimetableScreenUiState) {
 Why: a deeply nested tree hides the structure of the screen. A `@Composable` function may nest content lambdas at most **four** levels deep; the fifth level must move into its own `@Composable` function (`TimetableCard` above). In a screen file, [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) then gives that component its own file.
 
 A lambda counts towards the depth only when its body emits UI, so `onClick`, `remember`, and coroutine bodies are free. Builder lambdas that wrap content — `forEach`, `LazyListScope` — do count, because they add a level of braces the reader has to follow. The error is reported on the call that owns the offending lambda.
+
+### `ExplicitBackingFieldRequired`
+
+```kotlin
+class ServerEnvironmentStore {
+    private val mutableEnvironment = MutableStateFlow(ServerEnvironment.Staging)
+    val environment: StateFlow<ServerEnvironment> = mutableEnvironment.asStateFlow() // ERROR
+
+    // OK:
+    val environment: StateFlow<ServerEnvironment>
+        field = MutableStateFlow(ServerEnvironment.Staging)
+}
+```
+
+Why: a private property paired with a wider one that merely re-exposes it duplicates one piece of state under two names, and nothing keeps the pair in sync as the class grows. Kotlin's explicit backing field states the same intent in one declaration — the field type inside the class, the property type outside it. The checker fires only when the rewrite is mechanical: both properties are read-only, the private property's type is already a subtype of the exposed type, and its value comes from an initializer rather than a constructor parameter. A conversion that widens beyond a subtype (`Channel.receiveAsFlow()`) is left alone.
 
 ## Review + tests (fuzzy)
 
