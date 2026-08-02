@@ -37,6 +37,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Argument-forwarding lambdas use callable references | FIR `LambdaCanBeCallableReference` |
 | Mutation effect handlers call `reset()` | FIR `MutationEffectMustReset` |
 | Platform-confined common declarations carry a platform prefix | FIR `PlatformOnlyNaming` |
+| A screen-level composable is the only component in its file | FIR `ScreenIsSoleComponentInFile` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -194,6 +195,19 @@ fun IosHapticsSyncEffect(...) { … } // ERROR: "Ios" prefix without @PlatformOn
 ```
 
 Why: a declaration in a common source set that only has an effect on one platform must say so in its name, and a platform-prefixed name must be backed by `@PlatformOnly` (`:core:common`) so the prefix cannot lie or go stale. The reverse rule applies only to top-level declarations under `commonMain`; platform source sets use platform-prefixed names freely.
+
+### `ScreenIsSoleComponentInFile`
+
+```kotlin
+// TimetableScreen.kt
+@Composable
+fun TimetableScreen(...) { … }
+
+@Composable
+private fun TimetableCard(...) { … }   // ERROR: move it to TimetableCard.kt
+```
+
+Why: the file path is the component's identity, so an agent locates and edits a component without reading the screen it happens to sit in. A file declaring a top-level `Unit`-returning `@Composable` named `*Screen`/`*ScreenRoot` may declare no other UI component; `@Preview` functions and value-returning composables (presenters, `safeClick`) are exempt. The extracted component becomes `internal` — file-private visibility is not load-bearing here, since the module boundary already confines it to its feature.
 
 ### `LambdaCanBeCallableReference`
 
