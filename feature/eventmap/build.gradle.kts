@@ -7,7 +7,17 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":core:common"))
             implementation(project(":core:model"))
+            implementation(project(":core:preview:api"))
             implementation(project(":core:ui"))
+            implementation(libs.composeComponentsResources)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(project(":core:testing"))
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "io.github.droidkaigi.confsched.feature.eventmap.generated.resources"
 }
