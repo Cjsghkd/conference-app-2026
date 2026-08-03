@@ -4,6 +4,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -27,6 +28,7 @@ import kotlin.time.Duration
 class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
 
     private val openedSites = mutableListOf<String>()
+    private var backCount = 0
 
     fun setupContent(sponsors: Sponsors) {
         val queryKey: SponsorsQueryKey = buildQueryKey(
@@ -46,7 +48,7 @@ class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
                 ) {
                     context(screenContext) {
                         SponsorsScreenRoot(
-                            onNavigateBack = {},
+                            onNavigateBack = { backCount++ },
                             onNavigateToSponsorSite = openedSites::add,
                         )
                     }
@@ -61,6 +63,11 @@ class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
         composeUiTest.waitForIdle()
     }
 
+    fun clickBack() {
+        composeUiTest.onNodeWithContentDescription("Back").performClick()
+        composeUiTest.waitForIdle()
+    }
+
     fun checkPlanSectionDisplayed(title: String) {
         composeUiTest.onNodeWithText(title).assertIsDisplayed()
     }
@@ -69,11 +76,23 @@ class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
         composeUiTest.onNodeWithContentDescription(name).assertIsDisplayed()
     }
 
+    fun checkSponsorCount(name: String, expected: Int) {
+        assertEquals(expected, composeUiTest.onAllNodesWithContentDescription(name).fetchSemanticsNodes().size)
+    }
+
     fun checkPlanSectionDoesNotExist(title: String) {
         composeUiTest.onNodeWithText(title).assertDoesNotExist()
     }
 
     fun checkOpenedSites(vararg links: String) {
         assertEquals(links.toList(), openedSites)
+    }
+
+    fun checkBackInvoked(times: Int) {
+        assertEquals(times, backCount)
+    }
+
+    fun checkEmptyStateDisplayed() {
+        composeUiTest.onNodeWithText("Sponsors have not been announced yet.").assertIsDisplayed()
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import io.github.droidkaigi.confsched.core.common.LocalSafeClickInvoker
@@ -26,6 +27,7 @@ import kotlin.time.Duration
 class ContributorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
 
     private val openedProfiles = mutableListOf<String>()
+    private var backCount = 0
 
     fun setupContent(contributors: Contributors) {
         val queryKey: ContributorsQueryKey = buildQueryKey(
@@ -45,7 +47,7 @@ class ContributorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTes
                 ) {
                     context(screenContext) {
                         ContributorsScreenRoot(
-                            onNavigateBack = {},
+                            onNavigateBack = { backCount++ },
                             onNavigateToContributorProfile = openedProfiles::add,
                         )
                     }
@@ -70,5 +72,18 @@ class ContributorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTes
 
     fun checkOpenedProfiles(vararg urls: String) {
         assertEquals(urls.toList(), openedProfiles)
+    }
+
+    fun clickBack() {
+        composeUiTest.onNodeWithContentDescription("Back").performClick()
+        composeUiTest.waitForIdle()
+    }
+
+    fun checkBackInvoked(times: Int) {
+        assertEquals(times, backCount)
+    }
+
+    fun checkEmptyStateDisplayed() {
+        composeUiTest.onNodeWithText("No contributors to show yet.").assertIsDisplayed()
     }
 }

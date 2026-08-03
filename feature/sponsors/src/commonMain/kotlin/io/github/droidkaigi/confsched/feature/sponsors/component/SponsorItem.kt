@@ -7,6 +7,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.Sponsor
 import io.github.droidkaigi.confsched.core.ui.RemoteImage
@@ -19,7 +21,7 @@ internal fun SponsorItem(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.safeClickable { onSponsorClick(sponsor.link) },
+        modifier = modifier.safeClickable(role = Role.Button) { onSponsorClick(sponsor.link) },
         // Sponsor logos are supplied for a white background, so the card does not follow the theme.
         colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
@@ -27,6 +29,8 @@ internal fun SponsorItem(
             imageUrl = sponsor.logoUrl,
             contentDescription = sponsor.name,
             modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp),
+            // Logos arrive in arbitrary aspect ratios; cropping one to the card would cut off the wordmark.
+            contentScale = ContentScale.Fit,
         )
     }
 }

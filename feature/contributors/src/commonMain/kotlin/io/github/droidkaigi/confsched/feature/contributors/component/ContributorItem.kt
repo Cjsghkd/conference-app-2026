@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.Contributor
@@ -28,7 +29,7 @@ internal fun ContributorItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .safeClickable { onContributorClick(contributor.profileUrl) }
+            .safeClickable(role = Role.Button) { onContributorClick(contributor.profileUrl) }
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),

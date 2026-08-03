@@ -26,6 +26,7 @@ import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorItem
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsCountText
+import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsEmptyView
 import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,12 +48,16 @@ fun ContributorsScreen(
             )
         },
     ) { innerPadding ->
-        LazyColumn(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            item(key = "count") {
-                ContributorsCountText(count = uiState.contributors.size)
-            }
-            items(items = uiState.contributors, key = { it.id.value }) { contributor ->
-                ContributorItem(contributor = contributor, onContributorClick = onContributorClick)
+        if (uiState.contributors.isEmpty()) {
+            ContributorsEmptyView(modifier = Modifier.padding(innerPadding))
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+                item(key = "count") {
+                    ContributorsCountText(count = uiState.contributors.size)
+                }
+                items(items = uiState.contributors, key = { it.id.value }) { contributor ->
+                    ContributorItem(contributor = contributor, onContributorClick = onContributorClick)
+                }
             }
         }
     }

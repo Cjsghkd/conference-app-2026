@@ -38,6 +38,23 @@ class ContributorsScreenRobotTest {
                     checkOpenedProfiles("https://github.com/bob")
                 }
             }
+            describe("and back is tapped") {
+                doIt {
+                    clickBack()
+                }
+                itShould("leave the screen once") {
+                    checkBackInvoked(times = 1)
+                }
+            }
+        }
+
+        describe("when the payload carries no contributors") {
+            doIt {
+                setupContent(Contributors(items = persistentListOf()))
+            }
+            itShould("show the empty state instead of a zero count") {
+                checkEmptyStateDisplayed()
+            }
         }
     }
 

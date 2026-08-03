@@ -27,11 +27,10 @@ import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClick
+import io.github.droidkaigi.confsched.feature.sponsors.component.SPONSOR_GRID_COLUMNS
+import io.github.droidkaigi.confsched.feature.sponsors.component.SponsorsEmptyView
 import io.github.droidkaigi.confsched.feature.sponsors.component.sponsorPlanSection
 import kotlinx.collections.immutable.persistentListOf
-
-// Divisible by every SponsorPlan's items-per-row, so each plan spans a whole number of columns.
-private const val SPONSOR_GRID_COLUMNS = 6
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,14 +51,18 @@ fun SponsorsScreen(
             )
         },
     ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(SPONSOR_GRID_COLUMNS),
-            modifier = Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            uiState.groups.forEach { group ->
-                sponsorPlanSection(group = group, onSponsorClick = onSponsorClick)
+        if (uiState.groups.isEmpty()) {
+            SponsorsEmptyView(modifier = Modifier.padding(innerPadding))
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(SPONSOR_GRID_COLUMNS),
+                modifier = Modifier.fillMaxSize().padding(innerPadding).padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                uiState.groups.forEach { group ->
+                    sponsorPlanSection(group = group, onSponsorClick = onSponsorClick)
+                }
             }
         }
     }

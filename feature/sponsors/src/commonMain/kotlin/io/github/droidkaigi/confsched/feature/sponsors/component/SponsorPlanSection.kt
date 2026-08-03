@@ -12,15 +12,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.droidkaigi.confsched.core.model.Sponsor
 import io.github.droidkaigi.confsched.core.model.SponsorGroup
 import io.github.droidkaigi.confsched.core.model.SponsorPlan
+
+// The column count and the per-plan spans belong together: a span is a column count out of this total.
+internal const val SPONSOR_GRID_COLUMNS = 6
 
 internal fun LazyGridScope.sponsorPlanSection(
     group: SponsorGroup,
     onSponsorClick: (String) -> Unit,
 ) {
-    item(key = group.plan.name, span = { GridItemSpan(maxLineSpan) }) {
+    // The payload does not guarantee a unique sponsorName and a duplicate key throws in a lazy
+    // layout, so this grid stays on positional keys.
+    item(span = { GridItemSpan(maxLineSpan) }) {
         Text(
             text = group.plan.sectionTitle,
             style = MaterialTheme.typography.titleMedium,
@@ -30,8 +34,7 @@ internal fun LazyGridScope.sponsorPlanSection(
     }
     items(
         items = group.sponsors,
-        key = Sponsor::name,
-        span = { GridItemSpan(maxLineSpan / group.plan.itemsPerRow) },
+        span = { GridItemSpan(group.plan.columnSpan) },
     ) { sponsor ->
         SponsorItem(
             sponsor = sponsor,
@@ -48,12 +51,12 @@ private val SponsorPlan.sectionTitle: String
         SponsorPlan.Supporter -> "Supporters"
     }
 
-// Provisional proportions until the sponsor wall design lands; each value must divide the grid's column count.
-private val SponsorPlan.itemsPerRow: Int
+// Provisional proportions until the sponsor wall design lands.
+private val SponsorPlan.columnSpan: Int
     get() = when (this) {
-        SponsorPlan.Platinum -> 1
-        SponsorPlan.Gold -> 2
-        SponsorPlan.Supporter -> 3
+        SponsorPlan.Platinum -> SPONSOR_GRID_COLUMNS
+        SponsorPlan.Gold -> 3
+        SponsorPlan.Supporter -> 2
     }
 
 private val SponsorPlan.itemHeight: Dp
