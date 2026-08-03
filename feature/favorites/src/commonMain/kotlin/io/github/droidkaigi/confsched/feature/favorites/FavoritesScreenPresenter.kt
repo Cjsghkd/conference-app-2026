@@ -1,11 +1,62 @@
 package io.github.droidkaigi.confsched.feature.favorites
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.setValue
+import io.github.droidkaigi.confsched.core.common.ActionEffect
+import io.github.droidkaigi.confsched.core.common.MutationErrorEffect
+import io.github.droidkaigi.confsched.core.common.ScreenChannel
+import io.github.droidkaigi.confsched.core.common.toUserMessage
+import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
+import io.github.droidkaigi.confsched.core.model.Timetable
+import io.github.droidkaigi.confsched.core.model.TimetableItem
+import io.github.droidkaigi.confsched.feature.favorites.component.FavoritesListSectionUiState
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
+import soil.query.compose.rememberMutation
 
 @Composable
-context(_: FavoritesPresenterContext)
-fun favoritesScreenPresenter(): FavoritesScreenUiState {
+context(presenterContext: FavoritesPresenterContext)
+fun favoritesScreenPresenter(
+    screenChannel: ScreenChannel<FavoritesScreenAction, FavoritesScreenActionResult>,
+    timetable: Timetable,
+): FavoritesScreenUiState {
+    val favoriteMutation = rememberMutation(presenterContext.favoriteTimetableItemIdMutationKey)
+    var selectedDayFilter by retain { mutableStateOf<DroidKaigi2026Day?>(null) }
+
+    ActionEffect(screenChannel) { action ->
+        when (action) {
+            is FavoritesScreenAction.Bookmark -> favoriteMutation.mutateAsync(action.id)
+            is FavoritesScreenAction.SelectDayFilter -> selectedDayFilter = action.day
+        }
+    }
+
+    MutationErrorEffect(favoriteMutation) { error ->
+        screenChannel.emit(FavoritesScreenActionResult.ShowMessage(error.toUserMessage()))
+        favoriteMutation.reset()
+    }
+
+    val favoriteItems = timetable.items
+        .filter { timetable.isFavorite(it.id) }
+        .filter { selectedDayFilter == null || it.day == selectedDayFilter }
+
     return FavoritesScreenUiState(
-        title = "Favorites",
+        selectedDayFilter = selectedDayFilter,
+        favoritesListSection = FavoritesListSectionUiState(timeSlots = favoriteItems.toTimeSlots()),
     )
 }
+
+private fun List<TimetableItem>.toTimeSlots(): PersistentList<FavoritesListSectionUiState.TimeSlot> =
+    groupBy { item -> Triple(item.day, item.startsAt, item.endsAt) }
+        .map { entry ->
+            FavoritesListSectionUiState.TimeSlot(
+                day = entry.key.first,
+                startsAt = entry.key.second,
+                endsAt = entry.key.third,
+                items = entry.value.sortedBy { item -> item.room }.toPersistentList(),
+            )
+        }
+        .sortedWith(compareBy({ slot -> slot.day }, { slot -> slot.startsAt }, { slot -> slot.endsAt }))
+        .toPersistentList()
