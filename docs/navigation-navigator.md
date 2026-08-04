@@ -82,6 +82,25 @@ Because the binding is `@SingleIn` the screen's scope, resolving the navigator f
 
 `graph` is the per-screen graph the NavEntry retains — see [NavEntry aggregation](./navigation-entry-aggregation.md) for how entries are registered and aggregated.
 
+## External links
+
+A destination outside the app — a sponsor's site, a contributor's profile — has no `NavKey` and never enters the back stack, so it does not belong to a `<Feature>ScreenNavigator`. The NavEntry supplies Compose's `LocalUriHandler` as the Root's navigation lambda instead, and the Root passes it on like any other:
+
+```kotlin
+entry<SponsorsNavKey> {
+    val graph = retain(screenGraphFactory::createSponsorsScreenGraph)
+    val uriHandler = LocalUriHandler.current
+    context(graph.screenContext) {
+        SponsorsScreenRoot(
+            onNavigateBack = appNavigator::back,
+            onNavigateToSponsorSite = uriHandler::openUri,
+        )
+    }
+}
+```
+
+The Root and the Screen cannot tell the two apart: both receive an `on*` lambda, and `NavLambdaMustFlowToSafeClick` debounces an external link exactly as it debounces a push. A screen whose only outgoing navigation is external therefore declares no navigator methods.
+
 ## Safe click (navigation debounce)
 
 A fast double-tap on a navigation button would fire the lambda twice: the first tap pushes (or pops) before the screen leaves composition, and the second repeats it — a duplicate detail push, or an over-pop that skips a screen. The defense is split across three layers, each owning a distinct concern:

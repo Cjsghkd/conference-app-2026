@@ -17,16 +17,24 @@ fun RemoteImage(
     imageUrl: String,
     contentDescription: String?,
     modifier: Modifier = Modifier,
+    // Both branches take the same value: a preview that scales its local resource differently from
+    // the way production scales the network image makes a screenshot test pass on a layout that never ships.
+    contentScale: ContentScale = ContentScale.Crop,
 ) {
     val resource = LocalPreviewImageResolver.current?.resolve(imageUrl)
     if (resource != null) {
-        Image(painter = painterResource(resource), contentDescription = contentDescription, modifier = modifier)
+        Image(
+            painter = painterResource(resource),
+            contentDescription = contentDescription,
+            modifier = modifier,
+            contentScale = contentScale,
+        )
     } else {
         AsyncImage(
             model = imageUrl,
             contentDescription = contentDescription,
             modifier = modifier,
-            contentScale = ContentScale.Crop,
+            contentScale = contentScale,
         )
     }
 }
