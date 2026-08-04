@@ -19,11 +19,11 @@ A property named `speaker` promises a speaker, so one call site writes `item.spe
 val speakerName: String
 ```
 
-The check is one question: **is the value of this declaration a `<name>`?** For `speaker: String` the answer is no, and the correction is the `<entity><Attribute>` form — `speakerName`, `roomName`, `sponsorLogoUrl`. The bare entity name belongs to the declaration whose type models the entity: `val speaker: Speaker`.
+The check is one question: **is the value of this declaration a `<name>`?** For `speaker: String` the answer is no, and the correction is the `<entity><Attribute>` form — `speakerName`, `roomName`, `sponsorLogoUrl`. The bare entity name belongs to the declaration whose type models the entity, where the answer is yes: `ContributorsScreenUiState.contributors` holds `Contributor` and takes no suffix.
 
 ## Consequences
 
-- **Call sites are written against the promise.** A name that reads as an entity invites `speaker.name` and `speaker.iconUrl` — code that has to be un-written once the type is read.
+- **Call sites are written against the promise.** A name that reads as an entity invites `speaker.name` and `speaker.iconUrl` — code that has to be rewritten once the type is read.
 - **A wrong operation looks right.** `sessions.groupBy { it.speaker }` reads as grouping by speaker and in fact groups by display text, merging two people who share a name. `groupBy { it.speakerName }` puts the defect in view at the line that has it.
 - **The entity name is on loan.** `speaker: String` also decides, silently, that a session has one speaker identified by text. When an icon or a second speaker arrives the property is renamed anyway, whereas `speakerName` leaves `speaker` free for the type that will own it.
 
@@ -46,7 +46,7 @@ The same disagreement appears wherever the type carries less structure than the 
 
 | Rejected | Read as | Required |
 | --- | --- | --- |
-| `val speaker: SpeakerId` | a speaker | `speakerId` — a property holding an identity says so, even though the value class also does |
+| `val featuredSession: TimetableItemId` | a session | `featuredSessionId` — a property holding an identity says so, even though the value class also does |
 | `val favorite: Boolean` | a favorite | `isFavorite` — the value answers an assertion, so a noun takes `is` / `has` / `can` |
 | `val speaker: List<String>` | one speaker | `speakerNames` — a collection is plural, and the element attribute is named |
 
