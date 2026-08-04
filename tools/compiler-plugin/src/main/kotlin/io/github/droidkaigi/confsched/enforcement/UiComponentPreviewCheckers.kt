@@ -14,12 +14,6 @@ import org.jetbrains.kotlin.fir.declarations.utils.isExpect
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isUnit
 
-internal object UiComponentPreviewNames {
-    // Developer tooling, excluded from release builds, and its components render Soil ErrorRecords,
-    // whose constructor is internal to the Soil library, so sample data cannot be written for them.
-    const val DEBUG_FEATURE_PACKAGE = "io.github.droidkaigi.confsched.feature.debug"
-}
-
 internal object UiComponentRequiresPreviewChecker : FirFileChecker(MppCheckerKind.Platform) {
 
     @OptIn(DirectDeclarationsAccess::class)
@@ -28,7 +22,6 @@ internal object UiComponentRequiresPreviewChecker : FirFileChecker(MppCheckerKin
         val session = context.session
         val packageName = declaration.packageDirective.packageFqName.asString()
         if (!packageName.startsWith(SoilReadConfinementNames.FEATURE_PACKAGE_PREFIX)) return
-        if (packageName.startsWith(UiComponentPreviewNames.DEBUG_FEATURE_PACKAGE)) return
 
         val composables = declaration.declarations
             .filterIsInstance<FirNamedFunction>()

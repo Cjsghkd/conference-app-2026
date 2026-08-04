@@ -308,7 +308,9 @@ internal fun TimetableCard(item: TimetableItem, onClick: (TimetableItemId) -> Un
 fun TimetableCardPreview() { TimetableCard(item = /* sample */, onClick = {}) }
 ```
 
-Why: a component with no preview cannot be inspected without running the app, so a reader has no way to see what it looks like. Every top-level `Unit`-returning `@Composable` under a feature package requires a `@Preview` function in the same file — [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) exempts previews, so the preview sits beside the component it renders, and [`PreviewRequiresWrapper`](#previewrequireswrapper) then forces it through the sanctioned wrapper. Exempt: a composable declaring a context parameter (every `*ScreenRoot` — its `ScreenContext` comes from the screen's Metro graph, which a preview cannot build), `expect` / `actual` declarations, and `:feature:debug`, whose components render Soil `ErrorRecord`s that no sample data can construct.
+Why: a component with no preview cannot be inspected without running the app, so a reader has no way to see what it looks like. Every top-level `Unit`-returning `@Composable` under a feature package requires a `@Preview` function in the same file — [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) exempts previews, so the preview sits beside the component it renders, and [`PreviewRequiresWrapper`](#previewrequireswrapper) then forces it through the sanctioned wrapper.
+
+The rule holds for every feature module, `:feature:debug` included: a per-module exemption is invisible at the point of editing, so it reads as "this component needs no preview" and the next component written there inherits the gap. Two exemptions remain, both structural and visible in the signature itself — a composable declaring a context parameter (every `*ScreenRoot`, whose `ScreenContext` comes from the screen's Metro graph, which a preview cannot build), and `expect` / `actual` declarations.
 
 ## Review + tests (fuzzy)
 

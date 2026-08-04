@@ -24,13 +24,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
+import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClick
 import kotlinx.coroutines.launch
-import soil.query.core.ErrorRecord
 
 @Composable
-internal fun SoilErrorItem(error: ErrorRecord) {
+internal fun SoilErrorItem(error: SoilError) {
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
     var expanded by remember { mutableStateOf(false) }
@@ -40,7 +44,7 @@ internal fun SoilErrorItem(error: ErrorRecord) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Text(
-                text = "${error.keyId}",
+                text = error.keyId,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
@@ -84,5 +88,15 @@ internal fun SoilErrorItem(error: ErrorRecord) {
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun SoilErrorItemPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        SoilErrorItem(error = previewSoilError())
     }
 }

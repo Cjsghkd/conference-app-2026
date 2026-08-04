@@ -14,8 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.data.ServerEnvironment
+import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
+import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
@@ -69,5 +74,22 @@ fun ServerEnvironmentScreen(
                 onCheckedChange = toggleSkipNextLaunch,
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun ServerEnvironmentScreenPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        ServerEnvironmentScreen(
+            uiState = ServerEnvironmentScreenUiState(
+                skipSelectionNextLaunch = false,
+                autoSelectEnvironment = null,
+            ),
+            toggleSkipNextLaunch = {},
+            onSelectServer = {},
+        )
     }
 }
