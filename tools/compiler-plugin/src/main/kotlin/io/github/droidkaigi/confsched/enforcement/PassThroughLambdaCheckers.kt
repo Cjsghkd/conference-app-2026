@@ -1,7 +1,7 @@
 package io.github.droidkaigi.confsched.enforcement
 
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.KtRealSourceElementKind
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
