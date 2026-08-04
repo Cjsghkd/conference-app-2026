@@ -15,8 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.Contributor
+import io.github.droidkaigi.confsched.core.model.ContributorId
+import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
+import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.PreviewImage
+import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.RemoteImage
 import io.github.droidkaigi.confsched.core.ui.safeClickable
 
@@ -47,6 +54,24 @@ internal fun ContributorItem(
             style = MaterialTheme.typography.bodyLarge,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun ContributorItemPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        ContributorItem(
+            contributor = Contributor(
+                id = ContributorId(1L),
+                username = "DroidKaigi",
+                iconUrl = PreviewImage.SpeakerAvatarA.imageUrl,
+                profileUrl = "https://github.com/DroidKaigi",
+            ),
+            onContributorClick = {},
         )
     }
 }

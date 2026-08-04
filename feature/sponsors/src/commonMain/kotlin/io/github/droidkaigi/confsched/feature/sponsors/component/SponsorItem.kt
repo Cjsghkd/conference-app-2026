@@ -9,8 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.model.Sponsor
+import io.github.droidkaigi.confsched.core.model.SponsorPlan
+import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.PreviewImage
+import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.RemoteImage
 import io.github.droidkaigi.confsched.core.ui.safeClickable
 
@@ -31,6 +38,24 @@ internal fun SponsorItem(
             modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp),
             // Logos arrive in arbitrary aspect ratios; cropping one to the card would cut off the wordmark.
             contentScale = ContentScale.Fit,
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SponsorItemPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        SponsorItem(
+            sponsor = Sponsor(
+                name = "Arctic Fox Inc.",
+                logoUrl = PreviewImage.SessionCover.imageUrl,
+                plan = SponsorPlan.Platinum,
+                link = "https://droidkaigi.jp/2026/",
+            ),
+            onSponsorClick = {},
         )
     }
 }

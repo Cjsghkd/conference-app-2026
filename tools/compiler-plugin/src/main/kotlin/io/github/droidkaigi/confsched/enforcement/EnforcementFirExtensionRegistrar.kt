@@ -24,6 +24,7 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             PassThroughLambdaErrors,
             ExplicitBackingFieldErrors,
             PrivateSetErrors,
+            UiComponentPreviewErrors,
         )
     }
 }

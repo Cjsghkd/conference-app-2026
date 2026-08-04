@@ -42,6 +42,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Content lambdas nest at most four levels deep | FIR `ComposableNestingDepth` |
 | A private property exposed by a wider one uses an explicit backing field | FIR `ExplicitBackingFieldRequired` |
 | A private `var` exposed read-only uses `private set` | FIR `PrivateSetRequired` |
+| A feature UI composable carries a preview in its file | FIR `UiComponentRequiresPreview` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -292,6 +293,22 @@ class Counter {
 ```
 
 Why: the same duplicated-state problem as `ExplicitBackingFieldRequired`, for the case the field's type cannot express — a private `var` reassigned inside the class and read from outside. `private set` narrows the setter alone, so the pair collapses into one declaration. The two rules partition by type: identical types are a `private set` job, a strictly narrower private type is an explicit backing field one.
+
+### `UiComponentRequiresPreview`
+
+```kotlin
+// TimetableCard.kt
+@Composable
+internal fun TimetableCard(item: TimetableItem, onClick: (TimetableItemId) -> Unit) { … } // ERROR: no preview here
+
+// OK: a preview for it in the same file
+@PreviewWrapper(KaigiPreviewWrapper::class)
+@Preview
+@Composable
+fun TimetableCardPreview() { TimetableCard(item = /* sample */, onClick = {}) }
+```
+
+Why: a component with no preview cannot be inspected without running the app, so a reader has no way to see what it looks like. Every top-level `Unit`-returning `@Composable` under a feature package requires a `@Preview` function in the same file — [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) exempts previews, so the preview sits beside the component it renders, and [`PreviewRequiresWrapper`](#previewrequireswrapper) then forces it through the sanctioned wrapper. Exempt: a composable declaring a context parameter (every `*ScreenRoot` — its `ScreenContext` comes from the screen's Metro graph, which a preview cannot build), `expect` / `actual` declarations, and `:feature:debug`, whose components render Soil `ErrorRecord`s that no sample data can construct.
 
 ## Review + tests (fuzzy)
 
