@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.fir.declarations.utils.isExpect
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.isUnit
 
+private const val EFFECT_SUFFIX = "Effect"
+
 internal object UiComponentRequiresPreviewChecker : FirFileChecker(MppCheckerKind.Platform) {
 
     @OptIn(DirectDeclarationsAccess::class)
@@ -38,6 +40,8 @@ internal object UiComponentRequiresPreviewChecker : FirFileChecker(MppCheckerKin
             // An expect declaration has no body, and the tooling renders previews through the common
             // and Android views only, so a preview placed beside an actual would never run.
             if (component.symbol.isExpect || component.symbol.isActual) continue
+            // An *Effect composable runs side effects and emits nothing, so its preview would be blank.
+            if (component.name.asString().endsWith(EFFECT_SUFFIX)) continue
             val source = component.source ?: continue
             reporter.reportOn(
                 source,

@@ -310,7 +310,15 @@ fun TimetableCardPreview() { TimetableCard(item = /* sample */, onClick = {}) }
 
 Why: a component with no preview cannot be inspected without running the app, so a reader has no way to see what it looks like. Every top-level `Unit`-returning `@Composable` under a feature package requires a `@Preview` function in the same file — [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) exempts previews, so the preview sits beside the component it renders, and [`PreviewRequiresWrapper`](#previewrequireswrapper) then forces it through the sanctioned wrapper.
 
-The rule holds for every feature module, `:feature:debug` included: a per-module exemption is invisible at the point of editing, so it reads as "this component needs no preview" and the next component written there inherits the gap. Two exemptions remain, both structural and visible in the signature itself — a composable declaring a context parameter (every `*ScreenRoot`, whose `ScreenContext` comes from the screen's Metro graph, which a preview cannot build), and `expect` / `actual` declarations.
+The rule holds for every feature module, `:feature:debug` included: a per-module exemption is invisible at the point of editing, so it reads as "this component needs no preview" and the next component written there inherits the gap. The exemptions that remain are all visible in the declaration itself:
+
+| Exempt | Reason |
+| --- | --- |
+| A composable declaring a context parameter | Every `*ScreenRoot`; its `ScreenContext` comes from the screen's Metro graph, which a preview cannot build |
+| `expect` / `actual` declarations | An `expect` has no body, and the tooling renders the common and Android views only |
+| A composable named `*Effect` | Runs side effects and emits nothing, so its preview would be blank |
+| A member composable | The rule reads top-level declarations; a composable on a class is reached through its owner |
+| A composable returning anything but `Unit` | Every `*Presenter` returns a UiState rather than emitting UI |
 
 ## Review + tests (fuzzy)
 
