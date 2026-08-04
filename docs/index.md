@@ -10,6 +10,7 @@ A set of documents covering the architecture and implementation policy of the Dr
 - [Error handling](./error-handling.md) … the two-layer error model and how one-off events (navigation, messages) flow through Soil-derived effects and the ScreenChannel
 - [Presenter performance](./presenter-performance.md) … dividing responsibilities by pushing heavy computation into the data layer
 - [Enforcement](./enforcement.md) … making invalid code uncompilable via types and FIR checkers
+- [Naming review](./naming-review.md) … the naming rules a reviewer applies where the compiler cannot: a name states what the value is, a type states how it is represented
 - [Building a screen](./building-a-screen.md) … implementing one screen end to end using TimetableScreen as an example (steps and checklist)
 - [ScreenContext design](./screen-context.md) … concrete class + retain, role-context separation (composition, capability gating)
 - [Navigation overview](./navigation.md) … a per-screen Navigator (hand-written) + `@ContributesIntoSet` + KSP-generated [NavKey serializers](./navigation-navkey-serializers.md) for "no central editing, no missed registrations"
