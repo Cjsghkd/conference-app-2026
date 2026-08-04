@@ -101,7 +101,9 @@ fun Test.setLibraryProperty(propName: String, jarName: String) {
 // un-shaded kotlin-compiler so it can share a classpath with the compiler test framework. Every
 // consuming module therefore takes this relocated artifact, never the plain jar.
 tasks.shadowJar {
-    archiveClassifier.set("")
+    // A classifier of its own: an unclassified name is the `jar` task's output path, and whichever
+    // task ran last would win it — leaving the app build with the un-relocated classes half the time.
+    archiveClassifier.set("relocated")
     relocate("com.intellij", "org.jetbrains.kotlin.com.intellij")
     // Relocation is the only reason this task exists; the compiler supplies the stdlib, so bundling
     // any dependency would put a second copy of it on the compiler's classpath.
