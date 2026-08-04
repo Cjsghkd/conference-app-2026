@@ -1,0 +1,53 @@
+name: Test
+
+on:
+  pull_request:
+    paths:
+      - '**/*.kt'
+      - '**/*.kts'
+      - '**/*.java'
+      - '**/*.toml'
+      - '**/*.properties'
+      - '**/src/**/resources/**'
+      - 'core/data/openapi/**'
+      - 'gradle/wrapper/**'
+      - '.github/workflows/test.yml'
+  push:
+    branches: [main]
+    paths:
+      - '**/*.kt'
+      - '**/*.kts'
+      - '**/*.java'
+      - '**/*.toml'
+      - '**/*.properties'
+      - '**/src/**/resources/**'
+      - 'core/data/openapi/**'
+      - 'gradle/wrapper/**'
+      - '.github/workflows/test.yml'
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  jvm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+      # `test` covers the JVM-only modules (including the enforcement checker tests under
+      # :tools:compiler-plugin) and the Android unit-test variants; `jvmTest` covers the JVM target
+      # of every multiplatform module. --continue reports every failing module in one run.
+      - name: Run JVM tests
+        run: ./gradlew test jvmTest --continue
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: test-reports
+          path: '**/build/reports/tests/'
+          retention-days: 7
