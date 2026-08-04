@@ -20,7 +20,13 @@ import androidx.compose.material3.adaptive.navigation3.LocalListDetailSceneScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
+import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
+import io.github.droidkaigi.confsched.core.model.TimetableItem
+import io.github.droidkaigi.confsched.core.model.TimetableItemId
+import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewWrapper
 import io.github.droidkaigi.confsched.core.ui.safeClick
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
@@ -65,4 +71,26 @@ fun TimetableItemDetailScreen(
             Text("Day: ${item.day}")
         }
     }
+}
+
+@PreviewWrapper(KaigiPreviewWrapper::class)
+@Preview
+@Composable
+fun TimetableItemDetailScreenPreview() {
+    TimetableItemDetailScreen(
+        uiState = TimetableItemDetailScreenUiState(
+            item = TimetableItem(
+                id = TimetableItemId("d1a"),
+                title = "Compose Multiplatform in Practice",
+                room = "Arctic Fox",
+                speaker = "Alice",
+                day = DroidKaigi2026Day.Day1,
+                startsAt = "10:00",
+                endsAt = "10:40",
+            ),
+            isFavorite = true,
+        ),
+        onBookmarkClick = {},
+        onBack = {},
+    )
 }

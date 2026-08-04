@@ -51,6 +51,7 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
         )
         override val fileCheckers: Set<FirFileChecker> = setOf(
             ScreenIsSoleComponentInFileChecker,
+            UiComponentRequiresPreviewChecker,
         )
         override val propertyCheckers: Set<FirPropertyChecker> = setOf(
             ExplicitBackingFieldRequiredChecker,

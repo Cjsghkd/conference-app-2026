@@ -42,6 +42,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Content lambdas nest at most four levels deep | FIR `ComposableNestingDepth` |
 | A private property exposed by a wider one uses an explicit backing field | FIR `ExplicitBackingFieldRequired` |
 | A private `var` exposed read-only uses `private set` | FIR `PrivateSetRequired` |
+| A feature UI composable carries a preview in its file | FIR `UiComponentRequiresPreview` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -292,6 +293,34 @@ class Counter {
 ```
 
 Why: the same duplicated-state problem as `ExplicitBackingFieldRequired`, for the case the field's type cannot express — a private `var` reassigned inside the class and read from outside. `private set` narrows the setter alone, so the pair collapses into one declaration. The two rules partition by type: identical types are a `private set` job, a strictly narrower private type is an explicit backing field one.
+
+### `UiComponentRequiresPreview`
+
+```kotlin
+// TimetableCard.kt
+@Composable
+internal fun TimetableCard(item: TimetableItem, onClick: (TimetableItemId) -> Unit) { … } // ERROR: no preview here
+
+// OK: a preview for it in the same file
+@PreviewWrapper(KaigiPreviewWrapper::class)
+@Preview
+@Composable
+fun TimetableCardPreview() { TimetableCard(item = /* sample */, onClick = {}) }
+```
+
+Why: a component with no preview cannot be inspected without running the app, so a reader has no way to see what it looks like. Every top-level `Unit`-returning `@Composable` under a feature package requires a `@Preview` **that renders it** in the same file — a preview elsewhere in the file does not count, so a file holding several components needs a preview reaching each one. The check reads the preview's body, descending into wrapper lambdas such as `KaigiPreviewTheme(colorScheme) { … }` and following helpers declared in the same file, so a preview may reach the component indirectly. [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) exempts previews, so the preview sits beside the component it renders, and [`PreviewRequiresWrapper`](#previewrequireswrapper) then forces it through the sanctioned wrapper.
+
+The rule holds for every feature module, `:feature:debug` included: a per-module exemption is invisible at the point of editing, so it reads as "this component needs no preview" and the next component written there inherits the gap. The exemptions that remain are all visible in the declaration itself:
+
+| Exempt | Reason |
+| --- | --- |
+| A composable declaring a context parameter | Every `*ScreenRoot`; its `ScreenContext` comes from the screen's Metro graph, which a preview cannot build |
+| `expect` / `actual` declarations | An `expect` has no body, and the tooling renders the common and Android views only |
+| A composable named `*Effect` | Runs side effects and emits nothing, so its preview would be blank |
+| A member composable | The rule reads top-level declarations; a composable on a class is reached through its owner |
+| A composable returning anything but `Unit` | Every `*Presenter` returns a UiState rather than emitting UI |
+
+A component that genuinely cannot be rendered on its own carries `@Suppress("UI_COMPONENT_WITHOUT_PREVIEW")` with the reason beside it. `SoilErrorBottomSheet` is the one case in the codebase: `ModalBottomSheet` renders into a popup window, which a preview captures as an empty tree, so its content is split into `SoilErrorSheetContent` and previewed there.
 
 ## Review + tests (fuzzy)
 

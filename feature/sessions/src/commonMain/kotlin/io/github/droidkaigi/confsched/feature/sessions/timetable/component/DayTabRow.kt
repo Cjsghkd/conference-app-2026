@@ -11,8 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
+import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewWrapper
 import io.github.droidkaigi.confsched.core.ui.safeClick
 
 @Composable
@@ -41,4 +44,11 @@ internal fun DayTabRow(
 
 private object DayTabRowDefaults {
     val tabWidth = 104.dp
+}
+
+@PreviewWrapper(KaigiPreviewWrapper::class)
+@Preview
+@Composable
+fun DayTabRowPreview() {
+    DayTabRow(selectedDay = DroidKaigi2026Day.Day1, onDayClick = {})
 }
