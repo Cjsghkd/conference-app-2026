@@ -43,6 +43,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | A private property exposed by a wider one uses an explicit backing field | FIR `ExplicitBackingFieldRequired` |
 | A private `var` exposed read-only uses `private set` | FIR `PrivateSetRequired` |
 | A feature UI composable carries a preview in its file | FIR `UiComponentRequiresPreview` |
+| A feature UI composable reads every property of the state it takes | FIR `UiComponentTakesWhatItReads` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -321,6 +322,27 @@ The rule holds for every feature module, `:feature:debug` included: a per-module
 | A composable returning anything but `Unit` | Every `*Presenter` returns a UiState rather than emitting UI |
 
 A component that genuinely cannot be rendered on its own carries `@Suppress("UI_COMPONENT_WITHOUT_PREVIEW")` with the reason beside it. `SoilErrorBottomSheet` is the one case in the codebase: `ModalBottomSheet` renders into a popup window, which a preview captures as an empty tree, so its content is split into `SoilErrorSheetContent` and previewed there.
+
+### `UiComponentTakesWhatItReads`
+
+```kotlin
+@Composable
+internal fun TimetableItemDetailHeadline(item: TimetableItem) { // ERROR: id, day, startsAt, endsAt unread
+    Text(item.room)
+    Text(item.title)
+    Text(item.speaker)
+}
+
+// OK: the properties it reads
+@Composable
+internal fun TimetableItemDetailHeadline(room: String, title: String, speaker: String) { … }
+```
+
+Why: a component that takes an aggregate for a few of its properties spreads that type further than its own reads justify — every caller must hold the whole state to render the component, the preview must build it, and Compose recomposes the component when a property it never reads changes. A feature UI `@Composable` must read **every** property of a parameter it selects from; otherwise declare a UiState type for the component holding only what it reads (`FavoritesListSectionUiState` is the shape to copy), or take those properties as separate parameters.
+
+The parameter type in scope is a project-owned class with a primary constructor, and the properties counted are the ones that constructor declares. A parameter used as a value rather than selected from — passed on to another composable, compared, or a receiver of a member call — is out of scope, since its own shape is then load-bearing.
+
+A list item stays cheap under this rule because the state it does not render belongs elsewhere: the identifier it hands to its callbacks counts as read, selection state (`isFavorite`) reaches it as its own parameter rather than a field on the model, and layout state its parent applies (`SponsorPlan`) never enters the item at all.
 
 ## Review + tests (fuzzy)
 

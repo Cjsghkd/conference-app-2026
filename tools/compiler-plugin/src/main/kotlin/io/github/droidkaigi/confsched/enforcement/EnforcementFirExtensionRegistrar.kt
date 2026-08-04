@@ -25,6 +25,7 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             ExplicitBackingFieldErrors,
             PrivateSetErrors,
             UiComponentPreviewErrors,
+            UiComponentParameterErrors,
         )
     }
 }
