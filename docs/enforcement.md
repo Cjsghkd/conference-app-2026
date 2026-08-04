@@ -324,8 +324,8 @@ A component that genuinely cannot be rendered on its own carries `@Suppress("UI_
 
 ## Review + tests (fuzzy)
 
-Rules that depend on data volume or semantics stay out of static enforcement: heavy shaping belonging in the data layer, validity of an emitted result, and correctness of mutation-result handling — ensured by AI review rules + Presenter/Screen tests.
+Rules that depend on data volume or semantics stay out of static enforcement: heavy shaping belonging in the data layer, validity of an emitted result, and correctness of mutation-result handling — ensured by AI review rules + Presenter/Screen tests. Naming rules join them, because a name is judged against the domain vocabulary rather than against the types — see [Naming review](./naming-review.md).
 
 **Eliminate via types what types can eliminate** (required serializer, context param, `suspend`, `internal`), **use FIR checkers for binaries types can't express**, and **leave fuzzy cases to review**. Even when AI writes the code, the type and FIR layers hold because **compilation fails**.
 
-Related: [Architecture overview](./architecture-overview.md) · [Building a screen](./building-a-screen.md) · [ScreenContext design](./screen-context.md) · [Error handling](./error-handling.md)
+Related: [Architecture overview](./architecture-overview.md) · [Building a screen](./building-a-screen.md) · [ScreenContext design](./screen-context.md) · [Error handling](./error-handling.md) · [Naming review](./naming-review.md)

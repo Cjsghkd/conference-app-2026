@@ -21,6 +21,7 @@ The authoritative conventions live in `docs/`. Before judging, read the pages re
 - `docs/navigation.md`, `docs/navigation-navigator.md`, `docs/navigation-entry-aggregation.md`, `docs/navigation-predictive-back-tabs.md` — navigation rules.
 - `docs/error-handling.md` — Action/ActionResult/ScreenChannel contract.
 - `docs/enforcement.md` — every FIR checker, with NG examples. Compiler-enforced rules need no manual re-check; focus on what the checkers do NOT catch.
+- `docs/naming-review.md` — the naming rules no checker can decide: a name states what the value is, a type states how it is represented.
 - `docs/testing.md`, `docs/testing-presenter.md`, `docs/testing-robot.md`, `docs/testing-preview-screenshot.md` — expected tests.
 
 ## Locating the screen's file set
@@ -47,6 +48,7 @@ Work through every section. For each item, verify in the actual code, not by fil
 ### 2. Action / ActionResult / UiState
 - [ ] Each of the three lives in its own file, named after the declaration it holds.
 - [ ] `UiState` is a plain data class of render-ready values — no callbacks, no mutable state, no Soil objects.
+- [ ] Property names agree with their types: no entity-shaped name on a general-purpose type (`speaker: String` → `speakerName`). Run the procedure in `docs/naming-review.md` over the UiState, the Action/ActionResult payloads, and any model the screen adds.
 - [ ] Actions represent real work handled by the presenter. Navigation-only clicks are wired straight from Root to the nav lambda, not routed through the channel (the `NoForwardOnlyActionHandler` checker catches the emit-only shape, but not a handler that does trivial non-work).
 - [ ] ActionResults are one-shot outcomes (messages, navigation triggers) consumed in Root via `ActionResultEffect`.
 

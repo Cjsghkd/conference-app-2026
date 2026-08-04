@@ -39,6 +39,7 @@ export default withMermaid(defineConfig({
           { text: 'Error handling', link: '/error-handling' },
           { text: 'Presenter performance', link: '/presenter-performance' },
           { text: 'Enforcement', link: '/enforcement' },
+          { text: 'Naming review', link: '/naming-review' },
         ],
       },
       {
