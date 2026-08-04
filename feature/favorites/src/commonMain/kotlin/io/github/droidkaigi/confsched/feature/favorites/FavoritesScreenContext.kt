@@ -4,13 +4,20 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import io.github.droidkaigi.confsched.core.common.PresenterContext
 import io.github.droidkaigi.confsched.core.common.ScreenContext
+import io.github.droidkaigi.confsched.core.model.FavoriteTimetableIdsSubscriptionKey
+import io.github.droidkaigi.confsched.core.model.FavoriteTimetableItemIdMutationKey
 import io.github.droidkaigi.confsched.core.model.FavoritesScreenScope
+import io.github.droidkaigi.confsched.core.model.TimetableQueryKey
 
 @Inject
-class FavoritesPresenterContext : PresenterContext
+class FavoritesPresenterContext(
+    val favoriteTimetableItemIdMutationKey: FavoriteTimetableItemIdMutationKey,
+) : PresenterContext
 
 @Inject
 @SingleIn(FavoritesScreenScope::class)
 class FavoritesScreenContext(
+    val timetableQueryKey: TimetableQueryKey,
+    val favoriteTimetableIdsSubscriptionKey: FavoriteTimetableIdsSubscriptionKey,
     val presenterContext: FavoritesPresenterContext,
 ) : ScreenContext

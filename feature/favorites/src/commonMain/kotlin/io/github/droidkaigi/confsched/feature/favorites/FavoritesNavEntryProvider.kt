@@ -19,7 +19,9 @@ class FavoritesNavEntryProvider(
         entry<FavoritesNavKey>(metadata = instantNavTransition()) {
             val graph = retain(screenGraphFactory::createFavoritesScreenGraph)
             context(graph.screenContext) {
-                FavoritesScreenRoot()
+                FavoritesScreenRoot(
+                    onNavigateToDetail = graph.screenNavigator::openSessionDetail,
+                )
             }
         }
     }

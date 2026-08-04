@@ -3,6 +3,7 @@ package io.github.droidkaigi.confsched.core.data
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import io.github.droidkaigi.confsched.core.model.FavoriteTimetableItemIdMutationKey
+import io.github.droidkaigi.confsched.core.model.FavoritesScreenScope
 import io.github.droidkaigi.confsched.core.model.MutationTag
 import io.github.droidkaigi.confsched.core.model.SoilIds
 import io.github.droidkaigi.confsched.core.model.TimetableItemDetailScreenScope
@@ -12,6 +13,7 @@ import soil.query.buildMutationKey
 @Inject
 @ContributesBinding(TimetableScreenScope::class)
 @ContributesBinding(TimetableItemDetailScreenScope::class)
+@ContributesBinding(FavoritesScreenScope::class)
 class DefaultFavoriteTimetableItemIdMutationKey(
     extraTag: MutationTag,
     private val store: FavoritesStore,
