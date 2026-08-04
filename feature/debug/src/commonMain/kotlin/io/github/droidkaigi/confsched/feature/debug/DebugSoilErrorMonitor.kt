@@ -87,6 +87,9 @@ class DebugSoilErrorMonitor(
 
 private fun ErrorRecord.toSoilError() = SoilError(keyId = "$keyId", exception = exception)
 
+// ModalBottomSheet renders into a popup window, which a preview captures as an empty tree, so the
+// sheet itself has no preview and SoilErrorSheetContent carries one instead.
+@Suppress("UI_COMPONENT_WITHOUT_PREVIEW")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SoilErrorBottomSheet(

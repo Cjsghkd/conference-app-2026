@@ -308,7 +308,7 @@ internal fun TimetableCard(item: TimetableItem, onClick: (TimetableItemId) -> Un
 fun TimetableCardPreview() { TimetableCard(item = /* sample */, onClick = {}) }
 ```
 
-Why: a component with no preview cannot be inspected without running the app, so a reader has no way to see what it looks like. Every top-level `Unit`-returning `@Composable` under a feature package requires a `@Preview` function in the same file — [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) exempts previews, so the preview sits beside the component it renders, and [`PreviewRequiresWrapper`](#previewrequireswrapper) then forces it through the sanctioned wrapper.
+Why: a component with no preview cannot be inspected without running the app, so a reader has no way to see what it looks like. Every top-level `Unit`-returning `@Composable` under a feature package requires a `@Preview` **that renders it** in the same file — a preview elsewhere in the file does not count, so a file holding several components needs a preview reaching each one. The check reads the preview's body, descending into wrapper lambdas such as `KaigiPreviewTheme(colorScheme) { … }` and following helpers declared in the same file, so a preview may reach the component indirectly. [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) exempts previews, so the preview sits beside the component it renders, and [`PreviewRequiresWrapper`](#previewrequireswrapper) then forces it through the sanctioned wrapper.
 
 The rule holds for every feature module, `:feature:debug` included: a per-module exemption is invisible at the point of editing, so it reads as "this component needs no preview" and the next component written there inherits the gap. The exemptions that remain are all visible in the declaration itself:
 
@@ -319,6 +319,8 @@ The rule holds for every feature module, `:feature:debug` included: a per-module
 | A composable named `*Effect` | Runs side effects and emits nothing, so its preview would be blank |
 | A member composable | The rule reads top-level declarations; a composable on a class is reached through its owner |
 | A composable returning anything but `Unit` | Every `*Presenter` returns a UiState rather than emitting UI |
+
+A component that genuinely cannot be rendered on its own carries `@Suppress("UI_COMPONENT_WITHOUT_PREVIEW")` with the reason beside it. `SoilErrorBottomSheet` is the one case in the codebase: `ModalBottomSheet` renders into a popup window, which a preview captures as an empty tree, so its content is split into `SoilErrorSheetContent` and previewed there.
 
 ## Review + tests (fuzzy)
 

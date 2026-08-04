@@ -22,8 +22,8 @@ object UiComponentPreviewErrorMessages : BaseDiagnosticRendererFactory() {
         map.put(
             UiComponentPreviewErrors.UI_COMPONENT_WITHOUT_PREVIEW,
             "A UI @Composable in a feature module must be inspectable without running the app: " +
-                "add a @Preview @Composable function rendering ''{0}'' with sample data " +
-                "to this file.",
+                "no @Preview in this file renders ''{0}''. Add a @Preview @Composable that calls " +
+                "it with sample data.",
             CommonRenderers.STRING,
         )
     }
