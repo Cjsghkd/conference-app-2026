@@ -18,8 +18,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import io.github.droidkaigi.confsched.core.model.Contributor
-import io.github.droidkaigi.confsched.core.model.ContributorId
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
@@ -29,20 +27,22 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 internal fun ContributorItem(
-    contributor: Contributor,
+    username: String,
+    iconUrl: String,
+    profileUrl: String,
     onContributorClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .safeClickable(role = Role.Button) { onContributorClick(contributor.profileUrl) }
+            .safeClickable(role = Role.Button) { onContributorClick(profileUrl) }
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         RemoteImage(
-            imageUrl = contributor.iconUrl,
+            imageUrl = iconUrl,
             contentDescription = null,
             modifier = Modifier
                 .size(52.dp)
@@ -50,7 +50,7 @@ internal fun ContributorItem(
                 .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = CircleShape),
         )
         Text(
-            text = contributor.username,
+            text = username,
             style = MaterialTheme.typography.bodyLarge,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -65,12 +65,9 @@ fun ContributorItemPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         ContributorItem(
-            contributor = Contributor(
-                id = ContributorId(1L),
-                username = "DroidKaigi",
-                iconUrl = PreviewImage.SpeakerAvatarA.imageUrl,
-                profileUrl = "https://github.com/DroidKaigi",
-            ),
+            username = "DroidKaigi",
+            iconUrl = PreviewImage.SpeakerAvatarA.imageUrl,
+            profileUrl = "https://github.com/DroidKaigi",
             onContributorClick = {},
         )
     }

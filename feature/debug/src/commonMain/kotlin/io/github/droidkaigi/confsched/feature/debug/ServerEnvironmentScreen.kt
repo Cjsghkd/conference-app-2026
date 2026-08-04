@@ -25,7 +25,7 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 fun ServerEnvironmentScreen(
-    uiState: ServerEnvironmentScreenUiState,
+    skipSelectionNextLaunch: Boolean,
     // Not named on* so the safeClick checker does not treat it as a navigation callback.
     toggleSkipNextLaunch: (Boolean) -> Unit,
     onSelectServer: (ServerEnvironment) -> Unit,
@@ -70,7 +70,7 @@ fun ServerEnvironmentScreen(
         ) {
             Text("Skip this screen next launch")
             Switch(
-                checked = uiState.skipSelectionNextLaunch,
+                checked = skipSelectionNextLaunch,
                 onCheckedChange = toggleSkipNextLaunch,
             )
         }
@@ -84,10 +84,7 @@ fun ServerEnvironmentScreenPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         ServerEnvironmentScreen(
-            uiState = ServerEnvironmentScreenUiState(
-                skipSelectionNextLaunch = false,
-                autoSelectEnvironment = null,
-            ),
+            skipSelectionNextLaunch = false,
             toggleSkipNextLaunch = {},
             onSelectServer = {},
         )
