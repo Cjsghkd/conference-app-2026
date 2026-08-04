@@ -47,6 +47,8 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
+Each checker below is covered by a diagnostic test; for how to run and extend them, see [Enforcement checker tests](./testing-enforcement.md).
+
 ## FIR checkers (rejected example and reason)
 
 ### `NoDirectMutate`

@@ -110,6 +110,7 @@ export default withMermaid(defineConfig({
           { text: 'Presenter unit tests (Molecule)', link: '/testing-presenter' },
           { text: 'Preview screenshot tests', link: '/testing-preview-screenshot' },
           { text: 'Robot pattern tests', link: '/testing-robot' },
+          { text: 'Enforcement checker tests', link: '/testing-enforcement' },
         ],
       },
       {

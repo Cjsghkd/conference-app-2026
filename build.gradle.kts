@@ -23,7 +23,16 @@ subprojects {
         configurations
             .matching { it.name.startsWith("kotlinCompilerPluginClasspath") }
             .configureEach {
-                dependencies.add(project.dependencies.project(mapOf("path" to ":tools:compiler-plugin")))
+                // shadowRuntimeElements carries the relocated jar; the plain one references
+                // com.intellij, which the embeddable compiler loading this plugin does not have.
+                dependencies.add(
+                    project.dependencies.project(
+                        mapOf(
+                            "path" to ":tools:compiler-plugin",
+                            "configuration" to "shadowRuntimeElements",
+                        ),
+                    ),
+                )
             }
     }
 }
