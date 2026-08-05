@@ -1,6 +1,11 @@
-# conference-app-2026
+# DroidKaigi 2026 official app
 
-The DroidKaigi 2026 conference app — a Compose Multiplatform application targeting **Android / iOS / Desktop (JVM) / Web (wasmJS)** from a single shared codebase.
+[DroidKaigi](https://2026.droidkaigi.jp) is a conference for Android developers, now in its
+twelfth year. It runs for three days, 1–3 September 2026, at Bellesalle Shibuya Garden in Tokyo.
+
+The official app is built in the open by the community that attends it — a Compose Multiplatform
+app for **Android / iOS / Desktop (JVM) / Web (wasmJs)**. Anyone is welcome to help build it —
+see [Contributing](CONTRIBUTING.md).
 
 ## Running the app
 
