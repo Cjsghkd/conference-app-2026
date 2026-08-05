@@ -23,12 +23,11 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 internal fun SponsorItem(
     name: String,
     logoUrl: String,
-    link: String,
-    onSponsorClick: (String) -> Unit,
+    onSponsorClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.safeClickable(role = Role.Button) { onSponsorClick(link) },
+        modifier = modifier.safeClickable(role = Role.Button, onClick = onSponsorClick),
         // Sponsor logos are supplied for a white background, so the card does not follow the theme.
         colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
@@ -51,7 +50,6 @@ fun SponsorItemPreview(
         SponsorItem(
             name = "Arctic Fox Inc.",
             logoUrl = PreviewImage.SessionCover.imageUrl,
-            link = "https://droidkaigi.jp/2026/",
             onSponsorClick = {},
         )
     }

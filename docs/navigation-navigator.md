@@ -117,15 +117,15 @@ A fast double-tap on a navigation button would fire the lambda twice: the first 
 - The NavEntry wiring now hands screens **plain** navigation lambdas. Each screen applies the debounce at the interaction point via `safeClickable` / `safeClick`.
 
 ```kotlin
-// In the screen (interaction point), the row tap is debounced:
-Card(modifier = Modifier.safeClickable { onClick(item.id) }) { /* … */ }
+// In the row component (interaction point), the tap is debounced:
+Card(modifier = Modifier.safeClickable(onClick = onClick)) { /* … */ }
 // A library component takes a wrapped callback:
 Button(onClick = safeClick(onBack)) { Text("Back") }
 ```
 
 System / predictive back is **not** debounced: `KaigiApp` binds the platform back gesture straight to the navigator (`onBack = appNavigator::back`). Repeated back gestures are the user asking to pop multiple screens — legitimate intent, unlike an accidental double tap on one button — and the `Pop` command is already guarded against emptying the stack. Programmatic navigation likewise flows straight through `NavigatorEffect`.
 
-This is enforced by the **`NavLambdaMustFlowToSafeClick`** FIR checker (see [enforcement](./enforcement.md)). For every `@Composable` `*Screen` / `*ScreenRoot` in a feature package, each function-typed value parameter named `on[A-Z]*` may only be used as: an argument to `safeClick(…)` / `Modifier.safeClickable`'s `onClick`; forwarded into another in-module feature `@Composable`'s `on*` parameter (that declaration is checked by the same rule); invoked inside a lambda passed to `safeClick` / `safeClickable`; or invoked inside an `ActionResultEffect` lambda (the result-mediated path, whose originating tap is itself a `safeClickable` already forced by this checker). Anything else — a direct invocation in composition, or passing the lambda into a library click like `Button(onClick = param)` — is a compile error telling you to wrap it.
+This is enforced by the **`NavLambdaMustFlowToSafeClick`** FIR checker (see [enforcement](./enforcement.md)). For every `@Composable` `*Screen` / `*ScreenRoot` in a feature package, each function-typed value parameter named `on[A-Z]*` may only be used as: an argument to `safeClick(…)` / `Modifier.safeClickable`'s `onClick`; forwarded into another in-module feature `@Composable`'s `on*` parameter (that declaration is checked by the same rule); invoked inside a lambda passed to `safeClick` / `safeClickable`; invoked inside a lambda that is itself passed to another in-module feature `@Composable`'s `on*` parameter; or invoked inside an `ActionResultEffect` lambda (the result-mediated path, whose originating tap is itself a `safeClickable` already forced by this checker). Anything else — a direct invocation in composition, or passing the lambda into a library click like `Button(onClick = param)` — is a compile error telling you to wrap it.
 
 ### Limits
 

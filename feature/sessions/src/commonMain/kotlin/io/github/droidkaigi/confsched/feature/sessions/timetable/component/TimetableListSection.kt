@@ -43,13 +43,12 @@ internal fun TimetableListSection(
             }
             items(slot.items) { item ->
                 TimetableCard(
-                    id = item.id,
                     title = item.title,
                     room = item.room,
                     speaker = item.speaker,
                     isFavorite = item.id in uiState.bookmarks,
-                    onBookmarkClick = onBookmarkClick,
-                    onClick = onItemClick,
+                    onBookmarkClick = { onBookmarkClick(item.id) },
+                    onClick = { onItemClick(item.id) },
                 )
             }
         }

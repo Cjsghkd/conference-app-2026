@@ -59,8 +59,7 @@ fun ContributorsScreen(
                     ContributorItem(
                         username = contributor.username,
                         iconUrl = contributor.iconUrl,
-                        profileUrl = contributor.profileUrl,
-                        onContributorClick = onContributorClick,
+                        onContributorClick = { onContributorClick(contributor.profileUrl) },
                     )
                 }
             }
