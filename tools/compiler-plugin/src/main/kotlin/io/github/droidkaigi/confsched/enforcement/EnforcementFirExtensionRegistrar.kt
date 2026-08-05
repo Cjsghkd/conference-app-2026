@@ -26,6 +26,7 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             PrivateSetErrors,
             UiComponentPreviewErrors,
             UiComponentParameterErrors,
+            CallbackArgumentErrors,
         )
     }
 }

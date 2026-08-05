@@ -44,6 +44,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | A private `var` exposed read-only uses `private set` | FIR `PrivateSetRequired` |
 | A feature UI composable carries a preview in its file | FIR `UiComponentRequiresPreview` |
 | A feature UI composable reads every property of the state it takes | FIR `UiComponentTakesWhatItReads` |
+| A callback does not report back a value its own composable was given | FIR `NoCallerSuppliedCallbackArgument` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -151,7 +152,7 @@ fun SearchScreen(onItemClick: (TimetableItemId) -> Unit) {
 }
 ```
 
-Why: the debounce lives at the UI interaction point, so every `on[A-Z]*` parameter of a feature `*Screen`/`*ScreenRoot` must reach a `safeClick`/`safeClickable` sink (directly, forwarded to another feature `@Composable`'s `on*`, or invoked inside a `safeClick`/`safeClickable`/`ActionResultEffect` lambda). See [Safe click](./navigation-navigator.md#safe-click-navigation-debounce).
+Why: the debounce lives at the UI interaction point, so every `on[A-Z]*` parameter of a feature `*Screen`/`*ScreenRoot` must reach a `safeClick`/`safeClickable` sink. Four routes qualify: passing it to a sink directly, forwarding it to another feature declaration's `on*` parameter, invoking it inside a `safeClick`/`safeClickable`/`ActionResultEffect` lambda, or invoking it inside a lambda that is itself passed to another feature declaration's `on*` parameter — the shape [`NoCallerSuppliedCallbackArgument`](#nocallersuppliedcallbackargument) produces at every list item. See [Safe click](./navigation-navigator.md#safe-click-navigation-debounce).
 
 Conservative: it matches parameter *name*, so non-navigating `on*` callbacks are also forced through a sink.
 
@@ -302,13 +303,13 @@ Why: the same duplicated-state problem as `ExplicitBackingFieldRequired`, for th
 ```kotlin
 // TimetableCard.kt
 @Composable
-internal fun TimetableCard(item: TimetableItem, onClick: (TimetableItemId) -> Unit) { … } // ERROR: no preview here
+internal fun TimetableCard(title: String, onClick: () -> Unit) { … } // ERROR: no preview here
 
 // OK: a preview for it in the same file
 @PreviewWrapper(KaigiPreviewWrapper::class)
 @Preview
 @Composable
-fun TimetableCardPreview() { TimetableCard(item = /* sample */, onClick = {}) }
+fun TimetableCardPreview() { TimetableCard(title = /* sample */, onClick = {}) }
 ```
 
 Why: a component with no preview cannot be inspected without running the app, so a reader has no way to see what it looks like. Every top-level `Unit`-returning `@Composable` under a feature package requires a `@Preview` **that renders it** in the same file — a preview elsewhere in the file does not count, so a file holding several components needs a preview reaching each one. The check reads the preview's body, descending into wrapper lambdas such as `KaigiPreviewTheme(colorScheme) { … }` and following helpers declared in the same file, so a preview may reach the component indirectly. [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) exempts previews, so the preview sits beside the component it renders, and [`PreviewRequiresWrapper`](#previewrequireswrapper) then forces it through the sanctioned wrapper.
@@ -344,7 +345,35 @@ Why: a component that takes an aggregate for a few of its properties spreads tha
 
 The parameter type in scope is a project-owned class with a primary constructor, and the properties counted are the ones that constructor declares. A parameter used as a value rather than selected from — passed on to another composable, compared, or a receiver of a member call — is out of scope, since its own shape is then load-bearing.
 
-A list item stays cheap under this rule because the state it does not render belongs elsewhere: the identifier it hands to its callbacks counts as read, selection state (`isFavorite`) reaches it as its own parameter rather than a field on the model, and layout state its parent applies (`SponsorPlan`) never enters the item at all.
+A list item stays cheap under this rule because the state it does not render belongs elsewhere: selection state (`isFavorite`) reaches it as its own parameter rather than a field on the model, and layout state its parent applies (`SponsorPlan`) never enters the item at all. An identifier the item only hands to a callback does not enter it either — see [`NoCallerSuppliedCallbackArgument`](#nocallersuppliedcallbackargument).
+
+### `NoCallerSuppliedCallbackArgument`
+
+```kotlin
+@Composable
+internal fun TimetableCard(
+    id: TimetableItemId,
+    title: String,
+    onClick: (TimetableItemId) -> Unit,   // ERROR: reports back `id`
+) {
+    Card(modifier = Modifier.safeClickable { onClick(id) }) { Text(title) }
+}
+
+// OK: the caller holds the identifier, so the callback carries nothing
+@Composable
+internal fun TimetableCard(title: String, onClick: () -> Unit) {
+    Card(modifier = Modifier.safeClickable(onClick = onClick)) { Text(title) }
+}
+
+// at the call site
+items(slot.items) { item ->
+    TimetableCard(title = item.title, onClick = { onItemClick(item.id) })
+}
+```
+
+Why: a callback parameter exists to carry information the caller does not have. A value the caller passed in a moment earlier is not such information — the caller can close over it at the call site, and the round trip only widens the component's signature and forces the identifier into a state type that exists for rendering. A `@Composable` therefore must not invoke a `Unit`-returning function-typed parameter with one of its own value parameters, or with a property selected from one.
+
+The argument must be a plain read to be rejected: an element bound by a `forEach`/`items` lambda, a `remember`ed value, and any computed expression (`count + 1`) are all values the component owns. `@Composable` and `suspend` function types carry their own function-type kinds, so content slots and suspending handlers are out of scope.
 
 ## Review + tests (fuzzy)
 

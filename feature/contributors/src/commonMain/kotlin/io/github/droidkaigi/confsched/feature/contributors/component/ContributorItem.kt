@@ -29,14 +29,13 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 internal fun ContributorItem(
     username: String,
     iconUrl: String,
-    profileUrl: String,
-    onContributorClick: (String) -> Unit,
+    onContributorClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .safeClickable(role = Role.Button) { onContributorClick(profileUrl) }
+            .safeClickable(role = Role.Button, onClick = onContributorClick)
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -67,7 +66,6 @@ fun ContributorItemPreview(
         ContributorItem(
             username = "DroidKaigi",
             iconUrl = PreviewImage.SpeakerAvatarA.imageUrl,
-            profileUrl = "https://github.com/DroidKaigi",
             onContributorClick = {},
         )
     }

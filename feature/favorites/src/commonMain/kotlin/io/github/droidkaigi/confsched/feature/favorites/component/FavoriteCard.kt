@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClick
@@ -28,16 +27,15 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 internal fun FavoriteCard(
-    id: TimetableItemId,
     day: DroidKaigi2026Day,
     title: String,
     room: String,
     speaker: String,
-    onBookmarkClick: (TimetableItemId) -> Unit,
-    onClick: (TimetableItemId) -> Unit,
+    onBookmarkClick: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(modifier = modifier.fillMaxWidth().safeClickable { onClick(id) }) {
+    Card(modifier = modifier.fillMaxWidth().safeClickable(onClick = onClick)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -47,7 +45,7 @@ internal fun FavoriteCard(
                 Text(title, fontWeight = FontWeight.Bold)
                 Text("$room · $speaker")
             }
-            IconButton(onClick = safeClick { onBookmarkClick(id) }) {
+            IconButton(onClick = safeClick(onBookmarkClick)) {
                 Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Remove favorite")
             }
         }
@@ -61,7 +59,6 @@ fun FavoriteCardPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         FavoriteCard(
-            id = TimetableItemId("d1a"),
             day = DroidKaigi2026Day.Day1,
             title = "Compose Multiplatform in Practice",
             room = "Arctic Fox",

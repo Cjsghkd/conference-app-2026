@@ -18,22 +18,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewWrapper
 import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 internal fun TimetableCard(
-    id: TimetableItemId,
     title: String,
     room: String,
     speaker: String,
     isFavorite: Boolean,
-    onBookmarkClick: (TimetableItemId) -> Unit,
-    onClick: (TimetableItemId) -> Unit,
+    onBookmarkClick: () -> Unit,
+    onClick: () -> Unit,
 ) {
-    Card(modifier = Modifier.fillMaxWidth().safeClickable { onClick(id) }) {
+    Card(modifier = Modifier.fillMaxWidth().safeClickable(onClick = onClick)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -42,7 +40,7 @@ internal fun TimetableCard(
                 Text(title, fontWeight = FontWeight.Bold)
                 Text("$room · $speaker")
             }
-            IconButton(onClick = safeClick { onBookmarkClick(id) }) {
+            IconButton(onClick = safeClick(onBookmarkClick)) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                     contentDescription = if (isFavorite) "Remove favorite" else "Add favorite",
@@ -57,7 +55,6 @@ internal fun TimetableCard(
 @Composable
 fun TimetableCardPreview() {
     TimetableCard(
-        id = TimetableItemId("d1a"),
         title = "Compose Multiplatform in Practice",
         room = "Arctic Fox",
         speaker = "Alice",
