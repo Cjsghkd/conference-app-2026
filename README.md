@@ -172,7 +172,7 @@ Gradle comes from the wrapper, so there is nothing else to install.
 # Desktop (JVM)
 ./gradlew :app-desktop:run
 
-# Web (wasmJS)
+# Web (wasmJs)
 ./gradlew :app-web:wasmJsBrowserDevelopmentRun
 ```
 
