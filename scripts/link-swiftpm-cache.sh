@@ -4,12 +4,23 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 store="${SWIFTPM_IMPORT_CACHE:-$HOME/.cache/droidkaigi-conference-app-2026/swiftpm-import}"
 
+usage() {
+  echo "Usage: scripts/link-swiftpm-cache.sh [--store <dir>]" >&2
+  exit 1
+}
+
 while [ $# -gt 0 ]; do
   case "$1" in
-    --store) store="$2"; shift 2 ;;
-    *) echo "Usage: scripts/link-swiftpm-cache.sh [--store <dir>]" >&2; exit 1 ;;
+    --store) [ $# -ge 2 ] || usage; store="$2"; shift 2 ;;
+    *) usage ;;
   esac
 done
+
+# ln -s resolves a relative target from the link's own directory, so the store must be absolute.
+case "$store" in
+  /*) ;;
+  *) store="$PWD/$store" ;;
+esac
 
 if [ "$(uname -s)" != "Darwin" ]; then
   echo "Swift Package Manager import runs on macOS only; nothing to link." >&2
