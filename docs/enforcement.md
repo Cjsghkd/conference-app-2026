@@ -22,7 +22,8 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Cross-feature isolation (no importing another feature's `NavKey`) | Module boundary — no Gradle edge between features (`:feature:debug`, dev-only tooling, is exempt) |
 | `NavKey` is `@Serializable` | Hand-written serializer registration — a miss is a compile error |
 | Preview assets do not enter production | Module boundary — release excludes `:core:preview:impl` |
-| `@MustBeSerializable` type arguments are `@Serializable` | FIR `MustBeSerializable` |
+| `@MustBeSerializable` type arguments are serializable | FIR `MustBeSerializable` |
+| `rememberSerializable` type arguments are serializable | FIR `RememberSerializable` |
 | No direct `mutate` call | FIR `NoDirectMutate` |
 | Presenter must not declare [`ScreenContext`](./screen-context.md) | FIR `PresenterMustNotDeclareScreenContext` |
 | ScreenContext is not a subtype of PresenterContext | FIR `ScreenContextMustNotBePresenterContext` |
@@ -182,6 +183,21 @@ buildPersistedQueryKey(id, persistKey = "…", byteStore = …,
 ```
 
 Why: a missing `@Serializable` would only fail at runtime when persistence serializes; this checker restores the compile-time gate the reified serializer lookup removed. The check is driven by the `@MustBeSerializable` annotation (`:core:common`) on a type parameter — not a hard-coded callable and argument index — so signature changes cannot silently detach it, and any function can opt in. An unresolvable classifier (type parameter, local/anonymous type) is rejected rather than silently allowed.
+
+A type argument qualifies as serializable when it carries `@Serializable`, is an enum class, or is one of the types `kotlinx.serialization.builtins` covers: the primitives and their unsigned counterparts, `String`, `Unit`, `Nothing`, `List`/`Set`/`Map` and their mutable forms, `Map.Entry`, `Pair`/`Triple`, `Array` and the primitive array types, `kotlin.time.Duration`, and `kotlin.uuid.Uuid`. A generic type additionally requires every one of its type arguments to qualify, so `List<Session>` is accepted only when `Session` is — and the diagnostic then names `Session`, not the container.
+
+### `RememberSerializable`
+
+```kotlin
+class SearchFilters(val query: String)   // no @Serializable
+
+@Composable
+fun SearchScreenRoot() {
+    val filters = rememberSerializable { mutableStateOf(SearchFilters("")) } // ERROR
+}
+```
+
+Why: `rememberSerializable` (`androidx.compose.runtime.saveable`) resolves the serializer for its state through the same reified `serializer<T>()` lookup, so a type with no serializer compiles and then throws when the state is saved on process death. Serializability is decided as in [`MustBeSerializable`](#mustbeserializable). The overloads taking `serializer = …` / `stateSerializer = …` hand the lookup to the caller and are left alone; a type whose serializer reaches the call through a `SavedStateConfiguration` serializers module carries `@Suppress("REMEMBER_SERIALIZABLE_TYPE_NOT_SERIALIZABLE")`.
 
 ### `MutationEffectMustReset`
 

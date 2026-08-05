@@ -18,6 +18,7 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
         override val functionCallCheckers: Set<FirFunctionCallChecker> = setOf(
             NoPresenterEffectInScreenRootChecker,
             MustBeSerializableChecker,
+            RememberSerializableChecker,
             NoForwardOnlyActionChecker,
             SoilReadConfinementChecker,
             MutationCallConfinementChecker,
