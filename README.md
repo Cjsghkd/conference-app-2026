@@ -192,6 +192,8 @@ Start with [Module structure](./docs/project-structure.md) and the [Architecture
 
 ## Verification
 
+Compile all four targets and run the `:feature:sessions` tests:
+
 ```sh
 ./gradlew :app-desktop:compileKotlinJvm :app-web:compileKotlinWasmJs :app-android:compileDevDebugKotlin :app-shared:linkDebugFrameworkIosSimulatorArm64 :feature:sessions:jvmTest
 ```
