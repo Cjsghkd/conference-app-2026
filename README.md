@@ -7,6 +7,18 @@ The official app is built in the open by the community that attends it — a Com
 app for **Android / iOS / Desktop (JVM) / Web (wasmJs)**. Anyone is welcome to help build it —
 see [Contributing](CONTRIBUTING.md).
 
+## Features
+
+The DroidKaigi 2026 official app offers a variety of features to enhance your conference
+experience:
+
+- **Timetable**: Browse the schedule and bookmark the sessions you want to see.
+- **Profile cards**: Create a card and share it with the people you meet.
+- **Event map**: Find your way around the venue.
+- **Contributors**: Discover the contributors behind the app.
+
+...and more!
+
 ## Running the app
 
 ```sh
