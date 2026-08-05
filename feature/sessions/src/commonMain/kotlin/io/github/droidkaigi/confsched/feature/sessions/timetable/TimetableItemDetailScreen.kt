@@ -75,11 +75,18 @@ fun TimetableItemDetailScreen(
             contentPadding = PaddingValues(bottom = TimetableItemDetailScreenDefaults.floatingActionButtonClearance),
         ) {
             item {
-                TimetableItemDetailHeadline(item = uiState.item)
+                TimetableItemDetailHeadline(
+                    room = uiState.item.room,
+                    title = uiState.item.title,
+                    speaker = uiState.item.speaker,
+                )
             }
             item {
                 TimetableItemDetailSummaryCard(
-                    item = uiState.item,
+                    day = uiState.item.day,
+                    startsAt = uiState.item.startsAt,
+                    endsAt = uiState.item.endsAt,
+                    room = uiState.item.room,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
                 )
             }

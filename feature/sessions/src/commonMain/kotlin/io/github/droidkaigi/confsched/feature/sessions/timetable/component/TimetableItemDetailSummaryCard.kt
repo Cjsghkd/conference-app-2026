@@ -24,14 +24,15 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
-import io.github.droidkaigi.confsched.core.model.TimetableItem
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 
 @Composable
 internal fun TimetableItemDetailSummaryCard(
-    item: TimetableItem,
+    day: DroidKaigi2026Day,
+    startsAt: String,
+    endsAt: String,
+    room: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -45,12 +46,12 @@ internal fun TimetableItemDetailSummaryCard(
         SummaryRow(
             imageVector = Icons.Outlined.Schedule,
             title = "Schedule",
-            description = "${item.day.name} ${item.startsAt} - ${item.endsAt}",
+            description = "${day.name} $startsAt - $endsAt",
         )
         SummaryRow(
             imageVector = Icons.Outlined.LocationOn,
             title = "Location",
-            description = item.room,
+            description = room,
         )
     }
 }
@@ -90,15 +91,10 @@ fun TimetableItemDetailSummaryCardPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         TimetableItemDetailSummaryCard(
-            item = TimetableItem(
-                id = TimetableItemId("d1a"),
-                title = "Compose Multiplatform in Practice",
-                room = "Arctic Fox",
-                speaker = "Alice",
-                day = DroidKaigi2026Day.Day1,
-                startsAt = "10:00",
-                endsAt = "10:40",
-            ),
+            day = DroidKaigi2026Day.Day1,
+            startsAt = "10:00",
+            endsAt = "10:40",
+            room = "Arctic Fox",
         )
     }
 }

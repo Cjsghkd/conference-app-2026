@@ -22,16 +22,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
-import io.github.droidkaigi.confsched.core.model.TimetableItem
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 
 @Composable
 internal fun TimetableItemDetailHeadline(
-    item: TimetableItem,
+    room: String,
+    title: String,
+    speaker: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -42,7 +41,7 @@ internal fun TimetableItemDetailHeadline(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = item.room.uppercase(),
+            text = room.uppercase(),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
@@ -50,7 +49,7 @@ internal fun TimetableItemDetailHeadline(
                 .padding(horizontal = 6.dp, vertical = 2.dp),
         )
         Text(
-            text = item.title,
+            text = title,
             style = MaterialTheme.typography.headlineSmall,
         )
         Row(
@@ -68,7 +67,7 @@ internal fun TimetableItemDetailHeadline(
                     .padding(14.dp),
             )
             Text(
-                text = item.speaker,
+                text = speaker,
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
@@ -82,15 +81,9 @@ fun TimetableItemDetailHeadlinePreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         TimetableItemDetailHeadline(
-            item = TimetableItem(
-                id = TimetableItemId("d1a"),
-                title = "Compose Multiplatform in Practice",
-                room = "Arctic Fox",
-                speaker = "Alice",
-                day = DroidKaigi2026Day.Day1,
-                startsAt = "10:00",
-                endsAt = "10:40",
-            ),
+            room = "Arctic Fox",
+            title = "Compose Multiplatform in Practice",
+            speaker = "Alice",
         )
     }
 }
