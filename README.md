@@ -5,7 +5,7 @@ twelfth year. It runs for three days, 1–3 September 2026, at Bellesalle Shibuy
 
 The official app is built in the open by the community that attends it — a Compose Multiplatform
 app for **Android / iOS / Desktop (JVM) / Web (wasmJs)**. Anyone is welcome to help build it —
-see [Contributing](CONTRIBUTING.md).
+see [Contributing](#contributing).
 
 ## Features
 
@@ -18,6 +18,23 @@ experience:
 - **Contributors**: Discover the contributors behind the app.
 
 ...and more!
+
+## Contributing
+
+We welcome contributions.
+
+For a step-by-step guide, see [CONTRIBUTING.md](CONTRIBUTING.md). It walks you through everything
+from setting up your environment to submitting a pull request.
+
+コントリビューションの詳細な手順については [CONTRIBUTING.ja.md](CONTRIBUTING.ja.md) をご覧ください。
+初めての方でもわかりやすいステップバイステップのガイドを用意しています。
+
+> [!NOTE]
+> **Issue assignment rules changed this year.** To give as many people as possible a chance to take
+> part, each contributor holds **one open Issue at a time** — finish the one you have before
+> picking up the next. An assigned Issue with no activity receives a reminder after a few days and
+> is unassigned automatically about a week later. A comment, or an open pull request linked to
+> the Issue (a draft counts), keeps it yours, and you are welcome to pick it up again at any time.
 
 ## Running the app
 
