@@ -184,7 +184,7 @@ buildPersistedQueryKey(id, persistKey = "…", byteStore = …,
 
 Why: a missing `@Serializable` would only fail at runtime when persistence serializes; this checker restores the compile-time gate the reified serializer lookup removed. The check is driven by the `@MustBeSerializable` annotation (`:core:common`) on a type parameter — not a hard-coded callable and argument index — so signature changes cannot silently detach it, and any function can opt in. An unresolvable classifier (type parameter, local/anonymous type) is rejected rather than silently allowed.
 
-A type argument qualifies as serializable when it carries `@Serializable`, is an enum class, or is one of the types `kotlinx.serialization.builtins` covers — the primitives, `String`, `List`/`Set`/`Map`, `Pair`/`Triple`, `Duration`, and the array types. A generic type additionally requires every one of its type arguments to qualify, so `List<Session>` is accepted only when `Session` is.
+A type argument qualifies as serializable when it carries `@Serializable`, is an enum class, or is one of the types `kotlinx.serialization.builtins` covers: the primitives and their unsigned counterparts, `String`, `Unit`, `Nothing`, `List`/`Set`/`Map` and their mutable forms, `Map.Entry`, `Pair`/`Triple`, `Array` and the primitive array types, `kotlin.time.Duration`, and `kotlin.uuid.Uuid`. A generic type additionally requires every one of its type arguments to qualify, so `List<Session>` is accepted only when `Session` is — and the diagnostic then names `Session`, not the container.
 
 ### `RememberSerializable`
 

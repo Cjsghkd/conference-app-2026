@@ -68,15 +68,22 @@ internal object SerializerLookupNames {
     )
 }
 
-internal fun ConeKotlinType.hasKotlinxSerializer(session: FirSession): Boolean {
+/** Returns this type, or the first of its type arguments, that kotlinx.serialization cannot serialize. */
+internal fun ConeKotlinType.typeMissingSerializer(session: FirSession): ConeKotlinType? {
     val expanded = fullyExpandedType(session)
-    val classId = expanded.classId ?: return false
-    // A star projection resolves to no type at all, so `!= true` rejects it along with an
-    // argument that has no serializer.
-    if (expanded.typeArguments.any { it.type?.hasKotlinxSerializer(session) != true }) return false
-    if (classId.asFqNameString() in SerializerLookupNames.BUILT_IN_SERIALIZABLE) return true
+    val classId = expanded.classId ?: return expanded
 
-    val classSymbol = expanded.toRegularClassSymbol(session) ?: return false
-    return classSymbol.classKind == ClassKind.ENUM_CLASS ||
-        classSymbol.hasAnnotation(SerializerLookupNames.SERIALIZABLE_ID, session)
+    if (classId.asFqNameString() !in SerializerLookupNames.BUILT_IN_SERIALIZABLE) {
+        val classSymbol = expanded.toRegularClassSymbol(session) ?: return expanded
+        val serializable = classSymbol.classKind == ClassKind.ENUM_CLASS ||
+            classSymbol.hasAnnotation(SerializerLookupNames.SERIALIZABLE_ID, session)
+        if (!serializable) return expanded
+    }
+
+    for (argument in expanded.typeArguments) {
+        // A star projection resolves to no type, so the container's serializer cannot be built either.
+        val argumentType = argument.type ?: return expanded
+        argumentType.typeMissingSerializer(session)?.let { return it }
+    }
+    return null
 }

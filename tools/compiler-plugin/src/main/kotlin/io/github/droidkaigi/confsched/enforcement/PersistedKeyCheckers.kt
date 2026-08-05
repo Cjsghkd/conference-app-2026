@@ -45,12 +45,12 @@ internal object MustBeSerializableChecker : FirFunctionCallChecker(MppCheckerKin
                 return@forEachIndexed
             }
 
-            val type = typeRef.coneType
-            if (!type.hasKotlinxSerializer(session)) {
+            val missing = typeRef.coneType.typeMissingSerializer(session)
+            if (missing != null) {
                 reporter.reportOn(
                     expression.source,
                     PersistedKeyErrors.PERSISTED_KEY_TYPE_NOT_SERIALIZABLE,
-                    type.renderReadable(),
+                    missing.renderReadable(),
                     context,
                 )
             }
