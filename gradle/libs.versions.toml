@@ -8,6 +8,9 @@ coroutines = "1.11.0"
 kotlinxSerialization = "1.11.0"
 kotlinxCollectionsImmutable = "0.5.0"
 kotlinxBrowser = "0.5.0"
+# Time zones and date-time formatting. Instant/Clock themselves are stdlib (kotlin.time) since
+# Kotlin 2.3, and kotlinx-datetime 0.7.0 turned its own copies into deprecated type aliases.
+kotlinxDatetime = "0.8.0"
 soil = "1.0.0-alpha15"
 molecule = "2.2.0"
 androidxDatastore = "1.3.0-alpha09"
@@ -71,6 +74,7 @@ kotlinxCoroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-tes
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinxCollectionsImmutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 kotlinxBrowser = { module = "org.jetbrains.kotlinx:kotlinx-browser", version.ref = "kotlinxBrowser" }
+kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 soilQueryCore = { module = "com.soil-kt.soil:query-core", version.ref = "soil" }
 soilQueryCompose = { module = "com.soil-kt.soil:query-compose", version.ref = "soil" }
 soilReacty = { module = "com.soil-kt.soil:reacty", version.ref = "soil" }
@@ -128,8 +132,7 @@ jetwhaleAgentRuntime = { module = "com.kitakkun.jetwhale:jetwhale-agent-runtime"
 jetwhaleNav3Agent = { module = "com.kitakkun.jetwhale:jetwhale-nav3-agent", version.ref = "jetwhale" }
 # Carries the network agent core (JetWhaleNetworkAgentPlugin) as an api dependency.
 jetwhaleNetworkInspectorAgentKtor = { module = "com.kitakkun.jetwhale:jetwhale-network-inspector-agent-ktor", version.ref = "jetwhale" }
-jetwhaleComposeSemanticsInspectorAgent = { module = "com.kitakkun.jetwhale:jetwhale-compose-semantics-inspector-agent", version.ref = "jetwhale" }
-firebaseCrashlytics = { module = "com.google.firebase:firebase-crashlytics", version = "20.1.0" }
+jetwhaleComposeSemanticsInspectorAgent = { module = "com.kitakkun.jetwhale:jetwhale-compose-semantics-inspector-agent", version.ref = "jetwhale" }firebaseCrashlytics = { module = "com.google.firebase:firebase-crashlytics", version = "20.1.0" }
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazziCompose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazziJunitRule = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }

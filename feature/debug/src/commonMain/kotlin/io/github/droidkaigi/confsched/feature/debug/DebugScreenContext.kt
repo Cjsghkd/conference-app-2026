@@ -2,6 +2,7 @@ package io.github.droidkaigi.confsched.feature.debug
 
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import io.github.droidkaigi.confsched.core.common.KaigiClock
 import io.github.droidkaigi.confsched.core.common.PresenterContext
 import io.github.droidkaigi.confsched.core.common.ScreenContext
 import io.github.droidkaigi.confsched.core.data.PersistedDataResetter
@@ -16,6 +17,8 @@ class DebugPresenterContext(
     val debugPreferencesStore: DebugPreferencesStore,
     val soilErrorMonitor: DebugSoilErrorMonitor,
     val soilErrorOverlayEnabledMutationKey: SoilErrorOverlayEnabledMutationKey,
+    val clock: KaigiClock,
+    val clockOffsetStore: KaigiClockOffsetStore,
 ) : PresenterContext
 
 @Inject
