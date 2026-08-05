@@ -155,6 +155,14 @@ bar, a SwiftUI `TabView` rendering the Liquid Glass design over the Compose back
 side stays deliberately small, talking to Kotlin through Swift Export and reaching Apple
 frameworks through Swift Package Import. See [iOS overview](./docs/ios.md).
 
+## Requirements
+
+- **Android Studio**: the latest stable release, from [this page](https://developer.android.com/studio).
+- **JDK 21** or higher.
+- **Xcode**, to build and run the iOS app.
+
+Gradle comes from the wrapper, so there is nothing else to install.
+
 ## Running the app
 
 ```sh
