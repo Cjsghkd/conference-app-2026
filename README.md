@@ -36,6 +36,10 @@ from setting up your environment to submitting a pull request.
 > is unassigned automatically about a week later. A comment, or an open pull request linked to
 > the Issue (a draft counts), keeps it yours, and you are welcome to pick it up again at any time.
 
+## Design
+
+TBD
+
 ## Running the app
 
 ```sh
