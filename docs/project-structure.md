@@ -48,6 +48,10 @@ Applied at build time only; none of these are runtime dependencies.
 | `:tools:ksp-processor` | generates [NavKey serializer providers](./navigation-navkey-serializers.md) |
 | `gradle-conventions` (included build) | [primitive / convention plugins](./build-convention-plugins.md) shared by every module's build script (KMP targets, Compose, screenshot tests, feature wiring) |
 
+## Debug tooling
+
+`:tools:jetwhale-plugin:protocol` and `:tools:jetwhale-plugin:host` build the app's own JetWhale plugins — one jar carries as many as its manifest declares. The protocol module reaches dev builds through `:feature:debug`; the host module is packaged as a jar the desktop debugger loads and is never part of the app. The clock is the first plugin to live there — see [Clock (KaigiClock)](./clock.md).
+
 ## Dependency graph
 
 Dependency direction: `feature → core:*`, `app-shared → (feature + core)`, `app-* → app-shared`. Features must not depend on each other, except for the dev-only `:feature:debug`.
@@ -145,6 +149,6 @@ Reading the graph:
 - An edge into `:core:model` often means *implements its contracts*, not merely *uses its types*: `:core:model` declares interfaces and Soil keys dependency-free, and downstream modules (chiefly `:core:data`) supply the implementations, bound together through the DI graph.
 - Cross-feature navigation works without feature-to-feature edges: each feature declares a navigator interface, implemented in `app-shared` — see [Navigator](./navigation-navigator.md).
 - How the dotted edges keep `:feature:debug` and `:core:preview:impl` out of production: [Keeping dev-only code out of release](./build-dev-only-exclusion.md) · [Preview](./preview.md).
-- Build-time tooling (`:tools:*`, `gradle-conventions`) is applied as compiler/KSP/Gradle plugins, not runtime dependencies, so it does not appear in the graph.
+- Tooling under `:tools:*` and `gradle-conventions` is applied as compiler/KSP/Gradle plugins rather than depended on, so it does not appear in the graph. `:tools:jetwhale-plugin:protocol` is the one module there that is a runtime dependency, reaching dev builds through `:feature:debug`.
 
 Related: [Platforms & modules](./platforms-and-modules.md) · [AppGraph and UiGraph](./di-app-graph.md)
