@@ -23,6 +23,11 @@ local.properties
 **/xcuserdata/
 *.xcuserstate
 
+# --- SwiftPM import ---
+# The Kotlin Gradle plugin regenerates .swiftpm-locks/<id>/.gitignore with the directory form only,
+# which does not match the symbolic link scripts/link-swiftpm-cache.sh puts in its place.
+.swiftpm-locks/*/swiftPMCheckout
+
 # --- Screenshot outputs (Roborazzi goldens; a CI golden store is a separate decision) ---
 screenshots/
 

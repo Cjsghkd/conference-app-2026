@@ -90,6 +90,7 @@ export default withMermaid(defineConfig({
           { text: 'Convention plugins', link: '/build-convention-plugins' },
           { text: 'BuildKonfig (build-time values)', link: '/build-config-buildkonfig' },
           { text: 'Keeping dev-only code out of release', link: '/build-dev-only-exclusion' },
+          { text: 'SwiftPM import cache across worktrees', link: '/build-worktree-swiftpm-cache' },
         ],
       },
       {
