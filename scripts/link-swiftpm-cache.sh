@@ -2,7 +2,16 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
-store="${SWIFTPM_IMPORT_CACHE:-$HOME/Library/Caches/droidkaigi-conference-app-2026/swiftpm-import}"
+
+# Every working tree of a clone shares this directory, and deleting the clone takes the store with
+# it. git keeps nothing else in there that a name of ours could collide with.
+common_dir="$(git -C "$root" rev-parse --git-common-dir 2>/dev/null || true)"
+case "$common_dir" in
+  "") common_dir="$HOME/Library/Caches/droidkaigi-conference-app-2026" ;;
+  /*) ;;
+  *) common_dir="$root/$common_dir" ;;
+esac
+store="${SWIFTPM_IMPORT_CACHE:-$common_dir/swiftpm-import}"
 
 usage() {
   echo "Usage: scripts/link-swiftpm-cache.sh [--store <dir>] [--install-hook | --gc]" >&2
@@ -33,8 +42,6 @@ if [ "$(uname -s)" != "Darwin" ]; then
 fi
 
 if [ "$install_hook" = true ]; then
-  common_dir="$(git -C "$root" rev-parse --git-common-dir)"
-  case "$common_dir" in /*) ;; *) common_dir="$root/$common_dir" ;; esac
   hook="$common_dir/hooks/post-checkout"
 
   if [ -e "$hook" ]; then

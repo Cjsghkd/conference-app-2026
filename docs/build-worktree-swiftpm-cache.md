@@ -26,9 +26,11 @@ The hook only reaches working trees created after it. Link each one that already
 scripts/link-swiftpm-cache.sh
 ```
 
-Either path replaces the three directories with symbolic links into `~/Library/Caches/droidkaigi-conference-app-2026/swiftpm-import`, alongside the caches SwiftPM and Xcode keep for themselves. A working tree that already holds the real directories has them moved into the store; one created afterwards links straight to it. Re-running the script is a no-op, and it refuses to overwrite existing output rather than discarding it.
+Either path replaces the three directories with symbolic links into `swiftpm-import` inside the clone's git directory — the one `git rev-parse --git-common-dir` reports, shared by every working tree of the clone. Living there ties the store to the clone: deleting the clone takes it along, and no working tree owns it, so removing one leaves the rest intact. Git tracks nothing in that directory, so the store stays out of `git status` without a `.gitignore` entry.
 
-Pass `--store <dir>` to place the store elsewhere; export `SWIFTPM_IMPORT_CACHE` instead to have the hook honour it too, since the hook takes no arguments.
+A working tree that already holds the real directories has them moved into the store; one created afterwards links straight to it. Re-running the script is a no-op, and it refuses to overwrite existing output rather than discarding it.
+
+Pass `--store <dir>` to place the store elsewhere; export `SWIFTPM_IMPORT_CACHE` instead to have the hook honour it too, since the hook takes no arguments. Backing up the clone is the reason to move it: a bucket is a few gigabytes, and a git directory is not usually excluded from backups.
 
 ## One bucket per dependency set
 
