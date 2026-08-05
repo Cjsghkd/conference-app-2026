@@ -5,15 +5,17 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 store="${SWIFTPM_IMPORT_CACHE:-$HOME/.cache/droidkaigi-conference-app-2026/swiftpm-import}"
 
 usage() {
-  echo "Usage: scripts/link-swiftpm-cache.sh [--store <dir>] [--install-hook]" >&2
+  echo "Usage: scripts/link-swiftpm-cache.sh [--store <dir>] [--install-hook | --gc]" >&2
   exit 1
 }
 
 install_hook=false
+gc=false
 while [ $# -gt 0 ]; do
   case "$1" in
     --store) [ $# -ge 2 ] || usage; store="$2"; shift 2 ;;
     --install-hook) install_hook=true; shift ;;
+    --gc) gc=true; shift ;;
     *) usage ;;
   esac
 done
@@ -60,10 +62,45 @@ HOOK
   exit 0
 fi
 
-# SwiftPM resolves against the store, so working trees that share one must agree on the resolution.
-# Bucketing by the manifests and the lock file keeps a branch that changes dependencies out of the
-# bucket the others use, which would otherwise rewrite their Package.resolved.
-manifests="$(find "$root/.swiftpm-locks" \( -name Package.swift -o -name Package.resolved \) 2>/dev/null | LC_ALL=C sort)"
+if [ "$gc" = true ]; then
+  [ -d "$store_root" ] || { echo "No store at $store_root."; exit 0; }
+
+  # git has no hook for `git worktree remove`, so buckets are collected by asking which ones the
+  # working trees that still exist point at.
+  live=""
+  while IFS= read -r line; do
+    case "$line" in worktree\ *) ;; *) continue ;; esac
+    tree="${line#worktree }"
+    for relative in \
+      ".swiftpm-locks/default/swiftPMCheckout" \
+      "app-shared/build/kotlin/swiftPMCheckout" \
+      "app-shared/build/kotlin/swiftImportDd"
+    do
+      [ -L "$tree/$relative" ] || continue
+      destination="$(readlink "$tree/$relative")"
+      case "$destination" in
+        "$store_root"/*) live="$live $(basename "$(dirname "$destination")")" ;;
+      esac
+    done
+  done < <(git -C "$root" worktree list --porcelain)
+
+  removed=0
+  for bucket_dir in "$store_root"/*/; do
+    [ -d "$bucket_dir" ] || continue
+    name="$(basename "$bucket_dir")"
+    case " $live " in
+      *" $name "*) echo "  in use: $name ($(du -sh "$bucket_dir" | cut -f1))" ;;
+      *) echo "  removing: $name ($(du -sh "$bucket_dir" | cut -f1))"; rm -rf "$bucket_dir"; removed=$((removed + 1)) ;;
+    esac
+  done
+  echo "Removed $removed bucket(s) from $store_root."
+  exit 0
+fi
+
+# SwiftPM resolves against the store, so working trees that share one must agree on what they
+# declare. The digest covers the manifests only: Package.resolved is rewritten by resolution, and
+# keying on it would move a working tree to another bucket whenever a version moved.
+manifests="$(find "$root/.swiftpm-locks" -name Package.swift 2>/dev/null | LC_ALL=C sort)"
 if [ -z "$manifests" ]; then
   echo "No SwiftPM manifest under .swiftpm-locks; nothing to link." >&2
   exit 0
@@ -84,6 +121,9 @@ link() {
     local current
     current="$(readlink "$target")"
     if [ "$current" = "$shared" ]; then
+      # The bucket may have been collected since; a dangling link fails the build with a
+      # missing-header error far from the cause.
+      mkdir -p "$shared"
       kept+=("$relative")
       return
     fi

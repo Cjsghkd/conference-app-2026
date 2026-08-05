@@ -32,13 +32,23 @@ Pass `--store <dir>` to place the store elsewhere; export `SWIFTPM_IMPORT_CACHE`
 
 ## One bucket per dependency set
 
-The store is divided into buckets named after a digest of the SwiftPM manifests and lock file — `.swiftpm-locks/*/**/Package.swift` and `.swiftpm-locks/*/**/Package.resolved`. Working trees whose dependencies match share a bucket and reuse each other's work; a branch that changes dependencies gets a bucket of its own.
+The store is divided into buckets named after a digest of the SwiftPM manifests — every `Package.swift` under `.swiftpm-locks`. Working trees that declare the same dependencies share a bucket and reuse each other's work; a branch that changes them gets a bucket of its own, so its resolution never rewrites the checkout the others point at.
 
-The division matters because SwiftPM resolves against the store. Without it, a branch resolving a different version rewrites the checkout the other working trees point at, and their tracked `Package.resolved` follows on the next sync — a change nobody made, easily committed by accident.
+The digest covers the manifests only. `Package.resolved` is rewritten by resolution, so keying on it would move a working tree to a different bucket whenever a version moved.
 
-Gradle regenerates the manifests from `app-shared/build.gradle.kts`, so the bucket a working tree belongs to changes when `swiftPMDependencies` changes. Re-run the script after editing it; the script moves the links to the new bucket.
+Gradle regenerates the manifests from `app-shared/build.gradle.kts`, so a working tree changes bucket when `swiftPMDependencies` changes. Re-run the script after editing it and it moves the links across.
 
-Buckets are a few gigabytes each and are never removed automatically. Delete the ones belonging to dependency sets no longer in use.
+## Reclaiming buckets
+
+Git has no hook for `git worktree remove`, so buckets outlive the working trees that created them. Collect the unused ones:
+
+```sh
+scripts/link-swiftpm-cache.sh --gc
+```
+
+It keeps every bucket that a working tree still links to, reading the links themselves rather than recomputing the digest, so a working tree whose dependencies changed without a re-run keeps the bucket it actually uses. Everything else is deleted; a bucket is a few gigabytes.
+
+Deleting a bucket leaves the working trees that pointed at it with dangling links. Re-run the script there — it restores the directories, and the next sync refills them.
 
 `clang` and `xcodebuild` resolve symbolic links to their real paths, so the generated `.def` and `.ld` files record the store location and stay valid in every working tree. Linked working trees keep about 40 MB of build output instead of 3 GB, and `prepareKotlinIdeaImport` — the task an IDE sync runs — drops from roughly four minutes to about one.
 
