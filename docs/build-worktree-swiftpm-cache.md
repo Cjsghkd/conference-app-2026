@@ -26,7 +26,7 @@ The hook only reaches working trees created after it. Link each one that already
 scripts/link-swiftpm-cache.sh
 ```
 
-Either path replaces the three directories with symbolic links into `~/.cache/droidkaigi-conference-app-2026/swiftpm-import`. A working tree that already holds the real directories has them moved into the store; one created afterwards links straight to it. Re-running the script is a no-op, and it refuses to overwrite existing output rather than discarding it.
+Either path replaces the three directories with symbolic links into `~/Library/Caches/droidkaigi-conference-app-2026/swiftpm-import`, alongside the caches SwiftPM and Xcode keep for themselves. A working tree that already holds the real directories has them moved into the store; one created afterwards links straight to it. Re-running the script is a no-op, and it refuses to overwrite existing output rather than discarding it.
 
 Pass `--store <dir>` to place the store elsewhere; export `SWIFTPM_IMPORT_CACHE` instead to have the hook honour it too, since the hook takes no arguments.
 

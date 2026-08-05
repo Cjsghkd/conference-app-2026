@@ -2,7 +2,7 @@
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
-store="${SWIFTPM_IMPORT_CACHE:-$HOME/.cache/droidkaigi-conference-app-2026/swiftpm-import}"
+store="${SWIFTPM_IMPORT_CACHE:-$HOME/Library/Caches/droidkaigi-conference-app-2026/swiftpm-import}"
 
 usage() {
   echo "Usage: scripts/link-swiftpm-cache.sh [--store <dir>] [--install-hook | --gc]" >&2
