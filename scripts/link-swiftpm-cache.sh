@@ -23,6 +23,7 @@ case "$store" in
   /*) ;;
   *) store="$PWD/$store" ;;
 esac
+store_root="$store"
 
 if [ "$(uname -s)" != "Darwin" ]; then
   echo "Swift Package Manager import runs on macOS only; nothing to link." >&2
@@ -59,6 +60,17 @@ HOOK
   exit 0
 fi
 
+# SwiftPM resolves against the store, so working trees that share one must agree on the resolution.
+# Bucketing by the manifests and the lock file keeps a branch that changes dependencies out of the
+# bucket the others use, which would otherwise rewrite their Package.resolved.
+manifests="$(find "$root/.swiftpm-locks" \( -name Package.swift -o -name Package.resolved \) 2>/dev/null | LC_ALL=C sort)"
+if [ -z "$manifests" ]; then
+  echo "No SwiftPM manifest under .swiftpm-locks; nothing to link." >&2
+  exit 0
+fi
+bucket="$(printf '%s\n' "$manifests" | xargs cat | shasum -a 256 | cut -c1-12)"
+store="$store/$bucket"
+
 created=()
 adopted=()
 kept=()
@@ -69,12 +81,17 @@ link() {
   local shared="$store/$name"
 
   if [ -L "$target" ]; then
-    if [ "$(readlink "$target")" = "$shared" ]; then
+    local current
+    current="$(readlink "$target")"
+    if [ "$current" = "$shared" ]; then
       kept+=("$relative")
       return
     fi
-    echo "$relative already links to $(readlink "$target"); remove it and re-run." >&2
-    exit 1
+    # A link into another bucket is this working tree's own, left over from an earlier dependency set.
+    case "$current" in
+      "$store_root"/*) rm "$target" ;;
+      *) echo "$relative already links to $current; remove it and re-run." >&2; exit 1 ;;
+    esac
   fi
 
   if [ -e "$target" ]; then

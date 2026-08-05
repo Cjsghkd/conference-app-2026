@@ -30,6 +30,16 @@ Either path replaces the three directories with symbolic links into `~/.cache/dr
 
 Pass `--store <dir>` to place the store elsewhere; export `SWIFTPM_IMPORT_CACHE` instead to have the hook honour it too, since the hook takes no arguments.
 
+## One bucket per dependency set
+
+The store is divided into buckets named after a digest of the SwiftPM manifests and lock file — `.swiftpm-locks/*/**/Package.swift` and `.swiftpm-locks/*/**/Package.resolved`. Working trees whose dependencies match share a bucket and reuse each other's work; a branch that changes dependencies gets a bucket of its own.
+
+The division matters because SwiftPM resolves against the store. Without it, a branch resolving a different version rewrites the checkout the other working trees point at, and their tracked `Package.resolved` follows on the next sync — a change nobody made, easily committed by accident.
+
+Gradle regenerates the manifests from `app-shared/build.gradle.kts`, so the bucket a working tree belongs to changes when `swiftPMDependencies` changes. Re-run the script after editing it; the script moves the links to the new bucket.
+
+Buckets are a few gigabytes each and are never removed automatically. Delete the ones belonging to dependency sets no longer in use.
+
 `clang` and `xcodebuild` resolve symbolic links to their real paths, so the generated `.def` and `.ld` files record the store location and stay valid in every working tree. Linked working trees keep about 40 MB of build output instead of 3 GB, and `prepareKotlinIdeaImport` — the task an IDE sync runs — drops from roughly four minutes to about one.
 
 ## Constraints
