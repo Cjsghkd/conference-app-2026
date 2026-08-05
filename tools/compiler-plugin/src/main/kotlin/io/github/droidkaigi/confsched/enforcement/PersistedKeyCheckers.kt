@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirFunctionSymbol
 import org.jetbrains.kotlin.fir.types.FirTypeProjectionWithVariance
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.renderReadable
-import org.jetbrains.kotlin.fir.types.toRegularClassSymbol
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -21,11 +20,6 @@ internal object PersistedKeyNames {
     val MUST_BE_SERIALIZABLE_ID = ClassId(
         FqName("io.github.droidkaigi.confsched.core.common"),
         Name.identifier("MustBeSerializable"),
-    )
-
-    val SERIALIZABLE_ID = ClassId(
-        FqName("kotlinx.serialization"),
-        Name.identifier("Serializable"),
     )
 }
 
@@ -51,13 +45,12 @@ internal object MustBeSerializableChecker : FirFunctionCallChecker(MppCheckerKin
                 return@forEachIndexed
             }
 
-            val classSymbol = typeRef.toRegularClassSymbol(session)
-            val isSerializable = classSymbol?.hasAnnotation(PersistedKeyNames.SERIALIZABLE_ID, session) == true
-            if (!isSerializable) {
+            val type = typeRef.coneType
+            if (!type.hasKotlinxSerializer(session)) {
                 reporter.reportOn(
                     expression.source,
                     PersistedKeyErrors.PERSISTED_KEY_TYPE_NOT_SERIALIZABLE,
-                    typeRef.coneType.renderReadable(),
+                    type.renderReadable(),
                     context,
                 )
             }

@@ -17,3 +17,9 @@ fun LaunchedEffect(key: Any?, block: suspend () -> Unit) {
 
 @Composable
 fun <T> remember(calculation: () -> T): T = calculation()
+
+interface MutableState<T> {
+    var value: T
+}
+
+fun <T> mutableStateOf(value: T): MutableState<T> = throw UnsupportedOperationException()
