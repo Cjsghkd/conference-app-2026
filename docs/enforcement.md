@@ -152,7 +152,7 @@ fun SearchScreen(onItemClick: (TimetableItemId) -> Unit) {
 }
 ```
 
-Why: the debounce lives at the UI interaction point, so every `on[A-Z]*` parameter of a feature `*Screen`/`*ScreenRoot` must reach a `safeClick`/`safeClickable` sink. Four routes qualify: passing it to a sink directly, forwarding it to another feature `@Composable`'s `on*` parameter, invoking it inside a `safeClick`/`safeClickable`/`ActionResultEffect` lambda, or invoking it inside a lambda that is itself passed to another feature `@Composable`'s `on*` parameter — the shape [`NoCallerSuppliedCallbackArgument`](#nocallersuppliedcallbackargument) produces at every list item. See [Safe click](./navigation-navigator.md#safe-click-navigation-debounce).
+Why: the debounce lives at the UI interaction point, so every `on[A-Z]*` parameter of a feature `*Screen`/`*ScreenRoot` must reach a `safeClick`/`safeClickable` sink. Four routes qualify: passing it to a sink directly, forwarding it to another feature declaration's `on*` parameter, invoking it inside a `safeClick`/`safeClickable`/`ActionResultEffect` lambda, or invoking it inside a lambda that is itself passed to another feature declaration's `on*` parameter — the shape [`NoCallerSuppliedCallbackArgument`](#nocallersuppliedcallbackargument) produces at every list item. See [Safe click](./navigation-navigator.md#safe-click-navigation-debounce).
 
 Conservative: it matches parameter *name*, so non-navigating `on*` callbacks are also forced through a sink.
 
