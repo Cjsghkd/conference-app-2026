@@ -1,6 +1,6 @@
 package io.github.droidkaigi.confsched.enforcement
 
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
@@ -14,9 +14,11 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionChecker
 import org.jetbrains.kotlin.fir.declarations.FirAnonymousFunction
 import org.jetbrains.kotlin.fir.declarations.FirNamedFunction
+import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
+import org.jetbrains.kotlin.fir.expressions.resolvedArgumentMapping
 import org.jetbrains.kotlin.fir.references.toResolvedCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.types.FirTypeRef
@@ -91,13 +93,16 @@ private fun isAllowedUsage(ref: FirQualifiedAccessExpression, ancestors: List<Fi
     if (parent is FirFunctionCall && parent.explicitReceiver === ref) {
         val lambdaIndex = ancestors.indexOfLast { it is FirAnonymousFunction }
         if (lambdaIndex < 0) return false
-        val enclosingCall = (lambdaIndex - 1 downTo 0)
-            .asSequence()
-            .map { ancestors[it] }
-            .filterIsInstance<FirFunctionCall>()
-            .firstOrNull() ?: return false
-        val calleeName = enclosingCall.calleeReference.toResolvedCallableSymbol()?.name?.asString()
-        return calleeName in SAFE_CLICK_SINK_NAMES || calleeName == ACTION_RESULT_EFFECT
+        val enclosingIndex = (lambdaIndex - 1 downTo 0)
+            .firstOrNull { ancestors[it] is FirFunctionCall } ?: return false
+        val enclosingCall = ancestors[enclosingIndex] as FirFunctionCall
+        val calleeSymbol = enclosingCall.calleeReference.toResolvedCallableSymbol() ?: return false
+        val calleeName = calleeSymbol.name.asString()
+        if (calleeName in SAFE_CLICK_SINK_NAMES || calleeName == ACTION_RESULT_EFFECT) return true
+        val calleePkg = calleeSymbol.callableId?.packageName?.asString() ?: return false
+        if (!calleePkg.startsWith(FEATURE_PACKAGE_PREFIX)) return false
+        val parameter = enclosingCall.parameterFor(ancestors.subList(enclosingIndex + 1, lambdaIndex + 1))
+        return parameter?.name?.asString()?.isOnCallbackName() == true
     }
 
     val callIndex = ancestors.indexOfLast { it is FirFunctionCall }
@@ -112,6 +117,12 @@ private fun isAllowedUsage(ref: FirQualifiedAccessExpression, ancestors: List<Fi
     if (calleeName in SAFE_CLICK_SINK_NAMES) return true
     val calleePkg = calleeSymbol.callableId?.packageName?.asString() ?: return false
     return calleePkg.startsWith(FEATURE_PACKAGE_PREFIX)
+}
+
+/** The parameter one of [argumentNodes] is bound to, resolved through the call's argument mapping. */
+private fun FirFunctionCall.parameterFor(argumentNodes: List<FirElement>): FirValueParameter? {
+    val mapping = resolvedArgumentMapping ?: return null
+    return mapping.entries.firstOrNull { entry -> argumentNodes.any { it === entry.key } }?.value
 }
 
 object SafeClickErrors : KtDiagnosticsContainer() {

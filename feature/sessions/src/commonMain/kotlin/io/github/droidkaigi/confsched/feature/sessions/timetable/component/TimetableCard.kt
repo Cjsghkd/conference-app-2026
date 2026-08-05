@@ -18,30 +18,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
-import io.github.droidkaigi.confsched.core.model.TimetableItem
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewWrapper
 import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 internal fun TimetableCard(
-    item: TimetableItem,
+    title: String,
+    room: String,
+    speaker: String,
     isFavorite: Boolean,
-    onBookmarkClick: (TimetableItemId) -> Unit,
-    onClick: (TimetableItemId) -> Unit,
+    onBookmarkClick: () -> Unit,
+    onClick: () -> Unit,
 ) {
-    Card(modifier = Modifier.fillMaxWidth().safeClickable { onClick(item.id) }) {
+    Card(modifier = Modifier.fillMaxWidth().safeClickable(onClick = onClick)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.title, fontWeight = FontWeight.Bold)
-                Text("${item.room} · ${item.speaker}")
+                Text(title, fontWeight = FontWeight.Bold)
+                Text("$room · $speaker")
             }
-            IconButton(onClick = safeClick { onBookmarkClick(item.id) }) {
+            IconButton(onClick = safeClick(onBookmarkClick)) {
                 Icon(
                     imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                     contentDescription = if (isFavorite) "Remove favorite" else "Add favorite",
@@ -56,15 +55,9 @@ internal fun TimetableCard(
 @Composable
 fun TimetableCardPreview() {
     TimetableCard(
-        item = TimetableItem(
-            id = TimetableItemId("d1a"),
-            title = "Compose Multiplatform in Practice",
-            room = "Arctic Fox",
-            speaker = "Alice",
-            day = DroidKaigi2026Day.Day1,
-            startsAt = "10:00",
-            endsAt = "10:40",
-        ),
+        title = "Compose Multiplatform in Practice",
+        room = "Arctic Fox",
+        speaker = "Alice",
         isFavorite = true,
         onBookmarkClick = {},
         onClick = {},

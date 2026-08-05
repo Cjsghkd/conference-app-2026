@@ -13,8 +13,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
-import io.github.droidkaigi.confsched.core.model.Sponsor
-import io.github.droidkaigi.confsched.core.model.SponsorPlan
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
@@ -23,18 +21,19 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 internal fun SponsorItem(
-    sponsor: Sponsor,
-    onSponsorClick: (String) -> Unit,
+    name: String,
+    logoUrl: String,
+    onSponsorClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.safeClickable(role = Role.Button) { onSponsorClick(sponsor.link) },
+        modifier = modifier.safeClickable(role = Role.Button, onClick = onSponsorClick),
         // Sponsor logos are supplied for a white background, so the card does not follow the theme.
         colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
         RemoteImage(
-            imageUrl = sponsor.logoUrl,
-            contentDescription = sponsor.name,
+            imageUrl = logoUrl,
+            contentDescription = name,
             modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp),
             // Logos arrive in arbitrary aspect ratios; cropping one to the card would cut off the wordmark.
             contentScale = ContentScale.Fit,
@@ -49,12 +48,8 @@ fun SponsorItemPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         SponsorItem(
-            sponsor = Sponsor(
-                name = "Arctic Fox Inc.",
-                logoUrl = PreviewImage.SessionCover.imageUrl,
-                plan = SponsorPlan.Platinum,
-                link = "https://droidkaigi.jp/2026/",
-            ),
+            name = "Arctic Fox Inc.",
+            logoUrl = PreviewImage.SessionCover.imageUrl,
             onSponsorClick = {},
         )
     }

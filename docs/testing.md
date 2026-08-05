@@ -7,3 +7,5 @@ Three layers, each covering a different slice:
 - [Robot pattern tests (scenario-based)](./testing-robot.md) — end-to-end screen behaviour via a BDD (behavior-driven development) style DSL over Compose UI test.
 
 All three are designed to reuse the same sample data and fakes through Metro test graphs, so a screen can be described once and exercised at three levels.
+
+The compile-time rules are tested separately: [Enforcement checker tests](./testing-enforcement.md) compile Kotlin source with the plugin loaded and assert the diagnostics each FIR checker reports.

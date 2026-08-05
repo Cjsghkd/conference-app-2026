@@ -20,8 +20,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
-import io.github.droidkaigi.confsched.core.model.TimetableItem
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClick
@@ -29,22 +27,25 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 internal fun FavoriteCard(
-    item: TimetableItem,
-    onBookmarkClick: (TimetableItemId) -> Unit,
-    onClick: (TimetableItemId) -> Unit,
+    day: DroidKaigi2026Day,
+    title: String,
+    room: String,
+    speaker: String,
+    onBookmarkClick: () -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(modifier = modifier.fillMaxWidth().safeClickable { onClick(item.id) }) {
+    Card(modifier = modifier.fillMaxWidth().safeClickable(onClick = onClick)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.day.name, style = MaterialTheme.typography.labelSmall)
-                Text(item.title, fontWeight = FontWeight.Bold)
-                Text("${item.room} · ${item.speaker}")
+                Text(day.name, style = MaterialTheme.typography.labelSmall)
+                Text(title, fontWeight = FontWeight.Bold)
+                Text("$room · $speaker")
             }
-            IconButton(onClick = safeClick { onBookmarkClick(item.id) }) {
+            IconButton(onClick = safeClick(onBookmarkClick)) {
                 Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Remove favorite")
             }
         }
@@ -58,15 +59,10 @@ fun FavoriteCardPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         FavoriteCard(
-            item = TimetableItem(
-                id = TimetableItemId("d1a"),
-                title = "Compose Multiplatform in Practice",
-                room = "Arctic Fox",
-                speaker = "Sp1",
-                day = DroidKaigi2026Day.Day1,
-                startsAt = "10:00",
-                endsAt = "10:40",
-            ),
+            day = DroidKaigi2026Day.Day1,
+            title = "Compose Multiplatform in Practice",
+            room = "Arctic Fox",
+            speaker = "Sp1",
             onBookmarkClick = {},
             onClick = {},
         )

@@ -39,6 +39,7 @@ export default withMermaid(defineConfig({
           { text: 'Error handling', link: '/error-handling' },
           { text: 'Presenter performance', link: '/presenter-performance' },
           { text: 'Enforcement', link: '/enforcement' },
+          { text: 'Naming review', link: '/naming-review' },
         ],
       },
       {
@@ -109,6 +110,7 @@ export default withMermaid(defineConfig({
           { text: 'Presenter unit tests (Molecule)', link: '/testing-presenter' },
           { text: 'Preview screenshot tests', link: '/testing-preview-screenshot' },
           { text: 'Robot pattern tests', link: '/testing-robot' },
+          { text: 'Enforcement checker tests', link: '/testing-enforcement' },
         ],
       },
       {

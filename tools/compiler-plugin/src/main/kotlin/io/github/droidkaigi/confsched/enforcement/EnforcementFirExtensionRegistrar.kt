@@ -11,6 +11,7 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             NavigatorErrors,
             MutationKeyErrors,
             PersistedKeyErrors,
+            RememberSerializableErrors,
             SafeClickErrors,
             NoForwardOnlyActionErrors,
             SoilReadConfinementErrors,
@@ -25,6 +26,8 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             ExplicitBackingFieldErrors,
             PrivateSetErrors,
             UiComponentPreviewErrors,
+            UiComponentParameterErrors,
+            CallbackArgumentErrors,
         )
     }
 }

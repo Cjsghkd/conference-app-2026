@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewWrapper
 import io.github.droidkaigi.confsched.core.ui.RemoteImage
@@ -25,7 +24,7 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 @Composable
 fun AboutScreen(
     uiState: AboutScreenUiState,
-    onOpenFeaturedSession: (TimetableItemId) -> Unit,
+    onOpenFeaturedSession: () -> Unit,
     onOpenSponsors: () -> Unit,
     onOpenContributors: () -> Unit,
     isDebugMenuAvailable: Boolean,
@@ -50,7 +49,7 @@ fun AboutScreen(
             )
             HorizontalDivider()
             ListItem(
-                modifier = Modifier.safeClickable { onOpenFeaturedSession(uiState.featuredSessionId) },
+                modifier = Modifier.safeClickable(onClick = onOpenFeaturedSession),
                 headlineContent = { Text("Open featured session detail") },
                 supportingContent = {
                     Text("Navigates to the sessions feature through AboutScreenNavigator")
@@ -86,7 +85,6 @@ fun AboutScreenPreview() {
         uiState = AboutScreenUiState(
             title = "About DroidKaigi 2026",
             versionName = "1.0.0",
-            featuredSessionId = TimetableItemId("s6"),
         ),
         onOpenFeaturedSession = {},
         onOpenSponsors = {},
@@ -104,7 +102,6 @@ fun AboutScreenWithoutDebugMenuPreview() {
         uiState = AboutScreenUiState(
             title = "About DroidKaigi 2026",
             versionName = "1.0.0",
-            featuredSessionId = TimetableItemId("s6"),
         ),
         onOpenFeaturedSession = {},
         onOpenSponsors = {},

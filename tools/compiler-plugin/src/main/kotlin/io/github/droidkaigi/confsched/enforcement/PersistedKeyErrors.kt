@@ -1,7 +1,6 @@
 package io.github.droidkaigi.confsched.enforcement
 
-// kotlin-compiler-embeddable relocates IntelliJ packages under org.jetbrains.kotlin.com.intellij.
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
@@ -22,7 +21,7 @@ object PersistedKeyErrorMessages : BaseDiagnosticRendererFactory() {
     override val MAP by KtDiagnosticFactoryToRendererMap("PersistedKey") { map ->
         map.put(
             PersistedKeyErrors.PERSISTED_KEY_TYPE_NOT_SERIALIZABLE,
-            "The type argument for a @MustBeSerializable type parameter must be @Serializable: {0} has " +
+            "The type argument for a @MustBeSerializable type parameter must be serializable: {0} has " +
                 "no serializer, and the reified serializer<T>() lookup is not compile-checked, so " +
                 "persistence would fail only at runtime",
             CommonRenderers.STRING,

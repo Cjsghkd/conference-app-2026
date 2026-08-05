@@ -22,7 +22,8 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Cross-feature isolation (no importing another feature's `NavKey`) | Module boundary — no Gradle edge between features (`:feature:debug`, dev-only tooling, is exempt) |
 | `NavKey` is `@Serializable` | Hand-written serializer registration — a miss is a compile error |
 | Preview assets do not enter production | Module boundary — release excludes `:core:preview:impl` |
-| `@MustBeSerializable` type arguments are `@Serializable` | FIR `MustBeSerializable` |
+| `@MustBeSerializable` type arguments are serializable | FIR `MustBeSerializable` |
+| `rememberSerializable` type arguments are serializable | FIR `RememberSerializable` |
 | No direct `mutate` call | FIR `NoDirectMutate` |
 | Presenter must not declare [`ScreenContext`](./screen-context.md) | FIR `PresenterMustNotDeclareScreenContext` |
 | ScreenContext is not a subtype of PresenterContext | FIR `ScreenContextMustNotBePresenterContext` |
@@ -43,8 +44,12 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | A private property exposed by a wider one uses an explicit backing field | FIR `ExplicitBackingFieldRequired` |
 | A private `var` exposed read-only uses `private set` | FIR `PrivateSetRequired` |
 | A feature UI composable carries a preview in its file | FIR `UiComponentRequiresPreview` |
+| A feature UI composable reads every property of the state it takes | FIR `UiComponentTakesWhatItReads` |
+| A callback does not report back a value its own composable was given | FIR `NoCallerSuppliedCallbackArgument` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
+
+Each checker below is covered by a diagnostic test; for how to run and extend them, see [Enforcement checker tests](./testing-enforcement.md).
 
 ## FIR checkers (rejected example and reason)
 
@@ -148,7 +153,7 @@ fun SearchScreen(onItemClick: (TimetableItemId) -> Unit) {
 }
 ```
 
-Why: the debounce lives at the UI interaction point, so every `on[A-Z]*` parameter of a feature `*Screen`/`*ScreenRoot` must reach a `safeClick`/`safeClickable` sink (directly, forwarded to another feature `@Composable`'s `on*`, or invoked inside a `safeClick`/`safeClickable`/`ActionResultEffect` lambda). See [Safe click](./navigation-navigator.md#safe-click-navigation-debounce).
+Why: the debounce lives at the UI interaction point, so every `on[A-Z]*` parameter of a feature `*Screen`/`*ScreenRoot` must reach a `safeClick`/`safeClickable` sink. Four routes qualify: passing it to a sink directly, forwarding it to another feature declaration's `on*` parameter, invoking it inside a `safeClick`/`safeClickable`/`ActionResultEffect` lambda, or invoking it inside a lambda that is itself passed to another feature declaration's `on*` parameter — the shape [`NoCallerSuppliedCallbackArgument`](#nocallersuppliedcallbackargument) produces at every list item. See [Safe click](./navigation-navigator.md#safe-click-navigation-debounce).
 
 Conservative: it matches parameter *name*, so non-navigating `on*` callbacks are also forced through a sink.
 
@@ -178,6 +183,21 @@ buildPersistedQueryKey(id, persistKey = "…", byteStore = …,
 ```
 
 Why: a missing `@Serializable` would only fail at runtime when persistence serializes; this checker restores the compile-time gate the reified serializer lookup removed. The check is driven by the `@MustBeSerializable` annotation (`:core:common`) on a type parameter — not a hard-coded callable and argument index — so signature changes cannot silently detach it, and any function can opt in. An unresolvable classifier (type parameter, local/anonymous type) is rejected rather than silently allowed.
+
+A type argument qualifies as serializable when it carries `@Serializable`, is an enum class, or is one of the types `kotlinx.serialization.builtins` covers: the primitives and their unsigned counterparts, `String`, `Unit`, `Nothing`, `List`/`Set`/`Map` and their mutable forms, `Map.Entry`, `Pair`/`Triple`, `Array` and the primitive array types, `kotlin.time.Duration`, and `kotlin.uuid.Uuid`. A generic type additionally requires every one of its type arguments to qualify, so `List<Session>` is accepted only when `Session` is — and the diagnostic then names `Session`, not the container.
+
+### `RememberSerializable`
+
+```kotlin
+class SearchFilters(val query: String)   // no @Serializable
+
+@Composable
+fun SearchScreenRoot() {
+    val filters = rememberSerializable { mutableStateOf(SearchFilters("")) } // ERROR
+}
+```
+
+Why: `rememberSerializable` (`androidx.compose.runtime.saveable`) resolves the serializer for its state through the same reified `serializer<T>()` lookup, so a type with no serializer compiles and then throws when the state is saved on process death. Serializability is decided as in [`MustBeSerializable`](#mustbeserializable). The overloads taking `serializer = …` / `stateSerializer = …` hand the lookup to the caller and are left alone; a type whose serializer reaches the call through a `SavedStateConfiguration` serializers module carries `@Suppress("REMEMBER_SERIALIZABLE_TYPE_NOT_SERIALIZABLE")`.
 
 ### `MutationEffectMustReset`
 
@@ -299,13 +319,13 @@ Why: the same duplicated-state problem as `ExplicitBackingFieldRequired`, for th
 ```kotlin
 // TimetableCard.kt
 @Composable
-internal fun TimetableCard(item: TimetableItem, onClick: (TimetableItemId) -> Unit) { … } // ERROR: no preview here
+internal fun TimetableCard(title: String, onClick: () -> Unit) { … } // ERROR: no preview here
 
 // OK: a preview for it in the same file
 @PreviewWrapper(KaigiPreviewWrapper::class)
 @Preview
 @Composable
-fun TimetableCardPreview() { TimetableCard(item = /* sample */, onClick = {}) }
+fun TimetableCardPreview() { TimetableCard(title = /* sample */, onClick = {}) }
 ```
 
 Why: a component with no preview cannot be inspected without running the app, so a reader has no way to see what it looks like. Every top-level `Unit`-returning `@Composable` under a feature package requires a `@Preview` **that renders it** in the same file — a preview elsewhere in the file does not count, so a file holding several components needs a preview reaching each one. The check reads the preview's body, descending into wrapper lambdas such as `KaigiPreviewTheme(colorScheme) { … }` and following helpers declared in the same file, so a preview may reach the component indirectly. [`ScreenIsSoleComponentInFile`](#screenissolecomponentinfile) exempts previews, so the preview sits beside the component it renders, and [`PreviewRequiresWrapper`](#previewrequireswrapper) then forces it through the sanctioned wrapper.
@@ -322,10 +342,59 @@ The rule holds for every feature module, `:feature:debug` included: a per-module
 
 A component that genuinely cannot be rendered on its own carries `@Suppress("UI_COMPONENT_WITHOUT_PREVIEW")` with the reason beside it. `SoilErrorBottomSheet` is the one case in the codebase: `ModalBottomSheet` renders into a popup window, which a preview captures as an empty tree, so its content is split into `SoilErrorSheetContent` and previewed there.
 
+### `UiComponentTakesWhatItReads`
+
+```kotlin
+@Composable
+internal fun TimetableItemDetailHeadline(item: TimetableItem) { // ERROR: id, day, startsAt, endsAt unread
+    Text(item.room)
+    Text(item.title)
+    Text(item.speaker)
+}
+
+// OK: the properties it reads
+@Composable
+internal fun TimetableItemDetailHeadline(room: String, title: String, speaker: String) { … }
+```
+
+Why: a component that takes an aggregate for a few of its properties spreads that type further than its own reads justify — every caller must hold the whole state to render the component, the preview must build it, and Compose recomposes the component when a property it never reads changes. A feature UI `@Composable` must read **every** property of a parameter it selects from; otherwise declare a UiState type for the component holding only what it reads (`FavoritesListSectionUiState` is the shape to copy), or take those properties as separate parameters.
+
+The parameter type in scope is a project-owned class with a primary constructor, and the properties counted are the ones that constructor declares. A parameter used as a value rather than selected from — passed on to another composable, compared, or a receiver of a member call — is out of scope, since its own shape is then load-bearing.
+
+A list item stays cheap under this rule because the state it does not render belongs elsewhere: selection state (`isFavorite`) reaches it as its own parameter rather than a field on the model, and layout state its parent applies (`SponsorPlan`) never enters the item at all. An identifier the item only hands to a callback does not enter it either — see [`NoCallerSuppliedCallbackArgument`](#nocallersuppliedcallbackargument).
+
+### `NoCallerSuppliedCallbackArgument`
+
+```kotlin
+@Composable
+internal fun TimetableCard(
+    id: TimetableItemId,
+    title: String,
+    onClick: (TimetableItemId) -> Unit,   // ERROR: reports back `id`
+) {
+    Card(modifier = Modifier.safeClickable { onClick(id) }) { Text(title) }
+}
+
+// OK: the caller holds the identifier, so the callback carries nothing
+@Composable
+internal fun TimetableCard(title: String, onClick: () -> Unit) {
+    Card(modifier = Modifier.safeClickable(onClick = onClick)) { Text(title) }
+}
+
+// at the call site
+items(slot.items) { item ->
+    TimetableCard(title = item.title, onClick = { onItemClick(item.id) })
+}
+```
+
+Why: a callback parameter exists to carry information the caller does not have. A value the caller passed in a moment earlier is not such information — the caller can close over it at the call site, and the round trip only widens the component's signature and forces the identifier into a state type that exists for rendering. A `@Composable` therefore must not invoke a `Unit`-returning function-typed parameter with one of its own value parameters, or with a property selected from one.
+
+The argument must be a plain read to be rejected: an element bound by a `forEach`/`items` lambda, a `remember`ed value, and any computed expression (`count + 1`) are all values the component owns. `@Composable` and `suspend` function types carry their own function-type kinds, so content slots and suspending handlers are out of scope.
+
 ## Review + tests (fuzzy)
 
-Rules that depend on data volume or semantics stay out of static enforcement: heavy shaping belonging in the data layer, validity of an emitted result, and correctness of mutation-result handling — ensured by AI review rules + Presenter/Screen tests.
+Rules that depend on data volume or semantics stay out of static enforcement: heavy shaping belonging in the data layer, validity of an emitted result, and correctness of mutation-result handling — ensured by AI review rules + Presenter/Screen tests. Naming rules join them, because a name is judged against the domain vocabulary rather than against the types — see [Naming review](./naming-review.md).
 
 **Eliminate via types what types can eliminate** (required serializer, context param, `suspend`, `internal`), **use FIR checkers for binaries types can't express**, and **leave fuzzy cases to review**. Even when AI writes the code, the type and FIR layers hold because **compilation fails**.
 
-Related: [Architecture overview](./architecture-overview.md) · [Building a screen](./building-a-screen.md) · [ScreenContext design](./screen-context.md) · [Error handling](./error-handling.md)
+Related: [Architecture overview](./architecture-overview.md) · [Building a screen](./building-a-screen.md) · [ScreenContext design](./screen-context.md) · [Error handling](./error-handling.md) · [Naming review](./naming-review.md)

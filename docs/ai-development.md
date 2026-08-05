@@ -24,7 +24,7 @@ For Claude Code, the **`new-screen` skill** (`.claude/skills/new-screen`) wraps 
 
 - **FIR checkers** (`:tools:compiler-plugin`) turn the architecture rules into compile errors — role-context gating, forbidden direct `mutate`, Navigator confinement + safe-click debounce, Soil read confinement, mutation-tag isolation, preview wrapper. The full map lives in [Enforcement](./enforcement.md). For developing and maintaining the plugin itself, the [kotlin-compiler-plugin-skills](https://github.com/kitakkun/kotlin-compiler-plugin-skills) agent skills cover FIR/IR extension work with sourced references.
 - **Codegen removes the boilerplate AI would otherwise get subtly wrong**: [NavKey serializer registration](./navigation-navkey-serializers.md), Soil key ids (`SoilIds`), the off-JVM preview registry — all KSP-generated (`:tools:ksp-processor`).
-- **Review rules for AI reviewers** encode the same architecture decisions as detectable review criteria.
+- **Review rules for AI reviewers** encode the same architecture decisions as detectable review criteria — including [Naming review](./naming-review.md), which a checker cannot decide because it is judged against the domain vocabulary.
 
 ## Verifying changes
 

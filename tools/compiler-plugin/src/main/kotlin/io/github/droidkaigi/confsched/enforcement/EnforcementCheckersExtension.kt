@@ -18,6 +18,7 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
         override val functionCallCheckers: Set<FirFunctionCallChecker> = setOf(
             NoPresenterEffectInScreenRootChecker,
             MustBeSerializableChecker,
+            RememberSerializableChecker,
             NoForwardOnlyActionChecker,
             SoilReadConfinementChecker,
             MutationCallConfinementChecker,
@@ -41,6 +42,8 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
             ThemeSensitivePreviewChecker,
             NavLambdaMustFlowToSafeClickChecker,
             ComposableNestingDepthChecker,
+            UiComponentTakesWhatItReadsChecker,
+            NoCallerSuppliedCallbackArgumentChecker,
         )
         override val anonymousFunctionCheckers: Set<FirAnonymousFunctionChecker> = setOf(
             LambdaCanBeCallableReferenceChecker,

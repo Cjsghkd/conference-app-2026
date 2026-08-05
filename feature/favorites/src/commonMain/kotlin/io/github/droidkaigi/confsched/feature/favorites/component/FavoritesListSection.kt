@@ -44,9 +44,12 @@ internal fun FavoritesListSection(
             }
             items(slot.items, key = { it.id.value }) { item ->
                 FavoriteCard(
-                    item = item,
-                    onBookmarkClick = onBookmarkClick,
-                    onClick = onItemClick,
+                    day = item.day,
+                    title = item.title,
+                    room = item.room,
+                    speaker = item.speaker,
+                    onBookmarkClick = { onBookmarkClick(item.id) },
+                    onClick = { onItemClick(item.id) },
                 )
             }
         }

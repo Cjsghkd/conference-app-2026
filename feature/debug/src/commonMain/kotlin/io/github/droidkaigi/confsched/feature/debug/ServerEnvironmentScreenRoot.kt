@@ -31,7 +31,7 @@ fun ServerEnvironmentScreenRoot(
     }
 
     ServerEnvironmentScreen(
-        uiState = uiState,
+        skipSelectionNextLaunch = uiState.skipSelectionNextLaunch,
         toggleSkipNextLaunch = { enabled ->
             screenChannel.send(ServerEnvironmentScreenAction.SetSkipNextLaunch(enabled))
         },

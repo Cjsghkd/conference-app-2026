@@ -56,7 +56,11 @@ fun ContributorsScreen(
                     ContributorsCountText(count = uiState.contributors.size)
                 }
                 items(items = uiState.contributors, key = { it.id.value }) { contributor ->
-                    ContributorItem(contributor = contributor, onContributorClick = onContributorClick)
+                    ContributorItem(
+                        username = contributor.username,
+                        iconUrl = contributor.iconUrl,
+                        onContributorClick = { onContributorClick(contributor.profileUrl) },
+                    )
                 }
             }
         }

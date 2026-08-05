@@ -1,7 +1,6 @@
 package io.github.droidkaigi.confsched.enforcement
 
-// kotlin-compiler-embeddable relocates IntelliJ packages under org.jetbrains.kotlin.com.intellij.
-import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies

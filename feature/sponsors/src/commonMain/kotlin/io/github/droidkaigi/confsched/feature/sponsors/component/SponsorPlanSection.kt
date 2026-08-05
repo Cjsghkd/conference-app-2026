@@ -37,8 +37,9 @@ internal fun LazyGridScope.sponsorPlanSection(
         span = { GridItemSpan(group.plan.columnSpan) },
     ) { sponsor ->
         SponsorItem(
-            sponsor = sponsor,
-            onSponsorClick = onSponsorClick,
+            name = sponsor.name,
+            logoUrl = sponsor.logoUrl,
+            onSponsorClick = { onSponsorClick(sponsor.link) },
             modifier = Modifier.fillMaxWidth().height(group.plan.itemHeight),
         )
     }
