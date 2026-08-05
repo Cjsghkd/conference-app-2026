@@ -26,6 +26,10 @@ For Claude Code, the **`new-screen` skill** (`.claude/skills/new-screen`) wraps 
 - **Codegen removes the boilerplate AI would otherwise get subtly wrong**: [NavKey serializer registration](./navigation-navkey-serializers.md), Soil key ids (`SoilIds`), the off-JVM preview registry — all KSP-generated (`:tools:ksp-processor`).
 - **Review rules for AI reviewers** encode the same architecture decisions as detectable review criteria — including [Naming review](./naming-review.md), which a checker cannot decide because it is judged against the domain vocabulary.
 
+## Parallel working trees
+
+Agents work in their own `git worktree`, so several checkouts exist side by side. Each one otherwise repeats the Swift Package Manager import — roughly 3 GB and most of a sync — because those results reach neither the Gradle build cache nor the next working tree. Running `scripts/link-swiftpm-cache.sh --install-hook` once makes every working tree added from the clone share a single store. For details, see [SwiftPM import cache across worktrees](./build-worktree-swiftpm-cache.md).
+
 ## Verifying changes
 
 - Presenter logic: `runPresenterTest` harness (`:core:testing`) — see [Presenter unit tests](./testing-presenter.md).
