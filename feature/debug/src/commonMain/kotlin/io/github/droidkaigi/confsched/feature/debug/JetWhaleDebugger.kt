@@ -42,6 +42,7 @@ private const val JETWHALE_WSS_PORT = 5443
 class JetWhaleDebugger(
     private val httpClient: HttpClient,
     navKeySerializersProvider: MergedNavKeySerializersProvider,
+    private val kaigiAgentPlugin: KaigiAgentPlugin,
 ) : AppInitializer,
     BackStackDebuggingEffect,
     SemanticsDebuggingEffect {
@@ -74,6 +75,7 @@ class JetWhaleDebugger(
                 register(networkPlugin)
                 register(nav3Plugin)
                 register(JetWhaleSemanticsAgentPlugin())
+                register(kaigiAgentPlugin)
             }
         }
     }

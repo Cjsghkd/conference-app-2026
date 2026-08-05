@@ -35,6 +35,8 @@ coil = "3.2.0"
 ktor = "3.5.2"
 # Debug agent, wired into dev builds only.
 jetwhale = "1.0.0-alpha11"
+# Compose Multiplatform the targeted JetWhale host release itself was built with.
+jetwhaleHostCompose = "1.11.1"
 # Single source of truth for the app version; flows to common Kotlin via the generated BuildKonfig.
 droidkaigiApp = "0.1.0"
 # KMP logger with platform-native writers (Logcat / os_log / SLF4J / console), wasmJs-capable.
@@ -132,7 +134,19 @@ jetwhaleAgentRuntime = { module = "com.kitakkun.jetwhale:jetwhale-agent-runtime"
 jetwhaleNav3Agent = { module = "com.kitakkun.jetwhale:jetwhale-nav3-agent", version.ref = "jetwhale" }
 # Carries the network agent core (JetWhaleNetworkAgentPlugin) as an api dependency.
 jetwhaleNetworkInspectorAgentKtor = { module = "com.kitakkun.jetwhale:jetwhale-network-inspector-agent-ktor", version.ref = "jetwhale" }
-jetwhaleComposeSemanticsInspectorAgent = { module = "com.kitakkun.jetwhale:jetwhale-compose-semantics-inspector-agent", version.ref = "jetwhale" }firebaseCrashlytics = { module = "com.google.firebase:firebase-crashlytics", version = "20.1.0" }
+jetwhaleComposeSemanticsInspectorAgent = { module = "com.kitakkun.jetwhale:jetwhale-compose-semantics-inspector-agent", version.ref = "jetwhale" }
+# Building the app's own JetWhale plugin: shared message markers, the agent base class, and the
+# host-side SDK the desktop half compiles against.
+jetwhaleProtocolCore = { module = "com.kitakkun.jetwhale:jetwhale-protocol-core", version.ref = "jetwhale" }
+jetwhaleAgentSdk = { module = "com.kitakkun.jetwhale:jetwhale-agent-sdk", version.ref = "jetwhale" }
+jetwhaleHostSdk = { module = "com.kitakkun.jetwhale:jetwhale-host-sdk", version.ref = "jetwhale" }
+# The JetWhale host provides Compose at runtime, so the host plugin compiles against the versions
+# that host release ships rather than the app's own (newer) Compose Multiplatform.
+jetwhaleHostComposeRuntime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "jetwhaleHostCompose" }
+jetwhaleHostComposeFoundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "jetwhaleHostCompose" }
+jetwhaleHostComposeUi = { module = "org.jetbrains.compose.ui:ui", version.ref = "jetwhaleHostCompose" }
+jetwhaleHostComposeMaterial3 = { module = "org.jetbrains.compose.material3:material3", version = "1.11.0-alpha07" }
+firebaseCrashlytics = { module = "com.google.firebase:firebase-crashlytics", version = "20.1.0" }
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazziCompose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
 roborazziJunitRule = { module = "io.github.takahirom.roborazzi:roborazzi-junit-rule", version.ref = "roborazzi" }
@@ -169,6 +183,7 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 # runtime it rewrites the call into.
 jetwhaleAgent = { id = "com.kitakkun.jetwhale.agent", version.ref = "jetwhale" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+jetwhaleHost = { id = "com.kitakkun.jetwhale.host", version.ref = "jetwhale" }
 # Local convention plugins (gradle-conventions included build); the version is never resolved —
 # includeBuild substitution wins — but the catalog schema requires one.
 droidkaigiPrimitiveKmp = { id = "droidkaigi.primitive.kmp", version = "unspecified" }
