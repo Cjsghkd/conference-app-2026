@@ -18,7 +18,17 @@ Run the script once per working tree, before the first sync:
 scripts/link-swiftpm-cache.sh
 ```
 
-It replaces the three directories with symbolic links into `~/.cache/droidkaigi-conference-app-2026/swiftpm-import`. A working tree that already holds the real directories has them moved into the store; a working tree created afterwards links straight to it. Pass `--store <dir>` or set `SWIFTPM_IMPORT_CACHE` to place the store elsewhere. Re-running the script is a no-op.
+It replaces the three directories with symbolic links into `~/.cache/droidkaigi-conference-app-2026/swiftpm-import`. A working tree that already holds the real directories has them moved into the store; a working tree created afterwards links straight to it. Pass `--store <dir>` or export `SWIFTPM_IMPORT_CACHE` to place the store elsewhere. Re-running the script is a no-op.
+
+## Linking every new working tree automatically
+
+```sh
+scripts/link-swiftpm-cache.sh --install-hook
+```
+
+This writes a `post-checkout` hook into the clone's shared hook directory, so every `git worktree add` from that clone links itself. Git passes the all-zero ref as the previous HEAD for `git worktree add` and `git clone` only, so ordinary branch and file checkouts skip the hook. Installing it once covers every working tree of the clone, including the ones coding agents create.
+
+The hook is a personal setup step: hooks live outside version control, so it changes nothing for anyone else. It leaves an existing `post-checkout` hook untouched and reports the conflict instead. To honour a custom store, export `SWIFTPM_IMPORT_CACHE` from the shell that runs `git`.
 
 `clang` and `xcodebuild` resolve symbolic links to their real paths, so the generated `.def` and `.ld` files record the store location and stay valid in every working tree. Linked working trees keep about 40 MB of build output instead of 3 GB, and `prepareKotlinIdeaImport` — the task an IDE sync runs — drops from roughly four minutes to about one.
 

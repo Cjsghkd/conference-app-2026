@@ -5,13 +5,15 @@ root="$(cd "$(dirname "$0")/.." && pwd)"
 store="${SWIFTPM_IMPORT_CACHE:-$HOME/.cache/droidkaigi-conference-app-2026/swiftpm-import}"
 
 usage() {
-  echo "Usage: scripts/link-swiftpm-cache.sh [--store <dir>]" >&2
+  echo "Usage: scripts/link-swiftpm-cache.sh [--store <dir>] [--install-hook]" >&2
   exit 1
 }
 
+install_hook=false
 while [ $# -gt 0 ]; do
   case "$1" in
     --store) [ $# -ge 2 ] || usage; store="$2"; shift 2 ;;
+    --install-hook) install_hook=true; shift ;;
     *) usage ;;
   esac
 done
@@ -24,6 +26,36 @@ esac
 
 if [ "$(uname -s)" != "Darwin" ]; then
   echo "Swift Package Manager import runs on macOS only; nothing to link." >&2
+  exit 0
+fi
+
+if [ "$install_hook" = true ]; then
+  common_dir="$(git -C "$root" rev-parse --git-common-dir)"
+  case "$common_dir" in /*) ;; *) common_dir="$root/$common_dir" ;; esac
+  hook="$common_dir/hooks/post-checkout"
+
+  if [ -e "$hook" ]; then
+    echo "$hook already exists; add the call to it by hand." >&2
+    exit 1
+  fi
+
+  mkdir -p "$(dirname "$hook")"
+  cat > "$hook" <<'HOOK'
+#!/bin/sh
+# git runs this in the new working tree after `git worktree add` and `git clone`, passing the
+# all-zero ref as the previous HEAD. Ordinary checkouts pass a real ref and are skipped.
+case "$1" in *[!0]*) exit 0 ;; esac
+[ "$3" = "1" ] || exit 0
+[ -x ./scripts/link-swiftpm-cache.sh ] || exit 0
+
+# The hook's exit status becomes the exit status of the git command, so a failure here must not
+# fail `git worktree add`.
+./scripts/link-swiftpm-cache.sh || echo "Run scripts/link-swiftpm-cache.sh by hand to link this working tree." >&2
+exit 0
+HOOK
+  chmod +x "$hook"
+  echo "Installed $hook"
+  echo "Every working tree added from this clone links itself from now on."
   exit 0
 fi
 
