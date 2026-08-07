@@ -12,6 +12,7 @@ Dependencies live in two nested graphs with distinct lifetimes:
 ```kotlin
 interface AppGraph {
     val uiGraph: UiGraph
+    val appInitializer: AppInitializer // run by the platform entry point at process start
     val rootTabNavigator: RootTabNavigator // bridge to shells outside the Compose tree
 }
 
@@ -73,6 +74,6 @@ A `@GraphExtension.Factory` is only required where the creation itself must be *
 
 Anything whose lifetime is one UI instance binds into `UiScope`: `AppNavigator` is `@SingleIn(UiScope::class)`, features contribute `NavEntryProvider`s with `@ContributesIntoSet(UiScope::class)`, and the per-screen graph factories are contributed with `@ContributesTo(UiScope::class)` — so screen graphs are extensions of `UiGraph` and can inject UI-scoped bindings. Process-lifetime bindings must not depend on UI-scoped ones; Metro rejects the reverse edge at compile time.
 
-Accessors follow the consumer, not the binding's scope: everything the UI shell reads — including app-scoped bindings such as the `SwrClientPlus` or the logger — is exposed on `UiGraph`, while `AppGraph` keeps only what must be reachable before or outside a UI instance (the `UiGraph` accessor and the Swift-facing `RootTabNavigator`).
+Accessors follow the consumer, not the binding's scope: everything the UI shell reads — including app-scoped bindings such as the `SwrClientPlus` or the logger — is exposed on `UiGraph`, while `AppGraph` keeps only what must be reachable before or outside a UI instance (the `UiGraph` accessor, the `AppInitializer` the entry point runs at process start, and the Swift-facing `RootTabNavigator`).
 
 Related: [ScreenContext design](./screen-context.md) · [Per-screen graphs (@GraphExtension)](./di-screen-graph.md)

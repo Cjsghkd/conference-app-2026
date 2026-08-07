@@ -16,8 +16,10 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding
+import io.github.droidkaigi.confsched.core.common.AppInitializer
 import io.github.droidkaigi.confsched.core.common.BackStackDebuggingEffect
 import io.github.droidkaigi.confsched.core.common.MergedNavKeySerializersProvider
+import io.github.droidkaigi.confsched.core.common.NoopAppInitializer
 import io.github.droidkaigi.confsched.core.common.NoopBackStackDebuggingEffect
 import io.github.droidkaigi.confsched.core.common.NoopSemanticsDebuggingEffect
 import io.github.droidkaigi.confsched.core.common.SemanticsDebuggingEffect
@@ -34,12 +36,14 @@ private const val JETWHALE_WSS_PORT = 5443
 @OptIn(ExperimentalJetWhaleApi::class)
 @Inject
 @SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class, binding<AppInitializer>(), replaces = [NoopAppInitializer::class])
 @ContributesBinding(AppScope::class, binding<BackStackDebuggingEffect>(), replaces = [NoopBackStackDebuggingEffect::class])
 @ContributesBinding(AppScope::class, binding<SemanticsDebuggingEffect>(), replaces = [NoopSemanticsDebuggingEffect::class])
 class JetWhaleDebugger(
-    httpClient: HttpClient,
+    private val httpClient: HttpClient,
     navKeySerializersProvider: MergedNavKeySerializersProvider,
-) : BackStackDebuggingEffect,
+) : AppInitializer,
+    BackStackDebuggingEffect,
     SemanticsDebuggingEffect {
     private val networkPlugin = JetWhaleNetworkAgentPlugin()
 
@@ -49,10 +53,10 @@ class JetWhaleDebugger(
         Nav3KeyCodec.openPolymorphic(navKeySerializersProvider.serializersModule),
     )
 
-    init {
+    override fun initialize() {
         // HttpSend attaches to an already-built client, leaving core:data's provider untouched. It
         // has no way to unregister and does not reject duplicates, so this must run exactly once —
-        // which the AppScope singleton guarantees.
+        // which the AppScope singleton plus the single entry-point call guarantees.
         httpClient.plugin(HttpSend).intercept(networkPlugin.ktorSendInterceptor(httpClient))
 
         startJetWhale {
