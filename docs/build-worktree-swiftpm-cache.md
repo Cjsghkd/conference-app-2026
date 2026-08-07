@@ -2,13 +2,15 @@
 
 `:app-shared` declares a Swift Package Manager dependency through `swiftPMDependencies`, so every Gradle sync resolves the Firebase iOS SDK package graph and builds it with `xcodebuild`. The Kotlin Gradle plugin writes the results into three directories inside the working tree:
 
-| Directory | Contents |
-| --- | --- |
-| `.swiftpm-locks/default/swiftPMCheckout` | SwiftPM checkout of the umbrella package |
-| `app-shared/build/kotlin/swiftPMCheckout` | SwiftPM checkout passed to `xcodebuild` as `-clonedSourcePackagesDirPath` |
-| `app-shared/build/kotlin/swiftImportDd` | `xcodebuild` derived data, passed as `-derivedDataPath` |
+| Directory | Contents | Shared |
+| --- | --- | --- |
+| `.swiftpm-locks/default/swiftPMCheckout` | SwiftPM checkout of the umbrella package | yes |
+| `app-shared/build/kotlin/swiftPMCheckout` | SwiftPM checkout passed to `xcodebuild` as `-clonedSourcePackagesDirPath` | yes |
+| `app-shared/build/kotlin/swiftImportDd` | `xcodebuild` derived data, passed as `-derivedDataPath` | no |
 
-Together they hold roughly 3 GB. None of them is a declared Gradle output, and every SwiftPM import task carries `@DisableCachingByDefault`, so the Gradle build cache cannot carry the results from one working tree to another. Each additional `git worktree` otherwise repeats the entire resolve-and-build cycle.
+Together they hold roughly 3 GB, of which the two checkouts are 2.4 GB. None is a declared Gradle output, and every SwiftPM import task carries `@DisableCachingByDefault`, so the Gradle build cache cannot carry the results from one working tree to another. Each additional `git worktree` otherwise repeats the entire resolve-and-build cycle.
+
+The derived data stays per working tree. `xcodebuild` rejects concurrent use of one derived data directory — the Kotlin Gradle plugin already keeps one per SDK for that reason — and sharing it saves no measurable time, because the plugin deletes the synthetic package's build directory on every run regardless.
 
 ## Setup
 
@@ -26,7 +28,7 @@ The hook only reaches working trees created after it. Link each one that already
 scripts/link-swiftpm-cache.sh
 ```
 
-Either path replaces the three directories with symbolic links into `swiftpm-import` inside the clone's git directory — the one `git rev-parse --git-common-dir` reports, shared by every working tree of the clone. Living there ties the store to the clone: deleting the clone takes it along, and no working tree owns it, so removing one leaves the rest intact. Git tracks nothing in that directory, so the store stays out of `git status` without a `.gitignore` entry.
+Either path replaces the two checkouts with symbolic links into `swiftpm-import` inside the clone's git directory — the one `git rev-parse --git-common-dir` reports, shared by every working tree of the clone. Living there ties the store to the clone: deleting the clone takes it along, and no working tree owns it, so removing one leaves the rest intact. Git tracks nothing in that directory, so the store stays out of `git status` without a `.gitignore` entry.
 
 A working tree that already holds the real directories has them moved into the store; one created afterwards links straight to it. Re-running the script is a no-op, and it refuses to overwrite existing output rather than discarding it.
 
@@ -52,15 +54,16 @@ scripts/link-swiftpm-cache.sh --gc
 
 It keeps every bucket that a working tree still links to, reading the links themselves rather than recomputing the digest, so a working tree whose dependencies changed without a re-run keeps the bucket it actually uses. Everything else is deleted; a bucket is a few gigabytes.
 
-Deleting a bucket leaves the working trees that pointed at it with dangling links. Re-run the script there — it restores the directories, and the next sync refills them.
+Deleting a bucket leaves the working trees that pointed at it with dangling links. Re-run the script there: it restores the directories and drops the `.def` and `.ld` files naming the paths that went with the bucket, which the next sync regenerates.
 
-`clang` and `xcodebuild` resolve symbolic links to their real paths, so the generated `.def` and `.ld` files record the store location and stay valid in every working tree. Linked working trees keep about 40 MB of build output instead of 3 GB, and `prepareKotlinIdeaImport` — the task an IDE sync runs — drops from roughly four minutes to about one.
+Removing those files matters because the task producing them declares only the manifests as its inputs. Gradle keeps them when the paths they name disappear, and the build then fails at the linker on a file that is no longer there — far from the cause. Never delete a bucket or a derived data directory by hand without re-running the script afterwards.
+
+`clang` and `xcodebuild` resolve symbolic links to their real paths, so the generated `.def` and `.ld` files record the store location and stay valid in every working tree. A linked working tree keeps about 700 MB of build output instead of 3 GB, and `prepareKotlinIdeaImport` — the task an IDE sync runs — drops from roughly four minutes to about one and a half.
 
 ## Constraints
 
-- Sync one working tree at a time. `xcodebuild` does not support concurrent use of a single derived data directory, which is why the Kotlin Gradle plugin already keeps one derived data directory per SDK.
 - `./gradlew clean` removes the links, not the store. Re-run the script afterwards.
-- Deleting the store invalidates the `.def` files of every linked working tree. Run a sync afterwards to regenerate them.
+- The checkouts stay shared, so two working trees resolving at the same moment resolve against one directory.
 
 ## Remaining sync cost
 
