@@ -1,5 +1,9 @@
 plugins {
     alias(libs.plugins.droidkaigiConventionKmpFeature)
+    // Bakes this machine's address into the buildMachineWss() call in JetWhaleDebugger. The address
+    // is a compile input, so this module recompiles when the developer changes networks — keep the
+    // plugin on the one module that declares the endpoint.
+    alias(libs.plugins.jetwhaleAgent)
 }
 
 kotlin {

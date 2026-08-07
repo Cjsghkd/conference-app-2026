@@ -27,11 +27,11 @@ buildkonfig = "0.22.0"
 # Coil 3's network fetcher artifact (coil-network-ktor3) is only published at 3.2.0 in this stack, so
 # pin every Coil module to 3.2.0 to keep coil-core consistent across compose + network artifacts.
 coil = "3.2.0"
-ktor = "3.5.1"
-# Debug agent, wired into dev builds only. The Nav3 and Compose Semantics agents have no Maven
-# Central release yet, so every JetWhale artifact resolves to the matching snapshot from the
-# repository declared in settings.gradle.kts. Drop the suffix once alpha11 is published.
-jetwhale = "1.0.0-alpha11-SNAPSHOT"
+# The JetWhale agent runtime requires 3.5.2, which conflict resolution would raise this to anyway;
+# declaring it keeps the catalog reading as what actually resolves.
+ktor = "3.5.2"
+# Debug agent, wired into dev builds only.
+jetwhale = "1.0.0-alpha11"
 # Single source of truth for the app version; flows to common Kotlin via the generated BuildKonfig.
 droidkaigiApp = "0.1.0"
 # KMP logger with platform-native writers (Logcat / os_log / SLF4J / console), wasmJs-capable.
@@ -155,6 +155,9 @@ buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig"
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+# Carries the Kotlin compiler plugin that rewrites buildMachineWss(); same version as the agent
+# runtime it rewrites the call into.
+jetwhaleAgent = { id = "com.kitakkun.jetwhale.agent", version.ref = "jetwhale" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 # Local convention plugins (gradle-conventions included build); the version is never resolved —
 # includeBuild substitution wins — but the catalog schema requires one.

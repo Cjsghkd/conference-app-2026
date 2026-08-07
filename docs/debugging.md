@@ -18,23 +18,25 @@ The menu's **Clear persisted data** button wipes the app's persisted (and in-mem
 
 [JetWhale](https://kitakkun.github.io/JetWhale/) is a desktop debugger that a running app connects to over a WebSocket. Dev builds attach three of its plugins: the **Nav3 Navigator** (the live Navigation 3 back stack, with push / pop / reorder driven from the host), the **Network Inspector** (HTTP transactions and response mocking), and the **Compose Semantics Inspector** (the Compose node tree, with each node's own semantics actions invocable). The host exposes all three over an MCP server as well, so an AI agent can drive the app through the same operations.
 
-JetWhale is on trial here. Its agent runtime and Ktor network adapter have Maven Central releases, but the Nav3 and Compose Semantics agents do not yet — those two exist only as snapshots. So the catalog pins `1.0.0-alpha11-SNAPSHOT` for every JetWhale artifact, keeping one version across them, and `settings.gradle.kts` declares the Central snapshots repository, restricted to the `com.kitakkun.jetwhale` group. Moving to a release is a version-catalog edit once alpha11 is published.
-
 ### Running it
 
 Install the host from the [JetWhale releases page](https://github.com/kitakkun/JetWhale/releases) and launch it; it listens for debuggees on port **5080**. Run a dev build, and the app appears as a session in the host once the first composition connects the agent. Android devices and emulators reach the host through `adb reverse tcp:5080 tcp:5080`, which the host wires up automatically unless ADB auto port mapping is turned off in its settings.
 
 | Target | Reaches the host | Compose Semantics Inspector |
 | --- | --- | --- |
-| Android (dev flavor) | via `adb reverse`, automatic | yes |
-| Desktop | `localhost` | yes |
-| Web | `localhost` | no |
-| iOS Simulator | `localhost` | no |
-| iOS device | needs the host's LAN address over `wss` | no |
+| Android (dev flavor) | via `adb reverse`, automatic | available |
+| Desktop | via `localhost` | available |
+| Web | via `localhost` | unavailable |
+| iOS Simulator | via `localhost` | unavailable |
+| iOS device | via the build machine's address over `wss`, baked in at compile time | unavailable |
 
 The Nav3 Navigator and the Network Inspector work on every target. The Compose Semantics Inspector needs a probe that finds the platform's Compose roots, and JetWhale ships one for Android and desktop only; elsewhere it reports an empty tree.
 
-A physical iPhone does not see the host on `localhost`. Connecting one means pointing `JetWhaleDebugger` at the machine's LAN address over the host's secure WebSocket port, and adding `NSLocalNetworkUsageDescription` to the iOS app's `Info.plist` so iOS permits local-network access. The upstream [Secure connections (wss)](https://kitakkun.github.io/JetWhale/guide/getting-started#secure-connections-wss) guide covers the certificate side.
+`JetWhaleDebugger` lists `ws("localhost", 5080)` first and `buildMachineWss(5443)` after it. Loopback covers every target that shares the host machine's network namespace; a physical iPhone does not, so it falls through to the second candidate, which the `com.kitakkun.jetwhale.agent` Gradle plugin rewrites at compile time into this machine's own address — see [Baking in the build machine's address](https://kitakkun.github.io/JetWhale/guide/getting-started#baking-in-the-build-machine-s-address-no-browse).
+
+That plugin is applied to `:feature:debug` alone. The address it bakes in is a compile task input, so the module recompiles whenever the developer moves between networks and those compilations never come from a shared build cache; applying it project-wide would spread that cost across every module.
+
+A physical iPhone also needs `NSLocalNetworkUsageDescription` in the iOS app's `Info.plist` so iOS permits local-network access. The upstream [Secure connections (wss)](https://kitakkun.github.io/JetWhale/guide/getting-started#secure-connections-wss) guide covers the certificate side.
 
 ### How it is wired
 

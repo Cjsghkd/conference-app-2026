@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.kitakkun.jetwhale.agent.runtime.startJetWhale
+import com.kitakkun.jetwhale.annotations.ExperimentalJetWhaleApi
 import com.kitakkun.jetwhale.plugins.nav3.agent.JetWhaleNav3AgentPlugin
 import com.kitakkun.jetwhale.plugins.nav3.agent.Nav3KeyCodec
 import com.kitakkun.jetwhale.plugins.nav3.agent.TrackNavBackStack
@@ -24,11 +25,13 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.plugin
 
-// The JetWhale host's default port. Android and the iOS simulator reach it on localhost; the host
-// sets up the `adb reverse` mapping for Android itself.
+// The JetWhale host's default ports. It binds plain ws to loopback and serves wss on the LAN, so a
+// device that cannot reach loopback has to take the secure one.
 private const val JETWHALE_HOST = "localhost"
-private const val JETWHALE_PORT = 5080
+private const val JETWHALE_WS_PORT = 5080
+private const val JETWHALE_WSS_PORT = 5443
 
+@OptIn(ExperimentalJetWhaleApi::class)
 @Inject
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class, binding<BackStackDebuggingEffect>(), replaces = [NoopBackStackDebuggingEffect::class])
@@ -54,8 +57,14 @@ class JetWhaleDebugger(
 
         startJetWhale {
             connection {
-                host = JETWHALE_HOST
-                port = JETWHALE_PORT
+                // Candidates are tried in order. Loopback covers the emulator, the simulator, the
+                // desktop app and the browser; the baked-in build machine address covers a physical
+                // iPhone, which sees neither loopback nor the host's plain-ws port.
+                endpoints {
+                    ws(JETWHALE_HOST, JETWHALE_WS_PORT)
+                    buildMachineWss(JETWHALE_WSS_PORT)
+                }
+                ssl { trustServerCertificate() }
             }
             plugins {
                 register(networkPlugin)
