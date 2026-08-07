@@ -33,6 +33,7 @@ screenshots/
 
 # --- VitePress docs site ---
 docs-site/node_modules/
-docs-site/.vitepress/cache/
-docs-site/.vitepress/dist/
 docs/node_modules
+# srcDir points at docs/, so VitePress writes its cache and build output there
+docs/.vitepress/cache/
+docs/.vitepress/dist/
