@@ -7,37 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C4E3450C198326833DBA3B83 = {
-			isa = PBXBuildFile;
-			productRef = 112897CAA67C8494DD1620C2;
-		};
-		D704DE42B3A2D6012FBD2465 = {
-			isa = PBXBuildFile;
-			fileRef = 8485AEBFE26147661BEDAD60;
-		};
+		29B7AC689D7ECABE862F8993 /* KotlinMultiplatformLinkedPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 86FC7F99DFAC930297E290C9 /* KotlinMultiplatformLinkedPackage */; };
+		D704DE42B3A2D6012FBD2465 /* KaigiAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8485AEBFE26147661BEDAD60 /* KaigiAppApp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7E532852B454CE5AA4197950 = {
-			isa = PBXFileReference;
-			includeInIndex = 0;
-			lastKnownFileType = wrapper.application;
-			path = KaigiApp.app;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8485AEBFE26147661BEDAD60 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.swift;
-			path = KaigiAppApp.swift;
-			sourceTree = "<group>";
-		};
+		176C221CF46F0DEA006730BF /* KotlinMultiplatformLinkedPackage */ = {isa = PBXFileReference; lastKnownFileType = folder; name = KotlinMultiplatformLinkedPackage; path = KotlinMultiplatformLinkedPackage; sourceTree = SOURCE_ROOT; };
+		7E532852B454CE5AA4197950 /* KaigiApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KaigiApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8485AEBFE26147661BEDAD60 /* KaigiAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaigiAppApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		1D6DB8C56FA9ADC3C7F33FAC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				29B7AC689D7ECABE862F8993 /* KotlinMultiplatformLinkedPackage in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
-		222E49AA41115FA6A90758FF = {
+		222E49AA41115FA6A90758FF /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				8485AEBFE26147661BEDAD60,
+				8485AEBFE26147661BEDAD60 /* KaigiAppApp.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -45,28 +40,38 @@
 		3A9175E391B57E199467DC61 = {
 			isa = PBXGroup;
 			children = (
-				222E49AA41115FA6A90758FF,
-				5120FFD4AC77D2D7FC198913,
+				E31C00E7172728CFEAA83251 /* Packages */,
+				222E49AA41115FA6A90758FF /* Sources */,
+				5120FFD4AC77D2D7FC198913 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		5120FFD4AC77D2D7FC198913 = {
+		5120FFD4AC77D2D7FC198913 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7E532852B454CE5AA4197950,
+				7E532852B454CE5AA4197950 /* KaigiApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E31C00E7172728CFEAA83251 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				176C221CF46F0DEA006730BF /* KotlinMultiplatformLinkedPackage */,
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FD564C3238906D613578B698 = {
+		FD564C3238906D613578B698 /* KaigiApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D1D8B753AAA17DCA2FD54E14;
+			buildConfigurationList = D1D8B753AAA17DCA2FD54E14 /* Build configuration list for PBXNativeTarget "KaigiApp" */;
 			buildPhases = (
-				2FADAEE5871150E3E9212E1F,
-				A76C21A78BACE5B40893A930,
+				2FADAEE5871150E3E9212E1F /* Embed Kotlin Framework */,
+				A76C21A78BACE5B40893A930 /* Sources */,
+				1D6DB8C56FA9ADC3C7F33FAC /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -74,16 +79,16 @@
 			);
 			name = KaigiApp;
 			packageProductDependencies = (
-				112897CAA67C8494DD1620C2,
+				86FC7F99DFAC930297E290C9 /* KotlinMultiplatformLinkedPackage */,
 			);
 			productName = KaigiApp;
-			productReference = 7E532852B454CE5AA4197950;
+			productReference = 7E532852B454CE5AA4197950 /* KaigiApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		BFB551398D30F0DBD363B8C9 = {
+		BFB551398D30F0DBD363B8C9 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
@@ -91,7 +96,7 @@
 				TargetAttributes = {
 				};
 			};
-			buildConfigurationList = D5EB30EB1DD78DE0BDE08349;
+			buildConfigurationList = D5EB30EB1DD78DE0BDE08349 /* Build configuration list for PBXProject "KaigiApp" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -101,20 +106,20 @@
 			mainGroup = 3A9175E391B57E199467DC61;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				6AC08FC37EFE723AD3153E40,
+				714E95472E165F30B1EB2BDD /* XCLocalSwiftPackageReference "KotlinMultiplatformLinkedPackage" */,
 			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 5120FFD4AC77D2D7FC198913;
+			productRefGroup = 5120FFD4AC77D2D7FC198913 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FD564C3238906D613578B698,
+				FD564C3238906D613578B698 /* KaigiApp */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2FADAEE5871150E3E9212E1F = {
+		2FADAEE5871150E3E9212E1F /* Embed Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -136,18 +141,18 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		A76C21A78BACE5B40893A930 = {
+		A76C21A78BACE5B40893A930 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D704DE42B3A2D6012FBD2465,
+				D704DE42B3A2D6012FBD2465 /* KaigiAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1921EBC7ACB7E697A787088A = {
+		1921EBC7ACB7E697A787088A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -204,7 +209,7 @@
 			};
 			name = Release;
 		};
-		2F1C3A0FCB0D4E69B0814AC2 = {
+		2F1C3A0FCB0D4E69B0814AC2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -268,7 +273,7 @@
 			};
 			name = Debug;
 		};
-		704C8DDF5FDDE6E9462180E3 = {
+		704C8DDF5FDDE6E9462180E3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -296,7 +301,7 @@
 			};
 			name = Release;
 		};
-		CBDE5D5DC65F3F28A8A88354 = {
+		CBDE5D5DC65F3F28A8A88354 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -327,20 +332,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D1D8B753AAA17DCA2FD54E14 = {
+		D1D8B753AAA17DCA2FD54E14 /* Build configuration list for PBXNativeTarget "KaigiApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CBDE5D5DC65F3F28A8A88354,
-				704C8DDF5FDDE6E9462180E3,
+				CBDE5D5DC65F3F28A8A88354 /* Debug */,
+				704C8DDF5FDDE6E9462180E3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		D5EB30EB1DD78DE0BDE08349 = {
+		D5EB30EB1DD78DE0BDE08349 /* Build configuration list for PBXProject "KaigiApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				2F1C3A0FCB0D4E69B0814AC2,
-				1921EBC7ACB7E697A787088A,
+				2F1C3A0FCB0D4E69B0814AC2 /* Debug */,
+				1921EBC7ACB7E697A787088A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -348,18 +353,18 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		6AC08FC37EFE723AD3153E40 = {
+		714E95472E165F30B1EB2BDD /* XCLocalSwiftPackageReference "KotlinMultiplatformLinkedPackage" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = KotlinMultiplatformLinkedPackage;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		112897CAA67C8494DD1620C2 = {
+		86FC7F99DFAC930297E290C9 /* KotlinMultiplatformLinkedPackage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = KotlinMultiplatformLinkedPackage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = BFB551398D30F0DBD363B8C9;
+	rootObject = BFB551398D30F0DBD363B8C9 /* Project object */;
 }
