@@ -24,11 +24,11 @@ Install the host from the [JetWhale releases page](https://github.com/kitakkun/J
 
 | Target | Reaches the host | Compose Semantics Inspector |
 | --- | --- | --- |
-| Android (dev flavor) | via `adb reverse`, automatic | yes |
-| Desktop | `localhost` | yes |
-| Web | `localhost` | no |
-| iOS Simulator | `localhost` | no |
-| iOS device | the build machine's address over `wss`, baked in at compile time | no |
+| Android (dev flavor) | via `adb reverse`, automatic | available |
+| Desktop | via `localhost` | available |
+| Web | via `localhost` | unavailable |
+| iOS Simulator | via `localhost` | unavailable |
+| iOS device | via the build machine's address over `wss`, baked in at compile time | unavailable |
 
 The Nav3 Navigator and the Network Inspector work on every target. The Compose Semantics Inspector needs a probe that finds the platform's Compose roots, and JetWhale ships one for Android and desktop only; elsewhere it reports an empty tree.
 
