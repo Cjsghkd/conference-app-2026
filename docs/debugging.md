@@ -20,7 +20,7 @@ The menu's **Clear persisted data** button wipes the app's persisted (and in-mem
 
 ### Running it
 
-Install the host from the [JetWhale releases page](https://github.com/kitakkun/JetWhale/releases) and launch it; it listens for debuggees on port **5080**. Run a dev build, and the app appears as a session in the host as soon as the process starts. Android devices and emulators reach the host through `adb reverse tcp:5080 tcp:5080`, which the host wires up automatically unless ADB auto port mapping is turned off in its settings.
+Install the host from the [JetWhale releases page](https://github.com/kitakkun/JetWhale/releases) and launch it; it listens for debuggees on port **5080**. Run a dev build, and the app appears as a session in the host during startup, before the first composition. Android devices and emulators reach the host through `adb reverse tcp:5080 tcp:5080`, which the host wires up automatically unless ADB auto port mapping is turned off in its settings.
 
 | Target | Reaches the host | Compose Semantics Inspector |
 | --- | --- | --- |
