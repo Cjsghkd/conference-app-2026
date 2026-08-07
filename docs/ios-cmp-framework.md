@@ -64,4 +64,22 @@ struct KaigiIosApp: App {
 
 The host layers the native Liquid Glass tab bar above this view controller with transparent tab content; for the overlay shape and its requirements, see [Liquid Glass tab bar](./ios-liquid-glass.md).
 
+## Linked Swift package
+
+Swift Package Import ([Swift ↔ Kotlin interop](./ios-interop.md)) puts the imported package graph behind a generated `app-ios/KotlinMultiplatformLinkedPackage`, whose dynamic subpackage `AppShared.framework` loads at runtime through `@rpath`. The Gradle `embedAndSignAppleFrameworkForXcode` task embeds `AppShared.framework` alone, so the app target must link the generated package itself for Xcode to embed and sign that dynamic framework alongside it:
+
+```yaml
+# app-ios/project.yml
+packages:
+  KotlinMultiplatformLinkedPackage:
+    path: KotlinMultiplatformLinkedPackage
+targets:
+  KaigiApp:
+    dependencies:
+      - package: KotlinMultiplatformLinkedPackage
+        product: KotlinMultiplatformLinkedPackage
+```
+
+Without it the app builds and links, then fails at launch with `Library not loaded: @rpath/KotlinMultiplatformLinkedPackageDylib.framework/…`. The Gradle task that wires the package into an existing Xcode project (`integrateLinkagePackage`) adds the product to the target but attaches it to the Frameworks build phase only when the target already has one, so declaring the dependency in `project.yml` is what keeps the generated project correct.
+
 Related: [iOS overview](./ios.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [AppGraph and UiGraph](./di-app-graph.md)
