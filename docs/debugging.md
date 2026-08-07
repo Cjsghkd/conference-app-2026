@@ -28,11 +28,15 @@ Install the host from the [JetWhale releases page](https://github.com/kitakkun/J
 | Desktop | `localhost` | yes |
 | Web | `localhost` | no |
 | iOS Simulator | `localhost` | no |
-| iOS device | needs the host's LAN address over `wss` | no |
+| iOS device | the build machine's address over `wss`, baked in at compile time | no |
 
 The Nav3 Navigator and the Network Inspector work on every target. The Compose Semantics Inspector needs a probe that finds the platform's Compose roots, and JetWhale ships one for Android and desktop only; elsewhere it reports an empty tree.
 
-A physical iPhone does not see the host on `localhost`. Connecting one means pointing `JetWhaleDebugger` at the machine's LAN address over the host's secure WebSocket port, and adding `NSLocalNetworkUsageDescription` to the iOS app's `Info.plist` so iOS permits local-network access. The upstream [Secure connections (wss)](https://kitakkun.github.io/JetWhale/guide/getting-started#secure-connections-wss) guide covers the certificate side.
+`JetWhaleDebugger` lists `ws("localhost", 5080)` first and `buildMachineWss(5443)` after it. Loopback covers every target that shares the host machine's network namespace; a physical iPhone does not, so it falls through to the second candidate, which the `com.kitakkun.jetwhale.agent` Gradle plugin rewrites at compile time into this machine's own address — see [Baking in the build machine's address](https://kitakkun.github.io/JetWhale/guide/getting-started#baking-in-the-build-machine-s-address-no-browse).
+
+That plugin is applied to `:feature:debug` alone. The address it bakes in is a compile task input, so the module recompiles whenever the developer moves between networks and those compilations never come from a shared build cache; applying it project-wide would spread that cost across every module.
+
+A physical iPhone also needs `NSLocalNetworkUsageDescription` in the iOS app's `Info.plist` so iOS permits local-network access. The upstream [Secure connections (wss)](https://kitakkun.github.io/JetWhale/guide/getting-started#secure-connections-wss) guide covers the certificate side.
 
 ### How it is wired
 

@@ -153,6 +153,9 @@ buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig"
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+# Carries the Kotlin compiler plugin that rewrites buildMachineWss(); same version as the agent
+# runtime it rewrites the call into.
+jetwhaleAgent = { id = "com.kitakkun.jetwhale.agent", version.ref = "jetwhale" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 # Local convention plugins (gradle-conventions included build); the version is never resolved —
 # includeBuild substitution wins — but the catalog schema requires one.
