@@ -51,12 +51,5 @@ dependencyResolutionManagement {
         }
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-        // Two of the JetWhale agents this app uses are published only as snapshots so far.
-        maven("https://central.sonatype.com/repository/maven-snapshots/") {
-            mavenContent {
-                snapshotsOnly()
-                includeGroup("com.kitakkun.jetwhale")
-            }
-        }
     }
 }

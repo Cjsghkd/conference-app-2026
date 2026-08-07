@@ -28,10 +28,8 @@ buildkonfig = "0.22.0"
 # pin every Coil module to 3.2.0 to keep coil-core consistent across compose + network artifacts.
 coil = "3.2.0"
 ktor = "3.5.1"
-# Debug agent, wired into dev builds only. The Nav3 and Compose Semantics agents have no Maven
-# Central release yet, so every JetWhale artifact resolves to the matching snapshot from the
-# repository declared in settings.gradle.kts. Drop the suffix once alpha11 is published.
-jetwhale = "1.0.0-alpha11-SNAPSHOT"
+# Debug agent, wired into dev builds only.
+jetwhale = "1.0.0-alpha11"
 # Single source of truth for the app version; flows to common Kotlin via the generated BuildKonfig.
 droidkaigiApp = "0.1.0"
 # KMP logger with platform-native writers (Logcat / os_log / SLF4J / console), wasmJs-capable.

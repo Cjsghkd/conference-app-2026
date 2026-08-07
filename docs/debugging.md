@@ -18,8 +18,6 @@ The menu's **Clear persisted data** button wipes the app's persisted (and in-mem
 
 [JetWhale](https://kitakkun.github.io/JetWhale/) is a desktop debugger that a running app connects to over a WebSocket. Dev builds attach three of its plugins: the **Nav3 Navigator** (the live Navigation 3 back stack, with push / pop / reorder driven from the host), the **Network Inspector** (HTTP transactions and response mocking), and the **Compose Semantics Inspector** (the Compose node tree, with each node's own semantics actions invocable). The host exposes all three over an MCP server as well, so an AI agent can drive the app through the same operations.
 
-JetWhale is on trial here. Its agent runtime and Ktor network adapter have Maven Central releases, but the Nav3 and Compose Semantics agents do not yet — those two exist only as snapshots. So the catalog pins `1.0.0-alpha11-SNAPSHOT` for every JetWhale artifact, keeping one version across them, and `settings.gradle.kts` declares the Central snapshots repository, restricted to the `com.kitakkun.jetwhale` group. Moving to a release is a version-catalog edit once alpha11 is published.
-
 ### Running it
 
 Install the host from the [JetWhale releases page](https://github.com/kitakkun/JetWhale/releases) and launch it; it listens for debuggees on port **5080**. Run a dev build, and the app appears as a session in the host once the first composition connects the agent. Android devices and emulators reach the host through `adb reverse tcp:5080 tcp:5080`, which the host wires up automatically unless ADB auto port mapping is turned off in its settings.
