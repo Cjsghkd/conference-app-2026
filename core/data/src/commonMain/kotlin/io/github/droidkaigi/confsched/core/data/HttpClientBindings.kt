@@ -13,7 +13,7 @@ import kotlinx.serialization.json.Json
 interface HttpClientBindings {
     @Provides
     @SingleIn(AppScope::class)
-    fun provideHttpClient(): HttpClient = HttpClient {
+    fun provideHttpClient(): HttpClient = HttpClient(httpClientEngineFactory()) {
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
