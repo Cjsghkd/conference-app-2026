@@ -7,6 +7,7 @@ import io.github.droidkaigi.confsched.core.common.context
 
 fun main() {
     val graph = createGraph<DesktopAppGraph>()
+    graph.appInitializer.initialize()
 
     application {
         Window(

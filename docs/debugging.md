@@ -20,7 +20,7 @@ The menu's **Clear persisted data** button wipes the app's persisted (and in-mem
 
 ### Running it
 
-Install the host from the [JetWhale releases page](https://github.com/kitakkun/JetWhale/releases) and launch it; it listens for debuggees on port **5080**. Run a dev build, and the app appears as a session in the host once the first composition connects the agent. Android devices and emulators reach the host through `adb reverse tcp:5080 tcp:5080`, which the host wires up automatically unless ADB auto port mapping is turned off in its settings.
+Install the host from the [JetWhale releases page](https://github.com/kitakkun/JetWhale/releases) and launch it; it listens for debuggees on port **5080**. Run a dev build, and the app appears as a session in the host during startup, before the first composition. Android devices and emulators reach the host through `adb reverse tcp:5080 tcp:5080`, which the host wires up automatically unless ADB auto port mapping is turned off in its settings.
 
 | Target | Reaches the host | Compose Semantics Inspector |
 | --- | --- | --- |
@@ -40,9 +40,13 @@ A physical iPhone also needs `NSLocalNetworkUsageDescription` in the iOS app's `
 
 ### How it is wired
 
-Production code sees only two seams in `:core:common`, one per thing the host reaches. Both are `fun interface`s with a `@Composable operator fun invoke`, so an injected instance is called exactly like the plain composable effects beside it:
+Production code sees three seams in `:core:common`. `AppInitializer` is the process-wide startup hook; the other two are `fun interface`s with a `@Composable operator fun invoke`, so an injected instance is called exactly like the plain composable effects beside it:
 
 ```kotlin
+fun interface AppInitializer {
+    fun initialize()
+}
+
 fun interface BackStackDebuggingEffect {
     @Composable
     operator fun invoke(backStack: NavBackStack<NavKey>)
@@ -54,21 +58,27 @@ fun interface SemanticsDebuggingEffect {
 }
 ```
 
-`KaigiApp` composes both next to the `NavDisplay`:
+Each platform entry point runs the initializer once, before any UI exists — `Application.onCreate` on Android, `main()` on desktop and Web, the `App` struct's `init` on iOS:
+
+```kotlin
+appGraph.appInitializer.initialize()
+```
+
+`KaigiApp` composes the two effects next to the `NavDisplay`:
 
 ```kotlin
 uiGraph.backStackDebuggingEffect(backStack)
 uiGraph.semanticsDebuggingEffect()
 ```
 
-The bindings are `NoopBackStackDebuggingEffect` and `NoopSemanticsDebuggingEffect` unless `:feature:debug` is on the classpath, in which case one `JetWhaleDebugger` replaces both through Metro — the same aggregation the debug screen uses.
+The bindings are `NoopAppInitializer`, `NoopBackStackDebuggingEffect` and `NoopSemanticsDebuggingEffect` unless `:feature:debug` is on the classpath, in which case one `JetWhaleDebugger` replaces all three through Metro — the same aggregation the debug screen uses.
 
-`JetWhaleDebugger` is an `AppScope` singleton, and each plugin reaches the app through a seam that already exists:
+`JetWhaleDebugger` is an `AppScope` singleton whose `initialize()` opens the connection and attaches the plugins. Each plugin reaches the app through a seam that already exists:
 
 - **Nav3** — `Nav3KeyCodec.openPolymorphic` takes the merged `SerializersModule` the back stack is already built from, so the host can decode and construct every `NavKey` in the app. See [NavKey serializer aggregation](./navigation-navkey-serializers.md).
-- **Network** — the interceptor attaches to the injected `HttpClient` through Ktor's `HttpSend`, leaving the `:core:data` provider untouched. `HttpSend` cannot unregister an interceptor and does not reject duplicates, so the singleton scope is what keeps each transaction recorded once.
+- **Network** — the interceptor attaches to the injected `HttpClient` through Ktor's `HttpSend`, leaving the `:core:data` provider untouched. `HttpSend` cannot unregister an interceptor and does not reject duplicates, so the singleton scope plus the single entry-point call is what keeps each transaction recorded once.
 - **Compose semantics** — `SemanticsProbe()` is an `expect` function; the Android and desktop actuals install JetWhale's probe, and the iOS and Web actuals do nothing.
 
-Because the attachment is created on first access, the connection opens with the first composition rather than at process start. Requests issued before that are not captured.
+Because the entry point runs the initializer before the first composition, requests issued during startup are captured too.
 
 Related: [Keeping dev-only code out of release](./build-dev-only-exclusion.md) · [Logging (Kermit)](./logging.md)

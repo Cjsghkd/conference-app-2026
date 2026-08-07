@@ -9,6 +9,8 @@ import kotlinx.browser.document
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     val graph = createGraph<WebAppGraph>()
+    graph.appInitializer.initialize()
+
     ComposeViewport(document.body!!) {
         context(graph) {
             KaigiApp()
