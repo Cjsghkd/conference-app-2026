@@ -66,7 +66,7 @@ The host layers the native Liquid Glass tab bar above this view controller with 
 
 ## Linked Swift package
 
-Swift Package Import ([Swift ↔ Kotlin interop](./ios-interop.md)) puts the imported package graph behind a generated `app-ios/KotlinMultiplatformLinkedPackage`, whose dynamic subpackage `AppShared.framework` loads at runtime through `@rpath`. The Gradle `embedAndSignAppleFrameworkForXcode` task embeds `AppShared.framework` alone, so the app target must link the generated package itself for Xcode to embed and sign that dynamic framework alongside it:
+Swift Package Import ([Swift ↔ Kotlin interop](./ios-interop.md)) puts the imported package graph behind a generated `app-ios/KotlinMultiplatformLinkedPackage`. Its dynamic product, `KotlinMultiplatformLinkedPackageDylib`, is what `AppShared.framework` loads at runtime through `@rpath`. The Gradle `embedAndSignAppleFrameworkForXcode` task embeds `AppShared.framework` alone, so the app target must link the generated package itself for Xcode to embed and sign that dynamic framework alongside it:
 
 ```yaml
 # app-ios/project.yml
