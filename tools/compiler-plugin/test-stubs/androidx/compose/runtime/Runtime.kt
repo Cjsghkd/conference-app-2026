@@ -23,3 +23,13 @@ interface MutableState<T> {
 }
 
 fun <T> mutableStateOf(value: T): MutableState<T> = throw UnsupportedOperationException()
+
+class CompositionLocal<T>
+
+class ProvidedValue<T>
+
+infix fun <T> CompositionLocal<T>.provides(value: T): ProvidedValue<T> = ProvidedValue()
+
+@Composable
+fun CompositionLocalProvider(vararg values: ProvidedValue<*>, content: @Composable () -> Unit) {
+}

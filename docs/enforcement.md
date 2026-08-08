@@ -37,6 +37,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Theme-dependent previews use `@PreviewParameter` | FIR read + IR `@ThemeSensitive` metadata |
 | Argument-forwarding lambdas use callable references | FIR `LambdaCanBeCallableReference` |
 | Pass-through lambdas pass the function value itself | FIR `LambdaCanBePassedDirectly` |
+| A `@Composable` lambda literal at the last parameter is trailing | FIR `ComposableLambdaMustBeTrailing` |
 | Mutation effect handlers call `reset()` | FIR `MutationEffectMustReset` |
 | Platform-confined common declarations carry a platform prefix | FIR `PlatformOnlyNaming` |
 | A screen-level composable is the only component in its file | FIR `ScreenIsSoleComponentInFile` |
@@ -260,6 +261,24 @@ RowScopeConsumer(content = { content() })            // OK: adapts () -> Unit to
 Why: a lambda that does nothing but invoke a function value already in scope is one indirection with no meaning — pass the value. This is not a callable reference, so it stays available where `LambdaCanBeCallableReference` does not apply, including `@Composable` and `suspend` function types.
 
 The lambda's type and the value's type must be equal, which keeps adaptations out: a `@Composable () -> Unit` cannot reach a `@Composable RowScope.() -> Unit` parameter on its own. The value must also be a parameter or a `val`, since a `var` could change between the point the lambda is created and the point it runs.
+
+### `ComposableLambdaMustBeTrailing`
+
+```kotlin
+CompositionLocalProvider(LocalContentColor provides contentColor, content = { Label() })  // ERROR
+
+CompositionLocalProvider(LocalContentColor provides contentColor) {                       // OK
+    Label()
+}
+
+Wrapper(label = "label", content = content)          // OK: a value, not a literal
+LeadingSlot(icon = { Icon() }, label = "label")      // OK: `icon` is not the last parameter
+PlainSlot(content = { })                             // OK: not a @Composable function type
+```
+
+Why: a content slot written as a named argument buries the block that produces the UI inside the argument list, where it reads as configuration rather than as the nested content it is. Trailing syntax puts it where every other content block in the file sits.
+
+Only lambda literals bound to the callee's last value parameter are in scope. Named arguments may be written in any order, so a literal at the last parameter can always be moved out of the parentheses, even when another named argument follows it in source. The rule leaves alone what trailing syntax cannot express: a parameter that is not the last one, a `vararg` last parameter, an anonymous `fun` expression, and infix or operator calls.
 
 ### `ComposableNestingDepth`
 

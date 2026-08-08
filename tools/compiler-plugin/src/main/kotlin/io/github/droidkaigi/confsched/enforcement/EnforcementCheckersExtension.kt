@@ -23,6 +23,7 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
             SoilReadConfinementChecker,
             MutationCallConfinementChecker,
             MutationEffectMustResetChecker,
+            ComposableLambdaMustBeTrailingChecker,
         )
         override val propertyAccessExpressionCheckers: Set<FirPropertyAccessExpressionChecker> = setOf(
             NoDirectMutateChecker,

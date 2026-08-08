@@ -124,7 +124,7 @@ import io.github.droidkaigi.confsched.core.preview.KaigiPreviewWrapper
 
 @Composable
 fun SlottedSearchScreen(onItemClick: (String) -> Unit) {
-    SearchSlot(content = { <!NAV_LAMBDA_MUST_FLOW_TO_SAFE_CLICK!>onItemClick<!>("id") })
+    SearchSlot { <!NAV_LAMBDA_MUST_FLOW_TO_SAFE_CLICK!>onItemClick<!>("id") }
 }
 
 @Preview

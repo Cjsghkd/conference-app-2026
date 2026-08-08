@@ -17,17 +17,15 @@ val LocalSnackbarHostState = staticCompositionLocalOf<SnackbarHostState> {
 @Composable
 fun <T : Any> rememberSnackbarNavEntryDecorator(): NavEntryDecorator<T> {
     return remember {
-        NavEntryDecorator(
-            decorate = { entry ->
-                // Retained (not remembered) so a snackbar shown or queued right before a
-                // configuration change survives the recreated composition.
-                val snackbarHostState = retain { SnackbarHostState() }
-                CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
-                    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { _ ->
-                        entry.Content()
-                    }
+        NavEntryDecorator { entry ->
+            // Retained (not remembered) so a snackbar shown or queued right before a
+            // configuration change survives the recreated composition.
+            val snackbarHostState = retain { SnackbarHostState() }
+            CompositionLocalProvider(LocalSnackbarHostState provides snackbarHostState) {
+                Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { _ ->
+                    entry.Content()
                 }
-            },
-        )
+            }
+        }
     }
 }
