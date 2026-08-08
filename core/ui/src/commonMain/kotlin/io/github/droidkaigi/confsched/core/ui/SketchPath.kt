@@ -16,8 +16,6 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-private val SweepWavelength = 300.dp
-
 // Anchors carry the tremor, so they have to be dense enough to resolve it: roughly four
 // to a wavelength. The ceiling keeps a long wavelength from thinning them out until the
 // broad sweep itself turns polygonal.
@@ -35,6 +33,11 @@ private const val SECOND_OCTAVE_SCALE = 2.3f
 private const val PHASE_RANGE = 50f
 private const val LINE_LATTICE_SIZE = 256
 private const val QUARTER_TURN = PI.toFloat() / 2f
+private const val TWO_PI = PI.toFloat() * 2f
+
+// Anchors per ripple of the wavy line: enough for a Catmull-Rom fit to read as a
+// sine rather than a zigzag.
+private const val POINTS_PER_WAVE = 6
 
 // A sweep wavelength longer than the perimeter would leave one lattice cell per edge,
 // which offsets each edge by a near-constant amount and reads as a trapezoid rather
@@ -56,12 +59,13 @@ internal fun Density.sketchLinePath(
     centerY: Float,
     roughness: Dp,
     tremor: Dp,
+    sweepWavelength: Dp,
     tremorWavelength: Dp,
     seed: Int,
 ): Path {
     val sweepAmplitude = roughness.toPx()
     val tremorAmplitude = tremor.toPx()
-    val sweepWavelengthPx = SweepWavelength.toPx()
+    val sweepWavelengthPx = sweepWavelength.toPx()
     val tremorWavelengthPx = tremorWavelength.toPx()
 
     val random = Random(seed)
@@ -98,6 +102,54 @@ internal fun Density.sketchLinePath(
 }
 
 /**
+ * A vertical wavy line of [height], rippling either side of [centerX].
+ *
+ * Unlike the other two, this one is a sine wave rather than pure noise:
+ * [wavelength] sets the pitch of the ripple and [amplitude] its reach.
+ * [noiseAmount] modulates that reach point by point, from a mechanical wave
+ * at `0` to one whose crests vary widely at `1`.
+ */
+internal fun Density.sketchWavyLinePath(
+    height: Float,
+    centerX: Float,
+    amplitude: Dp,
+    wavelength: Dp,
+    noiseAmount: Float,
+    seed: Int,
+): Path {
+    val reach = amplitude.toPx()
+    val pitch = wavelength.toPx()
+    val random = Random(seed)
+    val noise = ValueNoise(random, LINE_LATTICE_SIZE)
+    val phase = random.nextFloat() * PHASE_RANGE
+
+    val steps = max(2, (height / pitch * POINTS_PER_WAVE).roundToInt())
+    val ys = FloatArray(steps + 1) { height * it / steps }
+    val xs = FloatArray(steps + 1) { index ->
+        val turns = ys[index] / pitch
+        val swell = 1f + noise.at(phase + turns) * noiseAmount
+        centerX + sin(turns * TWO_PI) * reach * swell
+    }
+
+    return Path().apply {
+        moveTo(xs[0], ys[0])
+        val controls = FloatArray(4)
+        for (index in 0 until steps) {
+            val previous = max(index - 1, 0)
+            val next = min(index + 2, steps)
+            controlPointsFor(
+                p0x = xs[previous], p0y = ys[previous],
+                p1x = xs[index], p1y = ys[index],
+                p2x = xs[index + 1], p2y = ys[index + 1],
+                p3x = xs[next], p3y = ys[next],
+                out = controls,
+            )
+            cubicTo(controls[0], controls[1], controls[2], controls[3], xs[index + 1], ys[index + 1])
+        }
+    }
+}
+
+/**
  * A closed round rect of [width] by [height], wobbling around its outline.
  *
  * Each anchor is displaced along the outward normal by the same two octaves
@@ -112,6 +164,7 @@ internal fun Density.sketchRoundRectPath(
     cornerRadius: Dp,
     roughness: Dp,
     tremor: Dp,
+    sweepWavelength: Dp,
     tremorWavelength: Dp,
     seed: Int,
 ): Path {
@@ -135,7 +188,7 @@ internal fun Density.sketchRoundRectPath(
 
     val distances = anchorDistances(lengths, anchorSpacingFor(tremorWavelength).toPx())
     val random = Random(seed)
-    val sweepNoise = ValueNoise(random, cellsFor(perimeter, SweepWavelength.toPx()))
+    val sweepNoise = ValueNoise(random, cellsFor(perimeter, sweepWavelength.toPx()))
     val tremorNoise = ValueNoise(random, cellsFor(perimeter, tremorWavelength.toPx()))
     val offsets = FloatArray(distances.size) { sweepNoise.atCyclic(distances[it] / perimeter) }
     normalizeToPeak(offsets, sweepAmplitude)

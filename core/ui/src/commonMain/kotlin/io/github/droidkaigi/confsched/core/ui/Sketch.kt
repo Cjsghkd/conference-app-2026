@@ -42,6 +42,9 @@ import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 
 /** How finely the tremor octave ripples: shorter is a faster, tighter shake. */
 private val DefaultTremorWavelength = 42.dp
+
+/** How far apart the broad sweep turns: the design spec recommends 300dp. */
+private val DefaultSweepWavelength = 300.dp
 private val DefaultRoughness = 1.dp
 private val DefaultTremor = 0.3.dp
 
@@ -68,6 +71,7 @@ fun SketchDivider(
     thickness: Dp = 2.dp,
     roughness: Dp = DefaultRoughness,
     tremor: Dp = DefaultTremor,
+    sweepWavelength: Dp = DefaultSweepWavelength,
     tremorWavelength: Dp = DefaultTremorWavelength,
 ) {
     Spacer(
@@ -80,7 +84,45 @@ fun SketchDivider(
                     centerY = size.height / 2f,
                     roughness = roughness,
                     tremor = tremor,
+                    sweepWavelength = sweepWavelength,
                     tremorWavelength = tremorWavelength,
+                    seed = seed,
+                )
+                val stroke = Stroke(width = thickness.toPx(), cap = StrokeCap.Round)
+                onDrawBehind {
+                    drawPath(path = path, color = color, style = stroke)
+                }
+            },
+    )
+}
+
+/**
+ * A vertical wavy line, for a timeline running down a column.
+ *
+ * The caller sets the height; the width follows from [amplitude] and [thickness].
+ * [noiseAmount] decides how mechanical the ripple looks, from an even sine at `0`
+ * to visibly uneven crests at `1`.
+ */
+@Composable
+fun SketchWavyLine(
+    seed: Int,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.outline,
+    thickness: Dp = 1.dp,
+    amplitude: Dp = 3.dp,
+    wavelength: Dp = 10.dp,
+    noiseAmount: Float = 0.8f,
+) {
+    Spacer(
+        modifier = modifier
+            .width(amplitude * 2 + thickness)
+            .drawWithCache {
+                val path = sketchWavyLinePath(
+                    height = size.height,
+                    centerX = size.width / 2f,
+                    amplitude = amplitude,
+                    wavelength = wavelength,
+                    noiseAmount = noiseAmount,
                     seed = seed,
                 )
                 val stroke = Stroke(width = thickness.toPx(), cap = StrokeCap.Round)
@@ -103,6 +145,7 @@ fun Modifier.sketchBorder(
     thickness: Dp = 2.dp,
     roughness: Dp = DefaultRoughness,
     tremor: Dp = DefaultTremor,
+    sweepWavelength: Dp = DefaultSweepWavelength,
     tremorWavelength: Dp = DefaultTremorWavelength,
     cornerRadius: Dp = 0.dp,
 ): Modifier = drawWithCache {
@@ -120,6 +163,7 @@ fun Modifier.sketchBorder(
         cornerRadius = cornerRadius,
         roughness = effectiveRoughness,
         tremor = effectiveTremor,
+        sweepWavelength = sweepWavelength,
         tremorWavelength = tremorWavelength,
         seed = seed,
     )
@@ -150,6 +194,7 @@ data class SketchShape(
     val seed: Int,
     val roughness: Dp = DefaultRoughness,
     val tremor: Dp = DefaultTremor,
+    val sweepWavelength: Dp = DefaultSweepWavelength,
     val tremorWavelength: Dp = DefaultTremorWavelength,
     val cornerRadius: Dp = 0.dp,
 ) : Shape {
@@ -172,6 +217,7 @@ data class SketchShape(
             cornerRadius = cornerRadius,
             roughness = effectiveRoughness,
             tremor = effectiveTremor,
+            sweepWavelength = sweepWavelength,
             tremorWavelength = tremorWavelength,
             seed = seed,
         )
@@ -286,6 +332,53 @@ private fun DividerWeightSamples() {
                     seed = 12,
                     modifier = Modifier.width(320.dp),
                     thickness = thickness,
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun SketchWavyLinePreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        PreviewSurface {
+            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                WavyNoiseSamples()
+                WavyWavelengthSamples()
+            }
+        }
+    }
+}
+
+@Composable
+private fun WavyNoiseSamples() {
+    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        listOf(0f, 0.4f, 0.8f, 1.2f).forEach { amount ->
+            LabelledSample(label = "n=$amount") {
+                SketchWavyLine(
+                    seed = 3,
+                    modifier = Modifier.height(60.dp),
+                    thickness = 2.dp,
+                    noiseAmount = amount,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WavyWavelengthSamples() {
+    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        listOf(6.dp, 10.dp, 16.dp, 24.dp).forEach { wavelength ->
+            LabelledSample(label = "${wavelength.value.toInt()}dp") {
+                SketchWavyLine(
+                    seed = 3,
+                    modifier = Modifier.height(60.dp),
+                    thickness = 2.dp,
+                    wavelength = wavelength,
                 )
             }
         }
