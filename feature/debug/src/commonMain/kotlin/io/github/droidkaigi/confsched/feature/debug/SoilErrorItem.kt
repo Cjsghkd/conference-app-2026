@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun SoilErrorItem(error: SoilError) {
     val clipboard = LocalClipboard.current
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     var expanded by remember { mutableStateOf(false) }
     OutlinedCard {
         Column(
@@ -78,7 +78,7 @@ internal fun SoilErrorItem(error: SoilError) {
                 if (expanded) {
                     TextButton(
                         onClick = safeClick {
-                            scope.launch {
+                            coroutineScope.launch {
                                 clipboard.setClipEntry(
                                     clipEntryOfPlainText(error.exception.stackTraceToString()),
                                 )

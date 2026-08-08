@@ -106,7 +106,7 @@ internal fun SoilErrorBottomSheet(
 @Composable
 internal fun SoilErrorSheetContent(errors: List<SoilError>) {
     val clipboard = LocalClipboard.current
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     var selectedIndex by remember { mutableIntStateOf(errors.lastIndex) }
     // Jump to the newest error when a new one arrives while the sheet is open.
     LaunchedEffect(errors.size) { selectedIndex = errors.lastIndex }
@@ -147,7 +147,7 @@ internal fun SoilErrorSheetContent(errors: List<SoilError>) {
         )
         Button(
             onClick = safeClick {
-                scope.launch { clipboard.setClipEntry(clipEntryOfPlainText(stackTrace)) }
+                coroutineScope.launch { clipboard.setClipEntry(clipEntryOfPlainText(stackTrace)) }
             },
         ) { Text("Copy stack trace") }
     }
