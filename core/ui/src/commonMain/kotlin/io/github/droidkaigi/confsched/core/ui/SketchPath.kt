@@ -14,7 +14,6 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
-import kotlin.random.Random
 
 // Anchors carry the tremor, so they have to be dense enough to resolve it: roughly four
 // to a wavelength. The ceiling keeps a long wavelength from thinning them out until the
@@ -25,13 +24,15 @@ private val MaxAnchorSpacing = 12.dp
 private fun anchorSpacingFor(tremorWavelength: Dp): Dp =
     minOf(tremorWavelength / ANCHORS_PER_WAVE, MaxAnchorSpacing)
 
-// Decorrelates the tremor octave from the sweep; any value that is not a
-// multiple of the noise lattice works.
-private const val SECOND_OCTAVE_OFFSET = 17f
-private const val SECOND_OCTAVE_SCALE = 2.3f
+// Offsets the tremor octave onto its own sequence, so the two bands stay uncorrelated.
+private const val TREMOR_SEED_OFFSET = 100
 
-private const val PHASE_RANGE = 50f
-private const val LINE_LATTICE_SIZE = 256
+// Constants of the specified hash: odd multipliers with well-spread bits, and the scale
+// that maps its top 24 bits onto [0, 1).
+private const val SEED_MULTIPLIER = 374761393
+private const val INDEX_MULTIPLIER = 668265263
+private const val MIX_MULTIPLIER = 1274126177
+private const val HASH_SCALE = 16777216f
 private const val QUARTER_TURN = PI.toFloat() / 2f
 private const val TWO_PI = PI.toFloat() * 2f
 
@@ -68,19 +69,15 @@ internal fun Density.sketchHorizontalLinePath(
     val sweepWavelengthPx = sweepWavelength.toPx()
     val tremorWavelengthPx = tremorWavelength.toPx()
 
-    val random = Random(seed)
-    val noise = ValueNoise(random, LINE_LATTICE_SIZE)
-    val phase = random.nextFloat() * PHASE_RANGE
-
     val segments = max(2, ceil(width / anchorSpacingFor(tremorWavelength).toPx()).toInt())
     val xs = FloatArray(segments + 1) { width * it / segments }
-    val ys = FloatArray(segments + 1) { noise.at(phase + xs[it] / sweepWavelengthPx) }
+    val ys = FloatArray(segments + 1) { coherentNoise(seed, xs[it], sweepWavelengthPx) }
     normalizeToPeak(ys, sweepAmplitude)
     // The tremor octave is added raw rather than normalized: normalizing it would
     // scale every fine wave down to the single largest one, flattening the effect.
-    val tremorPhase = phase * SECOND_OCTAVE_SCALE + SECOND_OCTAVE_OFFSET
     for (index in ys.indices) {
-        ys[index] += centerY + noise.at(tremorPhase + xs[index] / tremorWavelengthPx) * tremorAmplitude
+        val tremorNoise = coherentNoise(seed + TREMOR_SEED_OFFSET, xs[index], tremorWavelengthPx)
+        ys[index] += centerY + tremorNoise * tremorAmplitude
     }
 
     return Path().apply {
@@ -119,15 +116,11 @@ internal fun Density.sketchVerticalWavyLinePath(
 ): Path {
     val reach = amplitude.toPx()
     val pitch = wavelength.toPx()
-    val random = Random(seed)
-    val noise = ValueNoise(random, LINE_LATTICE_SIZE)
-    val phase = random.nextFloat() * PHASE_RANGE
-
     val steps = max(2, (height / pitch * POINTS_PER_WAVE).roundToInt())
     val ys = FloatArray(steps + 1) { height * it / steps }
     val xs = FloatArray(steps + 1) { index ->
         val turns = ys[index] / pitch
-        val swell = 1f + noise.at(phase + turns) * noiseAmount
+        val swell = 1f + coherentNoise(seed, ys[index], pitch) * noiseAmount
         centerX + sin(turns * TWO_PI) * reach * swell
     }
 
@@ -187,13 +180,13 @@ internal fun Density.sketchRoundRectPath(
     val perimeter = lengths.sum()
 
     val distances = anchorDistances(lengths, anchorSpacingFor(tremorWavelength).toPx())
-    val random = Random(seed)
-    val sweepNoise = ValueNoise(random, cellsFor(perimeter, sweepWavelength.toPx()))
-    val tremorNoise = ValueNoise(random, cellsFor(perimeter, tremorWavelength.toPx()))
-    val offsets = FloatArray(distances.size) { sweepNoise.atCyclic(distances[it] / perimeter) }
+    val sweepCells = cellsFor(perimeter, sweepWavelength.toPx())
+    val tremorCells = cellsFor(perimeter, tremorWavelength.toPx())
+    val offsets = FloatArray(distances.size) { coherentNoiseCyclic(seed, distances[it] / perimeter, sweepCells) }
     normalizeToPeak(offsets, sweepAmplitude)
     for (index in offsets.indices) {
-        offsets[index] += tremorNoise.atCyclic(distances[index] / perimeter) * tremorAmplitude
+        val t = distances[index] / perimeter
+        offsets[index] += coherentNoiseCyclic(seed + TREMOR_SEED_OFFSET, t, tremorCells) * tremorAmplitude
     }
 
     val xs = FloatArray(distances.size)
@@ -451,24 +444,41 @@ private fun normalizeToPeak(values: FloatArray, amplitude: Float) {
 private fun cellsFor(perimeter: Float, wavelength: Float): Int =
     max(MIN_SWEEP_CELLS, (perimeter / wavelength).roundToInt())
 
-private class ValueNoise(random: Random, size: Int) {
-    private val lattice = FloatArray(size) { random.nextFloat() * 2f - 1f }
+/**
+ * A deterministic value in `[-1, 1)` for a lattice point, specified so that a second
+ * implementation reproduces it exactly.
+ *
+ * Every step is 32-bit integer arithmetic that wraps on overflow, which JavaScript
+ * reproduces only through `Math.imul`; plain `*` there computes in double and loses the
+ * low bits. Shifts are unsigned, and the result is taken from the top 24 bits, a width
+ * both `Float` and `double` hold exactly, divided by a power of two so no rounding
+ * enters either.
+ */
+private fun hashNoise(seed: Int, index: Int): Float {
+    var h = seed * SEED_MULTIPLIER xor index * INDEX_MULTIPLIER
+    h = (h xor (h ushr 13)) * MIX_MULTIPLIER
+    h = h xor (h ushr 16)
+    return (h ushr 8) / HASH_SCALE * 2f - 1f
+}
 
-    fun at(x: Float): Float {
-        val index = floor(x).toInt()
-        return interpolate(index, x - index)
-    }
+private fun smoothstep(t: Float): Float = t * t * (3f - 2f * t)
 
-    /** Samples a closed loop: [t] in `[0, 1)` wraps back onto the first cell. */
-    fun atCyclic(t: Float): Float {
-        val x = t * lattice.size
-        val index = floor(x).toInt()
-        return interpolate(index, x - index)
-    }
+/** Interpolates [hashNoise] over a lattice of [wavelength], for an open curve. */
+private fun coherentNoise(seed: Int, position: Float, wavelength: Float): Float {
+    val turns = position / wavelength
+    val cell = floor(turns).toInt()
+    val blend = smoothstep(turns - cell)
+    return hashNoise(seed, cell) * (1f - blend) + hashNoise(seed, cell + 1) * blend
+}
 
-    private fun interpolate(index: Int, fraction: Float): Float {
-        val start = lattice[index.mod(lattice.size)]
-        val end = lattice[(index + 1).mod(lattice.size)]
-        return start + (end - start) * fraction * fraction * (3f - 2f * fraction)
-    }
+/**
+ * The same over a lattice of [cells] wrapped onto a closed path, where [t] runs `0..1`
+ * around it. Wrapping is what makes the value at the seam agree from both sides.
+ */
+private fun coherentNoiseCyclic(seed: Int, t: Float, cells: Int): Float {
+    val turns = t * cells
+    val cell = floor(turns).toInt()
+    val blend = smoothstep(turns - cell)
+    return hashNoise(seed, cell.mod(cells)) * (1f - blend) +
+        hashNoise(seed, (cell + 1).mod(cells)) * blend
 }
