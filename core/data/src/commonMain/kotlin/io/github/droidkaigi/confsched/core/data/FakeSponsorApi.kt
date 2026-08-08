@@ -8,14 +8,14 @@ class FakeSponsorApi : SponsorApi {
         return SponsorListResponse(
             status = HttpStatusResponse.OK,
             sponsor = listOf(
-                fakeSponsor("Arctic Fox Inc.", SponsorPlanResponse.PLATINUM),
-                fakeSponsor("Bumblebee Corp.", SponsorPlanResponse.PLATINUM),
-                fakeSponsor("Chipmunk Ltd.", SponsorPlanResponse.GOLD),
-                fakeSponsor("Dolphin Studio", SponsorPlanResponse.GOLD),
-                fakeSponsor("Electric Eel", SponsorPlanResponse.GOLD),
-                fakeSponsor("Flamingo Works", SponsorPlanResponse.SUPPORTER),
-                fakeSponsor("Giraffe Labs", SponsorPlanResponse.SUPPORTER),
-                fakeSponsor("Hedgehog Design", SponsorPlanResponse.SUPPORTER),
+                fakeSponsor("Sponsor A", SponsorPlanResponse.PLATINUM),
+                fakeSponsor("Sponsor B", SponsorPlanResponse.PLATINUM),
+                fakeSponsor("Sponsor C", SponsorPlanResponse.GOLD),
+                fakeSponsor("Sponsor D", SponsorPlanResponse.GOLD),
+                fakeSponsor("Sponsor E", SponsorPlanResponse.GOLD),
+                fakeSponsor("Sponsor F", SponsorPlanResponse.SUPPORTER),
+                fakeSponsor("Sponsor G", SponsorPlanResponse.SUPPORTER),
+                fakeSponsor("Sponsor H", SponsorPlanResponse.SUPPORTER),
             ),
         )
     }
@@ -27,7 +27,7 @@ class FakeSponsorApi : SponsorApi {
         sponsorName = name,
         sponsorLogo = "https://placehold.jp/240x120.png",
         plan = plan,
-        link = "https://droidkaigi.jp/2026/",
+        link = "https://example.com/${name.lowercase().replace(" ", "-")}",
         checkedBySponsor = true,
     )
 }

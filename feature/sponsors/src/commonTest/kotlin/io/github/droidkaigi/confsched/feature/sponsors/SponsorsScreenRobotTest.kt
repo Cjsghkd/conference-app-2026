@@ -16,11 +16,11 @@ class SponsorsScreenRobotTest {
         groups = persistentListOf(
             SponsorGroup(
                 plan = SponsorPlan.Platinum,
-                sponsors = persistentListOf(sponsor("Arctic Fox Inc.", "arctic-fox", SponsorPlan.Platinum)),
+                sponsors = persistentListOf(sponsor("Sponsor A", "sponsor-a", SponsorPlan.Platinum)),
             ),
             SponsorGroup(
                 plan = SponsorPlan.Supporter,
-                sponsors = persistentListOf(sponsor("Giraffe Labs", "giraffe-labs", SponsorPlan.Supporter)),
+                sponsors = persistentListOf(sponsor("Sponsor G", "sponsor-g", SponsorPlan.Supporter)),
             ),
         ),
     )
@@ -39,15 +39,15 @@ class SponsorsScreenRobotTest {
                 checkPlanSectionDoesNotExist("Gold Sponsors")
             }
             itShould("show each sponsor under its plan") {
-                checkSponsorDisplayed("Arctic Fox Inc.")
-                checkSponsorDisplayed("Giraffe Labs")
+                checkSponsorDisplayed("Sponsor A")
+                checkSponsorDisplayed("Sponsor G")
             }
             describe("and a sponsor is tapped") {
                 doIt {
-                    clickSponsor("Arctic Fox Inc.")
+                    clickSponsor("Sponsor A")
                 }
                 itShould("open that sponsor's site") {
-                    checkOpenedSites("https://example.com/arctic-fox")
+                    checkOpenedSites("https://example.com/sponsor-a")
                 }
             }
             describe("and back is tapped") {
@@ -68,8 +68,8 @@ class SponsorsScreenRobotTest {
                             SponsorGroup(
                                 plan = SponsorPlan.Gold,
                                 sponsors = persistentListOf(
-                                    sponsor("Dolphin Studio", "dolphin-jp", SponsorPlan.Gold),
-                                    sponsor("Dolphin Studio", "dolphin-us", SponsorPlan.Gold),
+                                    sponsor("Sponsor D", "sponsor-d-jp", SponsorPlan.Gold),
+                                    sponsor("Sponsor D", "sponsor-d-us", SponsorPlan.Gold),
                                 ),
                             ),
                         ),
@@ -78,7 +78,7 @@ class SponsorsScreenRobotTest {
             }
             itShould("render both instead of failing on a duplicate key") {
                 checkPlanSectionDisplayed("Gold Sponsors")
-                checkSponsorCount("Dolphin Studio", expected = 2)
+                checkSponsorCount("Sponsor D", expected = 2)
             }
         }
 

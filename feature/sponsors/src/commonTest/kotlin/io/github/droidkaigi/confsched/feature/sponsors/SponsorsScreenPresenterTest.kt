@@ -17,10 +17,10 @@ class SponsorsScreenPresenterTest {
                 plan = SponsorPlan.Platinum,
                 sponsors = persistentListOf(
                     Sponsor(
-                        name = "Arctic Fox Inc.",
-                        logoUrl = "https://example.com/arctic-fox.png",
+                        name = "Sponsor A",
+                        logoUrl = "https://example.com/sponsor-a.png",
                         plan = SponsorPlan.Platinum,
-                        link = "https://example.com/arctic-fox",
+                        link = "https://example.com/sponsor-a",
                     ),
                 ),
             ),

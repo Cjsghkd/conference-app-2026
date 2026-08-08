@@ -11,23 +11,23 @@ fun Sponsors.Companion.fake(): Sponsors = Sponsors(
         SponsorGroup(
             plan = SponsorPlan.Platinum,
             sponsors = persistentListOf(
-                fakeSponsor("Arctic Fox Inc.", SponsorPlan.Platinum),
-                fakeSponsor("Bumblebee Corp.", SponsorPlan.Platinum),
+                fakeSponsor("Sponsor A", SponsorPlan.Platinum),
+                fakeSponsor("Sponsor B", SponsorPlan.Platinum),
             ),
         ),
         SponsorGroup(
             plan = SponsorPlan.Gold,
             sponsors = persistentListOf(
-                fakeSponsor("Chipmunk Ltd.", SponsorPlan.Gold),
-                fakeSponsor("Dolphin Studio", SponsorPlan.Gold),
+                fakeSponsor("Sponsor C", SponsorPlan.Gold),
+                fakeSponsor("Sponsor D", SponsorPlan.Gold),
             ),
         ),
         SponsorGroup(
             plan = SponsorPlan.Supporter,
             sponsors = persistentListOf(
-                fakeSponsor("Electric Eel", SponsorPlan.Supporter),
-                fakeSponsor("Flamingo Works", SponsorPlan.Supporter),
-                fakeSponsor("Giraffe Labs", SponsorPlan.Supporter),
+                fakeSponsor("Sponsor E", SponsorPlan.Supporter),
+                fakeSponsor("Sponsor F", SponsorPlan.Supporter),
+                fakeSponsor("Sponsor G", SponsorPlan.Supporter),
             ),
         ),
     ),
@@ -37,5 +37,5 @@ private fun fakeSponsor(name: String, plan: SponsorPlan) = Sponsor(
     name = name,
     logoUrl = PreviewImage.SessionCover.imageUrl,
     plan = plan,
-    link = "https://droidkaigi.jp/2026/",
+    link = "https://example.com/${name.lowercase().replace(" ", "-")}",
 )
