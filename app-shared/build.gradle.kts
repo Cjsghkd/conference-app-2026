@@ -1,5 +1,6 @@
 @file:OptIn(ExperimentalSwiftExportDsl::class, ExperimentalKotlinGradlePluginApi::class)
 
+import droidkaigi.includeDebugFeature
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.swiftexport.ExperimentalSwiftExportDsl
 
@@ -12,9 +13,10 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
-// Xcode exports CONFIGURATION=Debug/Release, so the iOS default excludes the debug feature only for Release.
-val includeDebugFeature = (project.findProperty("includeDebugFeature") as String?)?.toBoolean()
-    ?: !System.getenv("CONFIGURATION").equals("Release", ignoreCase = true)
+// embedAndSignAppleFrameworkForXcode inherits Xcode's CONFIGURATION; a Gradle-driven framework link has none.
+val includeDebugFeature = project.includeDebugFeature(
+    developmentBuild = providers.environmentVariable("CONFIGURATION").orNull.equals("Debug", ignoreCase = true),
+)
 
 kotlin {
     android {
@@ -69,7 +71,7 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.okio)
-            // Debug feature must be on the iosMain compile classpath for Metro to aggregate it into the iOS graph; gated so Release frameworks exclude it.
+            // Metro aggregates the debug feature from the iosMain compile classpath, so the dependency must sit here.
             if (includeDebugFeature) implementation(project(":feature:debug"))
         }
     }
