@@ -144,7 +144,33 @@ internal fun Density.sketchVerticalWavyLinePath(
 }
 
 /**
+ * The eight lengths a round rect outline is made of: four edges alternating with four arcs,
+ * starting at the top edge and running clockwise.
+ */
+private fun Density.outlineSegments(width: Float, height: Float, cornerRadius: Dp): FloatArray {
+    val radius = cornerRadius.toPx().coerceIn(0f, min(width, height) / 2f)
+    val straightWidth = width - radius * 2f
+    val straightHeight = height - radius * 2f
+    val arcLength = QUARTER_TURN * radius
+    return floatArrayOf(
+        straightWidth,
+        arcLength,
+        straightHeight,
+        arcLength,
+        straightWidth,
+        arcLength,
+        straightHeight,
+        arcLength,
+    )
+}
+
+/**
  * A closed round rect of [width] by [height], wobbling around its outline.
+ *
+ * [latticeWidth] and [latticeHeight] give the outline that the noise lattice and the anchor
+ * counts are taken from. Passing the drawn size fits both to the shape at hand; passing a
+ * fixed size holds the wobble still while the shape resizes, since those counts are whole
+ * numbers and stepping one swaps the noise for an unrelated field.
  *
  * Each anchor is displaced along the outward normal by the same two octaves
  * [sketchHorizontalLinePath] uses, so the outline reaches `roughness + tremor` beyond
@@ -161,35 +187,29 @@ internal fun Density.sketchRoundRectPath(
     sweepWavelength: Dp,
     tremorWavelength: Dp,
     seed: Int,
+    latticeWidth: Float,
+    latticeHeight: Float,
 ): Path {
     val sweepAmplitude = roughness.toPx()
     val tremorAmplitude = tremor.toPx()
     val radius = cornerRadius.toPx().coerceIn(0f, min(width, height) / 2f)
     val straightWidth = width - radius * 2f
     val straightHeight = height - radius * 2f
-    val arcLength = QUARTER_TURN * radius
-    val lengths = floatArrayOf(
-        straightWidth,
-        arcLength,
-        straightHeight,
-        arcLength,
-        straightWidth,
-        arcLength,
-        straightHeight,
-        arcLength,
-    )
+    val lengths = outlineSegments(width, height, cornerRadius)
     val perimeter = lengths.sum()
 
-    val sweepCells = cellsFor(perimeter, sweepWavelength.toPx(), MIN_SWEEP_CELLS)
-    val tremorCells = cellsFor(perimeter, tremorWavelength.toPx(), MIN_TREMOR_CELLS)
+    val latticeLengths = outlineSegments(latticeWidth, latticeHeight, cornerRadius)
+    val latticePerimeter = latticeLengths.sum()
+    val sweepCells = cellsFor(latticePerimeter, sweepWavelength.toPx(), MIN_SWEEP_CELLS)
+    val tremorCells = cellsFor(latticePerimeter, tremorWavelength.toPx(), MIN_TREMOR_CELLS)
     // Anchors have to resolve the lattice the closed path ends up with, not the one the
     // nominal wavelength describes. Wrapping rounds the lattice to a whole number of cells,
     // and on a short perimeter that lands far finer than the wavelength asked for; spacing
     // the anchors by the nominal figure would drop the tremor between them.
-    val anchorSpacing = min(perimeter / tremorCells / ANCHORS_PER_WAVE, MaxAnchorSpacing.toPx())
-    val distances = anchorDistances(lengths, anchorSpacing)
+    val anchorSpacing = min(latticePerimeter / tremorCells / ANCHORS_PER_WAVE, MaxAnchorSpacing.toPx())
+    val distances = anchorDistances(lengths, latticeLengths, anchorSpacing)
     val offsets = FloatArray(distances.size) { coherentNoiseCyclic(seed, distances[it] / perimeter, sweepCells) }
-    normalizeToPeak(offsets, sweepAmplitude)
+    scaleToLatticeRange(offsets, seed, sweepCells, sweepAmplitude)
     for (index in offsets.indices) {
         val t = distances[index] / perimeter
         offsets[index] += coherentNoiseCyclic(seed + TREMOR_SEED_OFFSET, t, tremorCells) * tremorAmplitude
@@ -408,7 +428,11 @@ private fun clampToReach(
  *
  * The result is rotated so the path starts, and therefore closes, away from any corner.
  */
-private fun anchorDistances(lengths: FloatArray, anchorSpacing: Float): FloatArray {
+private fun anchorDistances(
+    lengths: FloatArray,
+    countLengths: FloatArray,
+    anchorSpacing: Float,
+): FloatArray {
     val distances = ArrayList<Float>(lengths.size * 4)
     var start = 0f
     lengths.forEachIndexed { index, length ->
@@ -420,7 +444,11 @@ private fun anchorDistances(lengths: FloatArray, anchorSpacing: Float): FloatArr
             // smoothly across that point. A cusp there facets a pill or a circle.
             if (isArc) distances += start
         } else {
-            val steps = max(if (isArc) 2 else 1, (length / anchorSpacing).roundToInt())
+            // How many anchors a segment gets comes from [countLengths] while where they sit
+            // comes from [lengths]. Given the lattice geometry for the former, a resizing box
+            // keeps the same anchors and simply stretches them, instead of gaining one and
+            // redistributing the lot.
+            val steps = max(if (isArc) 2 else 1, (countLengths[index] / anchorSpacing).roundToInt())
             for (step in 0 until steps) {
                 distances += start + length * step / steps
             }
@@ -512,6 +540,34 @@ private class OutlinePoint(
 private fun normalizeToPeak(values: FloatArray, amplitude: Float) {
     val lowest = values.min()
     val highest = values.max()
+    val halfRange = (highest - lowest) / 2f
+    if (halfRange == 0f) {
+        values.fill(0f)
+        return
+    }
+    val midpoint = (highest + lowest) / 2f
+    for (index in values.indices) {
+        values[index] = (values[index] - midpoint) / halfRange * amplitude
+    }
+}
+
+/**
+ * Rescales [values] so the wrapped lattice they came from spans exactly `2 * amplitude`.
+ *
+ * The span is read off the lattice rather than off [values]. Smoothstep interpolates
+ * monotonically between neighbouring lattice values, so the extremes sit exactly on the
+ * lattice points. Taking them from the anchors instead misses them wherever anchors are
+ * sparse enough to fall either side of a peak, and lets the scale breathe every time their
+ * count steps, which shows up as the whole outline pulsing while a box resizes.
+ */
+private fun scaleToLatticeRange(values: FloatArray, seed: Int, cells: Int, amplitude: Float) {
+    var lowest = Float.MAX_VALUE
+    var highest = -Float.MAX_VALUE
+    for (cell in 0 until cells) {
+        val value = hashNoise(seed, cell)
+        if (value < lowest) lowest = value
+        if (value > highest) highest = value
+    }
     val halfRange = (highest - lowest) / 2f
     if (halfRange == 0f) {
         values.fill(0f)

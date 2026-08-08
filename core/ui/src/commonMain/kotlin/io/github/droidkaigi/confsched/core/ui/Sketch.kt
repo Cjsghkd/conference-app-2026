@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
@@ -238,6 +239,12 @@ fun Modifier.sketchBorder(shape: SketchShape, color: Color): Modifier {
  *
  * On a box too small to hold the requested swing, both octaves shrink together rather
  * than letting the outline fold onto itself.
+ *
+ * Set [referenceSize] on anything whose size animates. The noise wraps onto the outline in
+ * a whole number of cells, so a box left to derive that count from its own perimeter swaps
+ * the wobble for an unrelated one each time the count steps — a flicker along the edge as
+ * the box grows. Pinning the count to one size holds a single stroke still and lets it
+ * stretch. What the size actually is barely matters; that it stops changing is the point.
  */
 @Immutable
 data class SketchShape(
@@ -248,11 +255,15 @@ data class SketchShape(
     val tremorWavelength: Dp = DefaultTremorWavelength,
     val cornerRadius: Dp = 0.dp,
     val borderThickness: Dp = 0.dp,
+    val referenceSize: DpSize? = null,
 ) : Shape {
     init {
         requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
         require(cornerRadius >= 0.dp) { "cornerRadius must not be negative, was $cornerRadius" }
         require(borderThickness >= 0.dp) { "borderThickness must not be negative, was $borderThickness" }
+        require(referenceSize == null || (referenceSize.width > 0.dp && referenceSize.height > 0.dp)) {
+            "referenceSize must be positive in both dimensions, was $referenceSize"
+        }
     }
 
     override fun createOutline(
@@ -267,6 +278,7 @@ data class SketchShape(
         val width = size.width - inset * 2f
         val height = size.height - inset * 2f
         if (width <= 0f || height <= 0f) return Outline.Rectangle(size.toRect())
+        val lattice = latticeOutline()
 
         val path = sketchRoundRectPath(
             width = width,
@@ -277,9 +289,23 @@ data class SketchShape(
             sweepWavelength = sweepWavelength,
             tremorWavelength = tremorWavelength,
             seed = seed,
+            latticeWidth = lattice?.width ?: width,
+            latticeHeight = lattice?.height ?: height,
         )
         path.translate(Offset(inset, inset))
         Outline.Generic(path)
+    }
+
+    /** The inset outline of [referenceSize], or `null` when no reference size was given. */
+    private fun Density.latticeOutline(): Size? {
+        val reference = referenceSize ?: return null
+        val width = reference.width.toPx()
+        val height = reference.height.toPx()
+        val ratio = swingCapRatio(width, height, roughness, tremor, borderThickness)
+        val inset = ((roughness + tremor) * ratio).toPx() + borderThickness.toPx() / 2f
+        val insetWidth = width - inset * 2f
+        val insetHeight = height - inset * 2f
+        return if (insetWidth > 0f && insetHeight > 0f) Size(insetWidth, insetHeight) else null
     }
 }
 
