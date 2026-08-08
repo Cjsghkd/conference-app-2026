@@ -29,13 +29,11 @@ val LocalSafeClickInvoker = staticCompositionLocalOf { SafeClickInvoker() }
 @Composable
 fun <T : Any> rememberSafeClickInvokerNavEntryDecorator(): NavEntryDecorator<T> {
     return remember {
-        NavEntryDecorator(
-            decorate = { entry ->
-                val invoker = remember { SafeClickInvoker() }
-                CompositionLocalProvider(LocalSafeClickInvoker provides invoker) {
-                    entry.Content()
-                }
-            },
-        )
+        NavEntryDecorator { entry ->
+            val invoker = remember { SafeClickInvoker() }
+            CompositionLocalProvider(LocalSafeClickInvoker provides invoker) {
+                entry.Content()
+            }
+        }
     }
 }

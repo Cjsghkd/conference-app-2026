@@ -584,8 +584,7 @@ private fun SketchShapePreview(
                         modifier = Modifier.size(90.dp, 64.dp),
                         shape = SketchShape(seed = 52, cornerRadius = 20.dp),
                         color = MaterialTheme.colorScheme.secondaryContainer,
-                        content = {},
-                    )
+                    ) {}
                 }
                 LabelledSample(label = "tremor=1") {
                     Box(

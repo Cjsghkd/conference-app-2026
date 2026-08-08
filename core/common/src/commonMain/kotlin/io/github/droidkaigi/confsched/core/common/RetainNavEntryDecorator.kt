@@ -10,13 +10,10 @@ import androidx.navigation3.runtime.NavEntryDecorator
 fun <T : Any> retainNavEntryDecorator(): NavEntryDecorator<T> {
     val registry: RetainedValuesStoreRegistry = retainRetainedValuesStoreRegistry()
     return remember(registry) {
-        NavEntryDecorator(
-            onPop = registry::clearChild,
-            decorate = { entry ->
-                registry.LocalRetainedValuesStoreProvider(entry.contentKey) {
-                    entry.Content()
-                }
-            },
-        )
+        NavEntryDecorator(onPop = registry::clearChild) { entry ->
+            registry.LocalRetainedValuesStoreProvider(entry.contentKey) {
+                entry.Content()
+            }
+        }
     }
 }
