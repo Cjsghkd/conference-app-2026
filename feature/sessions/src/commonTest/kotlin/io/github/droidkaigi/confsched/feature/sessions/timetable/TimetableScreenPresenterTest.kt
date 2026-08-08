@@ -39,9 +39,9 @@ class TimetableScreenPresenterTest {
 
     private val sampleTimetable = Timetable(
         items = persistentListOf(
-            TimetableItem(TimetableItemId("d1a"), "Day1 A", Room.NARWHAL, "Sp1", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
-            TimetableItem(TimetableItemId("d1b"), "Day1 B", Room.OTTER, "Sp2", Language.MIXED, DroidKaigi2026Day.Day1, "11:00", "11:40"),
-            TimetableItem(TimetableItemId("d2a"), "Day2 A", Room.NARWHAL, "Sp3", Language.MIXED, DroidKaigi2026Day.Day2, "10:00", "10:40"),
+            TimetableItem(TimetableItemId("d1a"), "Day1 A", Room.NARWHAL, "Sp1", Language.ENGLISH, DroidKaigi2026Day.Day1, "10:00", "10:40"),
+            TimetableItem(TimetableItemId("d1b"), "Day1 B", Room.OTTER, "Sp2", Language.ENGLISH, DroidKaigi2026Day.Day1, "11:00", "11:40"),
+            TimetableItem(TimetableItemId("d2a"), "Day2 A", Room.NARWHAL, "Sp3", Language.ENGLISH, DroidKaigi2026Day.Day2, "10:00", "10:40"),
         ),
         bookmarks = persistentSetOf(TimetableItemId("d1a")),
     )
@@ -80,9 +80,9 @@ class TimetableScreenPresenterTest {
         )
         val concurrent = Timetable(
             items = persistentListOf(
-                TimetableItem(TimetableItemId("d1a"), "Day1 A", Room.NARWHAL, "Sp1", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
-                TimetableItem(TimetableItemId("d1b"), "Day1 B", Room.OTTER, "Sp2", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
-                TimetableItem(TimetableItemId("d1c"), "Day1 C", Room.NARWHAL, "Sp3", Language.MIXED, DroidKaigi2026Day.Day1, "11:00", "11:40"),
+                TimetableItem(TimetableItemId("d1a"), "Day1 A", Room.NARWHAL, "Sp1", Language.ENGLISH, DroidKaigi2026Day.Day1, "10:00", "10:40"),
+                TimetableItem(TimetableItemId("d1b"), "Day1 B", Room.OTTER, "Sp2", Language.ENGLISH, DroidKaigi2026Day.Day1, "10:00", "10:40"),
+                TimetableItem(TimetableItemId("d1c"), "Day1 C", Room.NARWHAL, "Sp3", Language.ENGLISH, DroidKaigi2026Day.Day1, "11:00", "11:40"),
             ),
         )
         runPresenterTest(

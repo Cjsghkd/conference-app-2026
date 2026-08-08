@@ -17,8 +17,8 @@ class TimetableScreenRobotTest {
 
     private val sampleTimetable = Timetable(
         items = persistentListOf(
-            TimetableItem(TimetableItemId("d1a"), "Day1 A", Room.NARWHAL, "Sp1", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
-            TimetableItem(TimetableItemId("d2a"), "Day2 A", Room.NARWHAL, "Sp3", Language.MIXED, DroidKaigi2026Day.Day2, "10:00", "10:40"),
+            TimetableItem(TimetableItemId("d1a"), "Day1 A", Room.NARWHAL, "Sp1", Language.ENGLISH, DroidKaigi2026Day.Day1, "10:00", "10:40"),
+            TimetableItem(TimetableItemId("d2a"), "Day2 A", Room.NARWHAL, "Sp3", Language.ENGLISH, DroidKaigi2026Day.Day2, "10:00", "10:40"),
         ),
         bookmarks = persistentSetOf(),
     )

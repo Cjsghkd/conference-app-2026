@@ -4,18 +4,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
@@ -26,14 +17,12 @@ import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
-import io.github.droidkaigi.confsched.feature.sessions.timetable.component.DayTabRow
+import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableHeader
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableListSection
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableListSectionUiState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimetableScreen(
     uiState: TimetableScreenUiState,
@@ -43,27 +32,14 @@ fun TimetableScreen(
     onSearchClick: () -> Unit,
     onUiTypeChangeClick: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Timetable", fontWeight = FontWeight.Bold) },
-                actions = {
-                    IconButton(onClick = safeClick(onSearchClick)) {
-                        Icon(Icons.Filled.Search, contentDescription = "Search")
-                    }
-                    IconButton(onClick = safeClick(onUiTypeChangeClick)) {
-                        Icon(Icons.Filled.DateRange, contentDescription = "Switch to grid view")
-                    }
-                },
-                // The root tab shell already insets its content; a second system-bar inset here would double it.
-                windowInsets = WindowInsets(),
-            )
-        },
-        contentWindowInsets = WindowInsets(),
-    ) { innerPadding ->
+    Scaffold(contentWindowInsets = WindowInsets()) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            DayTabRow(selectedDay = uiState.day, onDayClick = onDayClick)
-
+            TimetableHeader(
+                selectedDay = uiState.day,
+                onDayClick = onDayClick,
+                onSearchClick = onSearchClick,
+                onUiTypeChangeClick = onUiTypeChangeClick,
+            )
             TimetableListSection(
                 uiState = uiState.timetableListSection,
                 onBookmarkClick = onBookmarkClick,
@@ -79,22 +55,49 @@ private fun previewUiState() = TimetableScreenUiState(
         timeSlots = persistentListOf(
             TimetableListSectionUiState.TimeSlot(
                 startsAt = "10:00",
-                endsAt = "10:40",
+                endsAt = "10:20",
                 items = persistentListOf(
-                    TimetableItem(TimetableItemId("d1a"), "Compose Multiplatform in Practice", Room.NARWHAL, "Sp1", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
-                    TimetableItem(TimetableItemId("d1b"), "Themed previews without codegen", Room.OTTER, "Sp2", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
+                    previewItem("d1a", "Welcome Talk", Room.NARWHAL, "", Language.MIXED, "10:00", "10:20"),
                 ),
             ),
             TimetableListSectionUiState.TimeSlot(
                 startsAt = "11:00",
                 endsAt = "11:40",
                 items = persistentListOf(
-                    TimetableItem(TimetableItemId("d1c"), "Metro DI: graphs without Dagger", Room.NARWHAL, "Sp3", Language.MIXED, DroidKaigi2026Day.Day1, "11:00", "11:40"),
+                    previewItem("d1b", "DroidKaigiアプリで見るアーキテクチャの変遷", Room.OTTER, "Speaker B", Language.ENGLISH, "11:00", "11:40"),
+                    previewItem("d1c", "CIパイプラインの最適化戦略", Room.PANDA, "Speaker C", Language.ENGLISH, "11:00", "11:40"),
+                ),
+            ),
+            TimetableListSectionUiState.TimeSlot(
+                startsAt = "13:00",
+                endsAt = "13:45",
+                items = persistentListOf(
+                    previewItem("d1d", "Kotlin Multiplatform: State of the Union", Room.QUAIL, "Speaker D", Language.ENGLISH, "13:00", "13:45"),
+                    previewItem("d1e", "Jetpack Composeのパフォーマンスチューニング", Room.MEERKAT, "Speaker E", Language.ENGLISH, "13:00", "13:45"),
                 ),
             ),
         ),
-        bookmarks = persistentSetOf(TimetableItemId("d1a")),
+        bookmarks = persistentSetOf(TimetableItemId("d1a"), TimetableItemId("d1b")),
     ),
+)
+
+private fun previewItem(
+    id: String,
+    title: String,
+    room: Room,
+    speaker: String,
+    language: Language,
+    startsAt: String,
+    endsAt: String,
+) = TimetableItem(
+    id = TimetableItemId(id),
+    title = title,
+    room = room,
+    speaker = speaker,
+    language = language,
+    day = DroidKaigi2026Day.Day1,
+    startsAt = startsAt,
+    endsAt = endsAt,
 )
 
 @Preview

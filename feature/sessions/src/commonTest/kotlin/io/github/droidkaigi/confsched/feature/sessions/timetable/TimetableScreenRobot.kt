@@ -77,7 +77,7 @@ class TimetableScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) 
     }
 
     fun clickDayTab(day: DroidKaigi2026Day) {
-        composeUiTest.onNodeWithText(day.name).performClick()
+        composeUiTest.onNodeWithText(day.label).performClick()
         composeUiTest.waitForIdle()
     }
 
@@ -90,7 +90,8 @@ class TimetableScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) 
     }
 
     fun checkTimeSlotDisplayed(startsAt: String, endsAt: String) {
-        composeUiTest.onNodeWithText("$startsAt - $endsAt").assertIsDisplayed()
+        composeUiTest.onNodeWithText(startsAt).assertIsDisplayed()
+        composeUiTest.onNodeWithText(endsAt).assertIsDisplayed()
     }
 
     fun checkTopBarActionsDisplayed() {
