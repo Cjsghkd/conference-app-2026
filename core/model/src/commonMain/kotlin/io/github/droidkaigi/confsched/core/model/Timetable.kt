@@ -11,21 +11,17 @@ import kotlin.jvm.JvmInline
 @JvmInline
 value class TimetableItemId(val value: String)
 
-@Serializable
-enum class DroidKaigi2026Day { Day1, Day2 }
-
-@Serializable
 data class TimetableItem(
     val id: TimetableItemId,
     val title: String,
-    val room: String,
+    val room: Room,
     val speaker: String,
+    val language: Language,
     val day: DroidKaigi2026Day,
     val startsAt: String,
     val endsAt: String,
 )
 
-@Serializable
 data class Timetable(
     val items: PersistentList<TimetableItem>,
     val bookmarks: PersistentSet<TimetableItemId> = persistentSetOf(),

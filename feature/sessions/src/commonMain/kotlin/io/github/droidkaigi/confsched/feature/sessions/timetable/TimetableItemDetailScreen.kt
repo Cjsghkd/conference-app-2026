@@ -26,6 +26,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
+import io.github.droidkaigi.confsched.core.model.Language
+import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
@@ -76,7 +78,7 @@ fun TimetableItemDetailScreen(
         ) {
             item {
                 TimetableItemDetailHeadline(
-                    room = uiState.item.room,
+                    room = uiState.item.room.name,
                     title = uiState.item.title,
                     speaker = uiState.item.speaker,
                 )
@@ -86,7 +88,7 @@ fun TimetableItemDetailScreen(
                     day = uiState.item.day,
                     startsAt = uiState.item.startsAt,
                     endsAt = uiState.item.endsAt,
-                    room = uiState.item.room,
+                    room = uiState.item.room.name,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
                 )
             }
@@ -109,8 +111,9 @@ fun TimetableItemDetailScreenPreview(
                 item = TimetableItem(
                     id = TimetableItemId("d1a"),
                     title = "Compose Multiplatform in Practice",
-                    room = "Arctic Fox",
+                    room = Room.NARWHAL,
                     speaker = "Speaker A",
+                    language = Language.MIXED,
                     day = DroidKaigi2026Day.Day1,
                     startsAt = "10:00",
                     endsAt = "10:40",

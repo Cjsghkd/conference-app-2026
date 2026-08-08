@@ -8,14 +8,14 @@ class FakeTimetableApi : TimetableApi {
         return TimetableResponse(
             status = HttpStatusResponse.OK,
             sessions = listOf(
-                fakeSession("s1", "Kotlin 2.4 context parameters in anger", 1L, "sp1", "2026-09-10T10:00:00+09:00", "2026-09-10T10:40:00+09:00"),
-                fakeSession("s2", "Compose Multiplatform on Desktop", 2L, "sp2", "2026-09-10T11:00:00+09:00", "2026-09-10T11:40:00+09:00"),
-                fakeSession("s3", "Metro DI: graphs without Dagger", 1L, "sp3", "2026-09-11T10:00:00+09:00", "2026-09-11T10:40:00+09:00"),
-                fakeSession("s4", "Soil query/mutation patterns", 2L, "sp1", "2026-09-11T11:00:00+09:00", "2026-09-11T11:40:00+09:00"),
+                fakeSession("s1", "Kotlin 2.4 context parameters in anger", 81669L, "sp1", LanguageResponse.JAPANESE, "2026-09-10T10:00:00+09:00", "2026-09-10T10:40:00+09:00"),
+                fakeSession("s2", "Compose Multiplatform on Desktop", 81667L, "sp2", LanguageResponse.ENGLISH, "2026-09-10T11:00:00+09:00", "2026-09-10T11:40:00+09:00"),
+                fakeSession("s3", "Metro DI: graphs without Dagger", 81669L, "sp3", LanguageResponse.MIXED, "2026-09-11T10:00:00+09:00", "2026-09-11T10:40:00+09:00"),
+                fakeSession("s4", "Soil query/mutation patterns", 81667L, "sp1", LanguageResponse.ENGLISH, "2026-09-11T11:00:00+09:00", "2026-09-11T11:40:00+09:00"),
             ),
             rooms = listOf(
-                RoomResponse(name = LocaledResponse(ja = "Arctic Fox", en = "Arctic Fox"), id = 1L, sort = 1),
-                RoomResponse(name = LocaledResponse(ja = "Bumblebee", en = "Bumblebee"), id = 2L, sort = 2),
+                RoomResponse(name = LocaledResponse(ja = "Narwhal", en = "Narwhal"), id = 81669L, sort = 1),
+                RoomResponse(name = LocaledResponse(ja = "Otter", en = "Otter"), id = 81667L, sort = 2),
             ),
             speakers = listOf(
                 fakeSpeaker("sp1", "Speaker A"),
@@ -31,6 +31,7 @@ class FakeTimetableApi : TimetableApi {
         title: String,
         roomId: Long,
         speakerId: String,
+        language: LanguageResponse,
         startsAt: String,
         endsAt: String,
     ) = SessionResponse(
@@ -39,7 +40,7 @@ class FakeTimetableApi : TimetableApi {
         speakers = listOf(speakerId),
         startsAt = startsAt,
         endsAt = endsAt,
-        language = LanguageResponse.JAPANESE,
+        language = language,
         roomId = roomId,
         lengthInMinutes = 40,
         sessionType = SessionTypeResponse.NORMAL,

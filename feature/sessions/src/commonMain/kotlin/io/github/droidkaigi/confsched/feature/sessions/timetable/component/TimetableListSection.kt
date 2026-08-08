@@ -15,6 +15,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
+import io.github.droidkaigi.confsched.core.model.Language
+import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
@@ -44,7 +46,7 @@ internal fun TimetableListSection(
             items(slot.items) { item ->
                 TimetableCard(
                     title = item.title,
-                    room = item.room,
+                    room = item.room.name,
                     speaker = item.speaker,
                     isFavorite = item.id in uiState.bookmarks,
                     onBookmarkClick = { onBookmarkClick(item.id) },
@@ -85,8 +87,9 @@ private fun previewItem(
 ) = TimetableItem(
     id = TimetableItemId(id),
     title = title,
-    room = "Arctic Fox",
+    room = Room.NARWHAL,
     speaker = speaker,
+    language = Language.MIXED,
     day = DroidKaigi2026Day.Day1,
     startsAt = startsAt,
     endsAt = endsAt,

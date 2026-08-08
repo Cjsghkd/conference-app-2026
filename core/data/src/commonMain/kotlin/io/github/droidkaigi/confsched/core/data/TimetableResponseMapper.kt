@@ -1,6 +1,8 @@
 package io.github.droidkaigi.confsched.core.data
 
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
+import io.github.droidkaigi.confsched.core.model.Language
+import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 
@@ -17,8 +19,13 @@ fun TimetableResponse.toTimetableItems(): List<TimetableItem> {
             TimetableItem(
                 id = TimetableItemId(session.id),
                 title = session.title.ja.ifEmpty { session.title.en },
-                room = roomNameById[session.roomId] ?: "",
+                room = Room.of(roomNameById[session.roomId].orEmpty()),
                 speaker = session.speakers.mapNotNull { speakerNameById[it] }.joinToString(", "),
+                language = when (session.language) {
+                    LanguageResponse.JAPANESE -> Language.JAPANESE
+                    LanguageResponse.ENGLISH -> Language.ENGLISH
+                    LanguageResponse.MIXED -> Language.MIXED
+                },
                 day = dayByDate.getValue(session.startsAt.date()),
                 startsAt = session.startsAt.time(),
                 endsAt = session.endsAt.time(),

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import io.github.droidkaigi.confsched.core.model.Room
 
 /** The mark a room is identified by, drawn beside its name. */
 enum class RoomShape { Circle, Star, Square, Triangle, Diamond }
@@ -12,68 +13,75 @@ enum class RoomShape { Circle, Star, Square, Triangle, Diamond }
 /**
  * The palette a room carries wherever it appears: its chip, and anything tinted to match.
  *
- * Every value holds across all five schemes. The chip is filled with a fixed light color
- * and the card behind the accent is white, so the ground under a room's colors never
- * darkens and none of them need a second reading.
+ * [container] and [onContainer] hold across all five schemes: the chip is filled with a
+ * fixed light color, so the label and the mark on it always want the darker reading.
+ *
+ * [accent] is what tints the session itself — the bookmark heart — which sits on the card
+ * rather than on the chip. That ground follows the scheme, so the accent takes a lighter
+ * reading where the scheme is dark.
+ *
+ * [shape] is null for a room the design has not placed, which then draws under its name alone.
  */
 @Immutable
 data class RoomTheme(
     val container: Color,
     val onContainer: Color,
     val accent: Color,
-    val shape: RoomShape,
+    val shape: RoomShape?,
 )
 
 /**
- * The palette for [room], matched on the room's name as the timetable reports it.
+ * The palette for [room].
  *
- * A name the design has no palette for falls back to the Material scheme, so an unfamiliar
- * room still draws as a chip rather than disappearing.
+ * The when is exhaustive, so a room added to [Room] does not compile until it is given a palette.
  */
 @Composable
 @ReadOnlyComposable
-fun roomTheme(room: String): RoomTheme {
-    return when (room.uppercase()) {
-        "NARWHAL" -> RoomTheme(
+fun roomTheme(room: Room): RoomTheme {
+    val dark = LocalSchemeIsDark.current
+    return when (room) {
+        Room.NARWHAL -> RoomTheme(
             container = Color(0xFFE2DCFE),
             onContainer = Color(0xFF3F2296),
-            accent = Color(0xFF7B58CB),
+            accent = if (dark) Color(0xFFB8A3E4) else Color(0xFF7B58CB),
             shape = RoomShape.Circle,
         )
 
-        "OTTER" -> RoomTheme(
+        Room.OTTER -> RoomTheme(
             container = Color(0xFFF0DCF8),
             onContainer = Color(0xFF6A1B9A),
-            accent = Color(0xFFA341BD),
+            accent = if (dark) Color(0xFFD18ADE) else Color(0xFFA341BD),
             shape = RoomShape.Star,
         )
 
-        "PANDA" -> RoomTheme(
+        Room.PANDA -> RoomTheme(
             container = Color(0xFFE3E9FB),
             onContainer = Color(0xFF3949AB),
-            accent = Color(0xFF5566C4),
+            accent = if (dark) Color(0xFF9AA7E0) else Color(0xFF5566C4),
             shape = RoomShape.Square,
         )
 
-        "QUAIL" -> RoomTheme(
+        Room.QUAIL -> RoomTheme(
             container = Color(0xFFD8F6E8),
             onContainer = Color(0xFF1B5E20),
-            accent = Color(0xFF2E7D32),
+            accent = if (dark) Color(0xFF66BB6A) else Color(0xFF2E7D32),
             shape = RoomShape.Triangle,
         )
 
-        "MEERKAT" -> RoomTheme(
+        Room.MEERKAT -> RoomTheme(
             container = Color(0xFFDCF9FD),
             onContainer = Color(0xFF005A63),
-            accent = Color(0xFF00838F),
+            accent = if (dark) Color(0xFF4DD0E0) else Color(0xFF00838F),
             shape = RoomShape.Diamond,
         )
 
-        else -> RoomTheme(
-            container = MaterialTheme.colorScheme.surfaceContainer,
-            onContainer = MaterialTheme.colorScheme.onSurface,
-            accent = MaterialTheme.colorScheme.outline,
-            shape = RoomShape.Circle,
+        // Neutral rather than one of the five: a room the design has not placed must not
+        // arrive wearing another room's color and mark.
+        Room.UNKNOWN -> RoomTheme(
+            container = Color(0xFFE6E6EA),
+            onContainer = Color(0xFF3F3F46),
+            accent = if (dark) Color(0xFFB4B4BE) else Color(0xFF5A5A63),
+            shape = null,
         )
     }
 }

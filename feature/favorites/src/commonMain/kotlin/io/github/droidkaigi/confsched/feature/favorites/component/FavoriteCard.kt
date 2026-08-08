@@ -61,7 +61,7 @@ fun FavoriteCardPreview(
         FavoriteCard(
             day = DroidKaigi2026Day.Day1,
             title = "Compose Multiplatform in Practice",
-            room = "Arctic Fox",
+            room = "NARWHAL",
             speaker = "Sp1",
             onBookmarkClick = {},
             onClick = {},
