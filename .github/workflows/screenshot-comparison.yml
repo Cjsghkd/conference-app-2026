@@ -23,7 +23,7 @@ jobs:
 
     permissions:
       contents: read # for clone
-      actions: read # for downloading the base branch artifact
+      actions: write # for upload-artifact, and for downloading the base branch artifact
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
