@@ -13,7 +13,6 @@ import dev.zacsweers.metro.createGraph
 import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.model.Sponsors
 import io.github.droidkaigi.confsched.core.testing.Robot
-import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalTestApi::class)
@@ -23,9 +22,19 @@ class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
     private val openedSites = mutableListOf<String>()
     private var backCount = 0
 
-    fun setupContent(sponsors: Sponsors) {
+    fun setupSponsors(sponsors: Sponsors) {
         graph.sponsorsQueryKey.set(sponsors)
+    }
 
+    fun setupPendingSponsors() {
+        graph.sponsorsQueryKey.hold()
+    }
+
+    fun setupFailingSponsors() {
+        graph.sponsorsQueryKey.failWith(IllegalStateException("boom"))
+    }
+
+    fun setupContent() {
         setScreenContent {
             context(graph.screenContext) {
                 SponsorsScreenRoot(
@@ -36,17 +45,7 @@ class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
         }
     }
 
-    fun setupLoadingContent() {
-        graph.sponsorsQueryKey.hold()
-        setupContent(Sponsors(groups = persistentListOf()))
-    }
-
-    fun setupFailingContent() {
-        graph.sponsorsQueryKey.failWith(IllegalStateException("boom"))
-        setupContent(Sponsors(groups = persistentListOf()))
-    }
-
-    fun releaseLoad(sponsors: Sponsors) {
+    fun releaseSponsors(sponsors: Sponsors) {
         graph.sponsorsQueryKey.set(sponsors)
         graph.sponsorsQueryKey.release()
         composeUiTest.waitForIdle()

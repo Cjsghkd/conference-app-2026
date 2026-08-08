@@ -31,7 +31,8 @@ class SponsorsScreenRobotTest {
     ) {
         describe("when the sponsors have loaded") {
             doIt {
-                setupContent(sampleSponsors)
+                setupSponsors(sampleSponsors)
+                setupContent()
             }
             itShould("show a section per plan present in the payload") {
                 checkPlanSectionDisplayed("Platinum Sponsors")
@@ -62,7 +63,7 @@ class SponsorsScreenRobotTest {
 
         describe("when two sponsors on one plan share a name") {
             doIt {
-                setupContent(
+                setupSponsors(
                     Sponsors(
                         groups = persistentListOf(
                             SponsorGroup(
@@ -75,6 +76,7 @@ class SponsorsScreenRobotTest {
                         ),
                     ),
                 )
+                setupContent()
             }
             itShould("render both instead of failing on a duplicate key") {
                 checkPlanSectionDisplayed("Gold Sponsors")
@@ -84,7 +86,8 @@ class SponsorsScreenRobotTest {
 
         describe("when the sponsors have not arrived yet") {
             doIt {
-                setupLoadingContent()
+                setupPendingSponsors()
+                setupContent()
             }
             itShould("show the loading fallback") {
                 checkLoadingDisplayed()
@@ -92,7 +95,7 @@ class SponsorsScreenRobotTest {
             }
             describe("and they arrive") {
                 doIt {
-                    releaseLoad(sampleSponsors)
+                    releaseSponsors(sampleSponsors)
                 }
                 itShould("swap the fallback for the content") {
                     checkSponsorDisplayed("Arctic Fox Inc.")
@@ -102,7 +105,8 @@ class SponsorsScreenRobotTest {
 
         describe("when the sponsors fail to load") {
             doIt {
-                setupFailingContent()
+                setupFailingSponsors()
+                setupContent()
             }
             itShould("show the error fallback") {
                 checkErrorDisplayed()
@@ -111,7 +115,8 @@ class SponsorsScreenRobotTest {
 
         describe("when the payload carries no sponsors") {
             doIt {
-                setupContent(Sponsors(groups = persistentListOf()))
+                setupSponsors(Sponsors(groups = persistentListOf()))
+                setupContent()
             }
             itShould("show the empty state") {
                 checkEmptyStateDisplayed()

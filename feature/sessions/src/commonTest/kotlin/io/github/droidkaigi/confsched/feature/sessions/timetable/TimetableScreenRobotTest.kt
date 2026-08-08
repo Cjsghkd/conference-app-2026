@@ -29,7 +29,8 @@ class TimetableScreenRobotTest {
     ) {
         describe("when the timetable has loaded") {
             doIt {
-                setupContent(sampleTimetable)
+                setupTimetable(sampleTimetable)
+                setupContent()
             }
             itShould("show Day1 sessions under their time slot") {
                 checkSessionDisplayed("Day1 A")

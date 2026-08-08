@@ -19,9 +19,11 @@ class ContributorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTes
     private val openedProfiles = mutableListOf<String>()
     private var backCount = 0
 
-    fun setupContent(contributors: Contributors) {
+    fun setupContributors(contributors: Contributors) {
         graph.contributorsQueryKey.set(contributors)
+    }
 
+    fun setupContent() {
         setScreenContent {
             context(graph.screenContext) {
                 ContributorsScreenRoot(

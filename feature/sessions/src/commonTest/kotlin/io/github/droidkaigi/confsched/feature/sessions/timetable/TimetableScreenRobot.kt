@@ -10,23 +10,18 @@ import dev.zacsweers.metro.createGraph
 import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.Timetable
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.testing.Robot
-import kotlinx.collections.immutable.PersistentSet
-import kotlinx.collections.immutable.persistentSetOf
 
 @OptIn(ExperimentalTestApi::class)
 class TimetableScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
 
     private val graph = createGraph<TimetableScreenTestGraph>()
 
-    fun setupContent(
-        timetable: Timetable,
-        favoriteIds: PersistentSet<TimetableItemId> = persistentSetOf(),
-    ) {
+    fun setupTimetable(timetable: Timetable) {
         graph.timetableQueryKey.set(timetable)
-        graph.favoriteIdsSubscriptionKey.set(favoriteIds)
+    }
 
+    fun setupContent() {
         setScreenContent {
             context(graph.screenContext) {
                 TimetableScreenRoot(onNavigateToDetail = {}, onNavigateToSearch = {})

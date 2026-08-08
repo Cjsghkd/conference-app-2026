@@ -21,7 +21,8 @@ class ContributorsScreenRobotTest {
     ) {
         describe("when the contributors have loaded") {
             doIt {
-                setupContent(sampleContributors)
+                setupContributors(sampleContributors)
+                setupContent()
             }
             itShould("list every contributor") {
                 checkContributorDisplayed("user-a")
@@ -50,7 +51,8 @@ class ContributorsScreenRobotTest {
 
         describe("when the payload carries no contributors") {
             doIt {
-                setupContent(Contributors(items = persistentListOf()))
+                setupContributors(Contributors(items = persistentListOf()))
+                setupContent()
             }
             itShould("show the empty state instead of a zero count") {
                 checkEmptyStateDisplayed()

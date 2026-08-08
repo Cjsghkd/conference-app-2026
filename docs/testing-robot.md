@@ -11,13 +11,16 @@ End-to-end screen behaviour is tested with the **Robot pattern** in a BDD (behav
 
 Screen-level Compose testing runs on the **JVM** through Compose Multiplatform's `runComposeUiTest` (from `org.jetbrains.compose.ui:ui-test`; the desktop actual and — via `compose.desktop.currentOs` — the Skiko native runtime ship alongside it). The BDD DSL itself is pure Kotlin in `commonMain`, so Android/iOS Robots can follow later via `expect/actual`; the Robot base is JVM-first for now.
 
-A Robot takes the screen's [`ScreenContext`](./screen-context.md) from a [test graph](./testing-graph.md). `setupContent` sets the payload on the fake keys the graph holds, then composes the Root through `setScreenContent`:
+A Robot takes the screen's [`ScreenContext`](./screen-context.md) from a [test graph](./testing-graph.md). Arranging the data and showing the screen are separate steps, so a scenario reads as a state the data layer is in followed by the screen opening on it:
 
 ```kotlin
 private val graph = createGraph<SponsorsScreenTestGraph>()
 
-fun setupContent(sponsors: Sponsors) {
+fun setupSponsors(sponsors: Sponsors) {
     graph.sponsorsQueryKey.set(sponsors)
+}
+
+fun setupContent() {
     setScreenContent {
         context(graph.screenContext) { SponsorsScreenRoot(…) }
     }
@@ -33,7 +36,10 @@ Because the Root owns the [`SoilDataBoundary`](./soil-data-boundary.md), the loa
 ```kotlin
 runRobotTest(robotFactory = { TimetableScreenRobot(this) }) {
     describe("when the timetable has loaded") {
-        doIt { setupContent(sampleTimetable) }
+        doIt {
+            setupTimetable(sampleTimetable)
+            setupContent()
+        }
         itShould("show Day1 sessions") {
             checkSessionDisplayed("Day1 A")
             checkSessionDoesNotExist("Day2 A")
