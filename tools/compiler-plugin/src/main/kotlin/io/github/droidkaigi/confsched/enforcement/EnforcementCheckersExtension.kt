@@ -64,6 +64,7 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
         override val propertyCheckers: Set<FirPropertyChecker> = setOf(
             ExplicitBackingFieldRequiredChecker,
             PrivateSetRequiredChecker,
+            StateMustBeDelegatedChecker,
         )
     }
 }
