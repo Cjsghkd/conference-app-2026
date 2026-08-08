@@ -110,7 +110,7 @@ fun TimetableItemDetailScreenPreview(
                     id = TimetableItemId("d1a"),
                     title = "Compose Multiplatform in Practice",
                     room = "Arctic Fox",
-                    speaker = "Alice",
+                    speaker = "Speaker A",
                     day = DroidKaigi2026Day.Day1,
                     startsAt = "10:00",
                     endsAt = "10:40",

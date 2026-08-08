@@ -61,15 +61,15 @@ private fun previewUiState() = TimetableListSectionUiState(
             startsAt = "10:00",
             endsAt = "10:40",
             items = persistentListOf(
-                previewItem("d1a", "Compose Multiplatform in Practice", "Alice", "10:00", "10:40"),
-                previewItem("d1b", "Themed previews without codegen", "Bob", "10:00", "10:40"),
+                previewItem("d1a", "Compose Multiplatform in Practice", "Speaker A", "10:00", "10:40"),
+                previewItem("d1b", "Themed previews without codegen", "Speaker B", "10:00", "10:40"),
             ),
         ),
         TimetableListSectionUiState.TimeSlot(
             startsAt = "11:00",
             endsAt = "11:40",
             items = persistentListOf(
-                previewItem("d1c", "Metro DI: graphs without Dagger", "Carol", "11:00", "11:40"),
+                previewItem("d1c", "Metro DI: graphs without Dagger", "Speaker C", "11:00", "11:40"),
             ),
         ),
     ),

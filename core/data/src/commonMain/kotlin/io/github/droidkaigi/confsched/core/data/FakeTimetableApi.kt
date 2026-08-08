@@ -18,9 +18,9 @@ class FakeTimetableApi : TimetableApi {
                 RoomResponse(name = LocaledResponse(ja = "Bumblebee", en = "Bumblebee"), id = 2L, sort = 2),
             ),
             speakers = listOf(
-                fakeSpeaker("sp1", "Alice"),
-                fakeSpeaker("sp2", "Bob"),
-                fakeSpeaker("sp3", "Carol"),
+                fakeSpeaker("sp1", "Speaker A"),
+                fakeSpeaker("sp2", "Speaker B"),
+                fakeSpeaker("sp3", "Speaker C"),
             ),
             categories = emptyList(),
         )

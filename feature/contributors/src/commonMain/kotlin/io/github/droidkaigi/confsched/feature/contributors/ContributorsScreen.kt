@@ -69,9 +69,9 @@ fun ContributorsScreen(
 
 private fun previewUiState() = ContributorsScreenUiState(
     contributors = persistentListOf(
-        previewContributor(1L, "alice"),
-        previewContributor(2L, "bob"),
-        previewContributor(3L, "carol"),
+        previewContributor(1L, "user-a"),
+        previewContributor(2L, "user-b"),
+        previewContributor(3L, "user-c"),
     ),
 )
 
@@ -79,7 +79,7 @@ private fun previewContributor(id: Long, username: String) = Contributor(
     id = ContributorId(id),
     username = username,
     iconUrl = PreviewImage.SpeakerAvatarA.imageUrl,
-    profileUrl = "https://github.com/$username",
+    profileUrl = "https://example.com/$username",
 )
 
 @Preview
