@@ -70,6 +70,7 @@
 			buildConfigurationList = D1D8B753AAA17DCA2FD54E14 /* Build configuration list for PBXNativeTarget "KaigiApp" */;
 			buildPhases = (
 				2FADAEE5871150E3E9212E1F /* Embed Kotlin Framework */,
+				7E31774264CF47925A1A2DE0 /* Generate Swift Package Licenses */,
 				A76C21A78BACE5B40893A930 /* Sources */,
 				1D6DB8C56FA9ADC3C7F33FAC /* Frameworks */,
 			);
@@ -137,6 +138,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "cd \"$SRCROOT/..\" && ./gradlew :app-shared:embedAndSignAppleFrameworkForXcode";
+		};
+		7E31774264CF47925A1A2DE0 /* Generate Swift Package Licenses */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Swift Package Licenses";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "$SRCROOT/scripts/generate-swift-package-licenses.py";
 		};
 /* End PBXShellScriptBuildPhase section */
 

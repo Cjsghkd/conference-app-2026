@@ -15,6 +15,8 @@ kotlin {
         commonMain.dependencies {
             api(libs.kotlinxCollectionsImmutable)
             api(libs.soilQueryCore)
+            // The licenses screen reads AboutLibraries' own model, so its key contract exposes it.
+            api(libs.aboutlibrariesCore)
             implementation(libs.kotlinxSerializationJson)
         }
     }

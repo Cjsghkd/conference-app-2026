@@ -13,6 +13,7 @@ fun AboutScreenRoot(
     onNavigateToSessionDetail: (TimetableItemId) -> Unit,
     onNavigateToSponsors: () -> Unit,
     onNavigateToContributors: () -> Unit,
+    onNavigateToLicenses: () -> Unit,
     isDebugMenuAvailable: Boolean,
     onNavigateToDebug: () -> Unit,
 ) {
@@ -24,6 +25,7 @@ fun AboutScreenRoot(
         onOpenFeaturedSession = { onNavigateToSessionDetail(FeaturedSessionId) },
         onOpenSponsors = onNavigateToSponsors,
         onOpenContributors = onNavigateToContributors,
+        onOpenLicenses = onNavigateToLicenses,
         isDebugMenuAvailable = isDebugMenuAvailable,
         onOpenDebug = onNavigateToDebug,
     )

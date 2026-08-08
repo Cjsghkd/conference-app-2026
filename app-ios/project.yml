@@ -37,6 +37,11 @@ targets:
       - name: Embed Kotlin Framework
         script: cd "$SRCROOT/.." && ./gradlew :app-shared:embedAndSignAppleFrameworkForXcode
         basedOnDependencyAnalysis: false
+      # Gradle never resolves Swift packages, so the licenses screen learns about them from the
+      # iOS build; the app reads the result and hands it to createIosAppGraph.
+      - name: Generate Swift Package Licenses
+        script: "$SRCROOT/scripts/generate-swift-package-licenses.py"
+        basedOnDependencyAnalysis: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.github.droidkaigi.confsched.kaigiapp

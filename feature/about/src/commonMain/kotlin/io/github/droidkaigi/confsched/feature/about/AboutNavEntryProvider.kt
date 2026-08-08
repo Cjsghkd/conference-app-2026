@@ -23,6 +23,7 @@ class AboutNavEntryProvider(
                     onNavigateToSessionDetail = graph.screenNavigator::openSessionDetail,
                     onNavigateToSponsors = graph.screenNavigator::openSponsors,
                     onNavigateToContributors = graph.screenNavigator::openContributors,
+                    onNavigateToLicenses = graph.screenNavigator::openLicenses,
                     isDebugMenuAvailable = graph.screenNavigator.isDebugMenuAvailable,
                     onNavigateToDebug = graph.screenNavigator::openDebug,
                 )

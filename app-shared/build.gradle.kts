@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveBuildkonfig)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.metro)
+    alias(libs.plugins.droidkaigiPrimitiveLicensesExport)
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
@@ -75,4 +76,14 @@ kotlin {
             if (includeDebugFeature) implementation(project(":feature:debug"))
         }
     }
+}
+
+// app-ios is an Xcode shell with no Gradle dependency graph, so the iOS dependencies are exported
+// from here. Compose resources carry one directory per source set and the two iOS targets share
+// iosMain, so one of them has to stand for both: they compile the same source set and therefore
+// resolve the same libraries, and the device target is the one that ships. A simulator build shows
+// the same list, differing only in the artifact suffix of the coordinates that carry one.
+licensesExport {
+    target = "iosArm64"
+    sourceSet = "iosMain"
 }

@@ -28,6 +28,7 @@ kotlin {
             implementation(libs.ktorClientContentNegotiation)
             implementation(libs.ktorSerializationKotlinxJson)
             implementation(libs.ktorfitLib)
+            implementation(libs.aboutlibrariesCore)
         }
         commonTest.dependencies {
             implementation(project(":core:model"))

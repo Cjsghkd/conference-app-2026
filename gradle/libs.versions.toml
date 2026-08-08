@@ -38,6 +38,9 @@ droidkaigiApp = "0.1.0"
 kermit = "2.1.0"
 # Retrofit-style declarative HTTP clients over Ktor (KSP-generated implementations).
 ktorfit = "2.7.5"
+# Collects the open source dependencies of each platform entry module and their licenses; the Gradle
+# plugin and the runtime parser share one version.
+aboutlibraries = "15.0.4"
 # Generates the Ktorfit API surface from openapi/openapi.yml via custom Mustache templates.
 openapiGenerator = "7.14.0"
 # YAML parser used by the trimOpenApiSpec convention task (gradle-conventions only).
@@ -118,6 +121,9 @@ ktorSerializationKotlinxJson = { module = "io.ktor:ktor-serialization-kotlinx-js
 ktorfitLib = { module = "de.jensklingenberg.ktorfit:ktorfit-lib", version.ref = "ktorfit" }
 ktorfitKsp = { module = "de.jensklingenberg.ktorfit:ktorfit-ksp", version.ref = "ktorfit" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+aboutlibrariesCore = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutlibraries" }
+# Ready-made Material 3 list, detail expansion and license dialog over the collected libraries.
+aboutlibrariesComposeM3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutlibraries" }
 jetwhaleAgentRuntime = { module = "com.kitakkun.jetwhale:jetwhale-agent-runtime", version.ref = "jetwhale" }
 jetwhaleNav3Agent = { module = "com.kitakkun.jetwhale:jetwhale-nav3-agent", version.ref = "jetwhale" }
 # Carries the network agent core (JetWhaleNetworkAgentPlugin) as an api dependency.
@@ -152,6 +158,9 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+# Separate plugin id: it registers the per-Android-variant tasks and feeds their output into the
+# variant's generated resources.
+aboutlibrariesAndroid = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "aboutlibraries" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 # Carries the Kotlin compiler plugin that rewrites buildMachineWss(); same version as the agent
 # runtime it rewrites the call into.
@@ -164,4 +173,5 @@ droidkaigiPrimitiveOpenapi = { id = "droidkaigi.primitive.openapi", version = "u
 droidkaigiPrimitiveKmpCompose = { id = "droidkaigi.primitive.kmp.compose", version = "unspecified" }
 droidkaigiPrimitiveBuildkonfig = { id = "droidkaigi.primitive.buildkonfig", version = "unspecified" }
 droidkaigiPrimitiveSpotless = { id = "droidkaigi.primitive.spotless", version = "unspecified" }
+droidkaigiPrimitiveLicensesExport = { id = "droidkaigi.primitive.licenses-export", version = "unspecified" }
 droidkaigiConventionKmpFeature = { id = "droidkaigi.convention.kmp-feature", version = "unspecified" }

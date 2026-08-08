@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveKmpCompose)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.metro)
+    alias(libs.plugins.droidkaigiPrimitiveLicensesExport)
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
