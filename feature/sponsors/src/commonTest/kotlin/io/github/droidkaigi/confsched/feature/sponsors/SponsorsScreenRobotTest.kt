@@ -98,7 +98,7 @@ class SponsorsScreenRobotTest {
                     releaseSponsors(sampleSponsors)
                 }
                 itShould("swap the fallback for the content") {
-                    checkSponsorDisplayed("Arctic Fox Inc.")
+                    checkSponsorDisplayed("Sponsor A")
                 }
             }
         }
