@@ -680,7 +680,7 @@ private fun ResizeSample() {
             valueRange = 200f..360f,
             modifier = Modifier.width(320.dp),
         )
-        LabelledSample(label = "referenceSize なし") {
+        LabelledSample(label = "no referenceSize") {
             Box(
                 Modifier
                     .size(width.dp, height)
