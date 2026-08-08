@@ -54,7 +54,7 @@ private const val TANGENT_CLAMP = 0.33f
  * wobble layered on top of it, both in dp, so the line reaches `roughness + tremor`
  * away from [centerY] at most.
  */
-internal fun Density.sketchLinePath(
+internal fun Density.sketchHorizontalLinePath(
     width: Float,
     centerY: Float,
     roughness: Dp,
@@ -109,7 +109,7 @@ internal fun Density.sketchLinePath(
  * [noiseAmount] modulates that reach point by point, from a mechanical wave
  * at `0` to one whose crests vary widely at `1`.
  */
-internal fun Density.sketchWavyLinePath(
+internal fun Density.sketchVerticalWavyLinePath(
     height: Float,
     centerX: Float,
     amplitude: Dp,
@@ -153,7 +153,7 @@ internal fun Density.sketchWavyLinePath(
  * A closed round rect of [width] by [height], wobbling around its outline.
  *
  * Each anchor is displaced along the outward normal by the same two octaves
- * [sketchLinePath] uses, so the outline reaches `roughness + tremor` beyond
+ * [sketchHorizontalLinePath] uses, so the outline reaches `roughness + tremor` beyond
  * the nominal rectangle at most. Pass a [roughness] already scaled by
  * [swingCapRatio] and inset by the same amount, so the swing stays inside the
  * bounds and cannot fold the outline onto itself.

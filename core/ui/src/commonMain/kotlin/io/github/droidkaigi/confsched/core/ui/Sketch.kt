@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,6 +44,18 @@ private val DefaultTremorWavelength = 42.dp
 
 /** How far apart the broad sweep turns: the design spec recommends 300dp. */
 private val DefaultSweepWavelength = 300.dp
+
+/**
+ * A wavelength divides, so zero would put the noise lookup at infinity, and a
+ * negative amplitude reverses the swing and can drive a computed height below zero,
+ * which the layout rejects at draw time rather than at the call site.
+ */
+private fun requireWobble(roughness: Dp, tremor: Dp, sweepWavelength: Dp, tremorWavelength: Dp) {
+    require(roughness >= 0.dp) { "roughness must not be negative, was $roughness" }
+    require(tremor >= 0.dp) { "tremor must not be negative, was $tremor" }
+    require(sweepWavelength > 0.dp) { "sweepWavelength must be positive, was $sweepWavelength" }
+    require(tremorWavelength > 0.dp) { "tremorWavelength must be positive, was $tremorWavelength" }
+}
 private val DefaultRoughness = 1.dp
 private val DefaultTremor = 0.3.dp
 
@@ -64,7 +75,7 @@ private val TREMOR_STEPS = listOf(0.dp, 0.3.dp, 1.dp)
  * that wobble ripples.
  */
 @Composable
-fun SketchDivider(
+fun SketchHorizontalDivider(
     seed: Int,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.outline,
@@ -74,12 +85,14 @@ fun SketchDivider(
     sweepWavelength: Dp = DefaultSweepWavelength,
     tremorWavelength: Dp = DefaultTremorWavelength,
 ) {
-    Spacer(
+    requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
+    require(thickness >= 0.dp) { "thickness must not be negative, was $thickness" }
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .height(thickness + (roughness + tremor) * 2)
             .drawWithCache {
-                val path = sketchLinePath(
+                val path = sketchHorizontalLinePath(
                     width = size.width,
                     centerY = size.height / 2f,
                     roughness = roughness,
@@ -104,7 +117,7 @@ fun SketchDivider(
  * to visibly uneven crests at `1`.
  */
 @Composable
-fun SketchWavyLine(
+fun SketchVerticalWavyLine(
     seed: Int,
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.outline,
@@ -113,11 +126,15 @@ fun SketchWavyLine(
     wavelength: Dp = 10.dp,
     noiseAmount: Float = 0.8f,
 ) {
-    Spacer(
+    require(thickness >= 0.dp) { "thickness must not be negative, was $thickness" }
+    require(amplitude >= 0.dp) { "amplitude must not be negative, was $amplitude" }
+    require(wavelength > 0.dp) { "wavelength must be positive, was $wavelength" }
+    require(noiseAmount >= 0f) { "noiseAmount must not be negative, was $noiseAmount" }
+    Box(
         modifier = modifier
             .width(amplitude * 2 + thickness)
             .drawWithCache {
-                val path = sketchWavyLinePath(
+                val path = sketchVerticalWavyLinePath(
                     height = size.height,
                     centerX = size.width / 2f,
                     amplitude = amplitude,
@@ -148,33 +165,38 @@ fun Modifier.sketchBorder(
     sweepWavelength: Dp = DefaultSweepWavelength,
     tremorWavelength: Dp = DefaultTremorWavelength,
     cornerRadius: Dp = 0.dp,
-): Modifier = drawWithCache {
-    val ratio = swingCapRatio(size.width, size.height, roughness, tremor)
-    val effectiveRoughness = roughness * ratio
-    val effectiveTremor = tremor * ratio
-    val inset = (effectiveRoughness + effectiveTremor).toPx() + thickness.toPx() / 2f
-    val width = size.width - inset * 2f
-    val height = size.height - inset * 2f
-    if (width <= 0f || height <= 0f) return@drawWithCache onDrawBehind {}
+): Modifier {
+    requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
+    require(thickness >= 0.dp) { "thickness must not be negative, was $thickness" }
+    require(cornerRadius >= 0.dp) { "cornerRadius must not be negative, was $cornerRadius" }
+    return drawWithCache {
+        val ratio = swingCapRatio(size.width, size.height, roughness, tremor)
+        val effectiveRoughness = roughness * ratio
+        val effectiveTremor = tremor * ratio
+        val inset = (effectiveRoughness + effectiveTremor).toPx() + thickness.toPx() / 2f
+        val width = size.width - inset * 2f
+        val height = size.height - inset * 2f
+        if (width <= 0f || height <= 0f) return@drawWithCache onDrawBehind {}
 
-    val path = sketchRoundRectPath(
-        width = width,
-        height = height,
-        cornerRadius = cornerRadius,
-        roughness = effectiveRoughness,
-        tremor = effectiveTremor,
-        sweepWavelength = sweepWavelength,
-        tremorWavelength = tremorWavelength,
-        seed = seed,
-    )
-    path.translate(Offset(inset, inset))
-    val stroke = Stroke(
-        width = thickness.toPx(),
-        cap = StrokeCap.Round,
-        join = StrokeJoin.Round,
-    )
-    onDrawBehind {
-        drawPath(path = path, color = color, style = stroke)
+        val path = sketchRoundRectPath(
+            width = width,
+            height = height,
+            cornerRadius = cornerRadius,
+            roughness = effectiveRoughness,
+            tremor = effectiveTremor,
+            sweepWavelength = sweepWavelength,
+            tremorWavelength = tremorWavelength,
+            seed = seed,
+        )
+        path.translate(Offset(inset, inset))
+        val stroke = Stroke(
+            width = thickness.toPx(),
+            cap = StrokeCap.Round,
+            join = StrokeJoin.Round,
+        )
+        onDrawBehind {
+            drawPath(path = path, color = color, style = stroke)
+        }
     }
 }
 
@@ -198,6 +220,11 @@ data class SketchShape(
     val tremorWavelength: Dp = DefaultTremorWavelength,
     val cornerRadius: Dp = 0.dp,
 ) : Shape {
+    init {
+        requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
+        require(cornerRadius >= 0.dp) { "cornerRadius must not be negative, was $cornerRadius" }
+    }
+
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
@@ -228,18 +255,18 @@ data class SketchShape(
 
 @Preview
 @Composable
-private fun SketchDividerPreview(
+private fun SketchHorizontalDividerPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
         PreviewSurface {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 repeat(4) { index ->
-                    SketchDivider(seed = index)
+                    SketchHorizontalDivider(seed = index)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    SketchDivider(seed = 10, modifier = Modifier.width(80.dp))
-                    SketchDivider(seed = 11, modifier = Modifier.width(160.dp))
+                    SketchHorizontalDivider(seed = 10, modifier = Modifier.width(80.dp))
+                    SketchHorizontalDivider(seed = 11, modifier = Modifier.width(160.dp))
                 }
             }
         }
@@ -248,7 +275,7 @@ private fun SketchDividerPreview(
 
 @Preview
 @Composable
-private fun SketchDividerTastePreview(
+private fun SketchHorizontalDividerTastePreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
@@ -272,7 +299,7 @@ private fun DividerTasteRow(roughness: Dp) {
     Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
         TREMOR_STEPS.forEach { tremor ->
             LabelledSample(label = "${roughness.value.toInt()}dp / $tremor") {
-                SketchDivider(
+                SketchHorizontalDivider(
                     seed = 7,
                     modifier = Modifier.width(150.dp),
                     roughness = roughness,
@@ -285,7 +312,7 @@ private fun DividerTasteRow(roughness: Dp) {
 
 @Preview
 @Composable
-private fun SketchDividerFinenessPreview(
+private fun SketchHorizontalDividerFinenessPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
@@ -300,7 +327,7 @@ private fun FinenessSamples() {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         listOf(80.dp, 42.dp, 20.dp, 10.dp).forEach { wavelength ->
             LabelledSample(label = "${wavelength.value.toInt()}dp") {
-                SketchDivider(
+                SketchHorizontalDivider(
                     seed = 4,
                     modifier = Modifier.width(320.dp),
                     tremor = 1.dp,
@@ -313,7 +340,7 @@ private fun FinenessSamples() {
 
 @Preview
 @Composable
-private fun SketchDividerWeightPreview(
+private fun SketchHorizontalDividerWeightPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
@@ -328,7 +355,7 @@ private fun DividerWeightSamples() {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         listOf(0.75.dp, 1.5.dp, 3.dp, 6.dp).forEach { thickness ->
             LabelledSample(label = "${thickness.value}dp") {
-                SketchDivider(
+                SketchHorizontalDivider(
                     seed = 12,
                     modifier = Modifier.width(320.dp),
                     thickness = thickness,
@@ -340,7 +367,7 @@ private fun DividerWeightSamples() {
 
 @Preview
 @Composable
-private fun SketchWavyLinePreview(
+private fun SketchVerticalWavyLinePreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
@@ -358,7 +385,7 @@ private fun WavyNoiseSamples() {
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         listOf(0f, 0.4f, 0.8f, 1.2f).forEach { amount ->
             LabelledSample(label = "n=$amount") {
-                SketchWavyLine(
+                SketchVerticalWavyLine(
                     seed = 3,
                     modifier = Modifier.height(60.dp),
                     thickness = 2.dp,
@@ -374,7 +401,7 @@ private fun WavyWavelengthSamples() {
     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         listOf(6.dp, 10.dp, 16.dp, 24.dp).forEach { wavelength ->
             LabelledSample(label = "${wavelength.value.toInt()}dp") {
-                SketchWavyLine(
+                SketchVerticalWavyLine(
                     seed = 3,
                     modifier = Modifier.height(60.dp),
                     thickness = 2.dp,
@@ -531,7 +558,7 @@ private fun SketchCardPreview(
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                SketchDivider(seed = 41, thickness = 1.5.dp)
+                SketchHorizontalDivider(seed = 41, thickness = 1.5.dp)
                 Text(
                     text = "会場をめぐってスタンプを集めましょう",
                     style = MaterialTheme.typography.bodySmall,
