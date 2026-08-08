@@ -12,10 +12,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
+import kotlin.math.roundToInt
 
 /** How finely the tremor octave ripples: shorter is a faster, tighter shake. */
 private val DefaultTremorWavelength = 42.dp
@@ -639,6 +645,66 @@ private fun SegmentedSample(selectedFirst: Boolean) {
             )
         }
         Box(Modifier.matchParentSize().sketchBorder(shape, MaterialTheme.colorScheme.outline))
+    }
+}
+
+/**
+ * Drag the slider in an interactive preview: the upper outline swaps its wobble out as the
+ * lattice steps, the lower one holds a single stroke and stretches it.
+ */
+@Preview
+@Composable
+private fun SketchResizePreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        PreviewSurface {
+            ResizeSample()
+        }
+    }
+}
+
+@Composable
+private fun ResizeSample() {
+    var width by remember { mutableFloatStateOf(296f) }
+    val height = 72.dp
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            text = "width = ${width.roundToInt()}dp",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Slider(
+            value = width,
+            onValueChange = { width = it },
+            valueRange = 200f..360f,
+            modifier = Modifier.width(320.dp),
+        )
+        LabelledSample(label = "referenceSize なし") {
+            Box(
+                Modifier
+                    .size(width.dp, height)
+                    .sketchBorder(
+                        shape = SketchShape(seed = 5, cornerRadius = 16.dp, borderThickness = 2.dp),
+                        color = MaterialTheme.colorScheme.outline,
+                    ),
+            )
+        }
+        LabelledSample(label = "referenceSize = 292×72") {
+            Box(
+                Modifier
+                    .size(width.dp, height)
+                    .sketchBorder(
+                        shape = SketchShape(
+                            seed = 5,
+                            cornerRadius = 16.dp,
+                            borderThickness = 2.dp,
+                            referenceSize = DpSize(292.dp, height),
+                        ),
+                        color = MaterialTheme.colorScheme.outline,
+                    ),
+            )
+        }
     }
 }
 
