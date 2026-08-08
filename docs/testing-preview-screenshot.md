@@ -46,13 +46,15 @@ Roborazzi's default tester, `AndroidComposePreviewTester`, discovers and capture
 
 ## Tasks
 
+Each task runs across every feature module; prefix it with a project path (`:feature:sessions:…`) to scope it to one.
+
 | Task | Purpose |
 | --- | --- |
-| `:feature:sessions:recordRoborazziAndroidHostTest` | Render previews and (re)write the goldens under `feature/sessions/build/outputs/roborazzi/`. |
-| `:feature:sessions:verifyRoborazziAndroidHostTest` | Render and fail on any pixel diff against the committed goldens. |
-| `:feature:sessions:compareRoborazziAndroidHostTest` | Render, compare, and emit diff images (no build failure). |
+| `recordRoborazziAndroidHostTest` | Render previews and (re)write the goldens. |
+| `verifyRoborazziAndroidHostTest` | Render and fail on any pixel diff against the recorded goldens. |
+| `compareRoborazziAndroidHostTest` | Render, compare, and emit diff images (no build failure). |
 
-Goldens are written to `feature/sessions/build/outputs/roborazzi/` and are not committed; a CI golden store is an open decision. Because previews already inject sample data and a `PreviewImageResolver`, the screenshots are deterministic and need no network — see [Preview image enum generation](./preview-image-enum.md).
+Goldens are written to `<module>/build/outputs/roborazzi/` and are not committed, so `verify` needs a `record` run to compare against; a CI golden store is an open decision. Because previews already inject sample data and a `PreviewImageResolver`, the screenshots are deterministic and need no network — see [Preview image enum generation](./preview-image-enum.md).
 
 ## Desktop and iOS
 
