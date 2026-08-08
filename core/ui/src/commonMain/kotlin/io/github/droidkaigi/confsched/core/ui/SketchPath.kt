@@ -16,9 +16,16 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-private val AnchorSpacing = 10.dp
 private val SweepWavelength = 300.dp
-private val TremorWavelength = 42.dp
+
+// Anchors carry the tremor, so they have to be dense enough to resolve it: roughly four
+// to a wavelength. The ceiling keeps a long wavelength from thinning them out until the
+// broad sweep itself turns polygonal.
+private const val ANCHORS_PER_WAVE = 4f
+private val MaxAnchorSpacing = 12.dp
+
+private fun anchorSpacingFor(tremorWavelength: Dp): Dp =
+    minOf(tremorWavelength / ANCHORS_PER_WAVE, MaxAnchorSpacing)
 
 // Decorrelates the tremor octave from the sweep; any value that is not a
 // multiple of the noise lattice works.
@@ -29,40 +36,47 @@ private const val PHASE_RANGE = 50f
 private const val LINE_LATTICE_SIZE = 256
 private const val QUARTER_TURN = PI.toFloat() / 2f
 
+// A sweep wavelength longer than the perimeter would leave one lattice cell per edge,
+// which offsets each edge by a near-constant amount and reads as a trapezoid rather
+// than a drawn rectangle. Six cells put roughly one and a half undulations on a side.
+private const val MIN_SWEEP_CELLS = 6
+
 // How far a Catmull-Rom tangent may reach, as a fraction of the segment it belongs to.
-private const val TANGENT_CLAMP = 0.35f
+private const val TANGENT_CLAMP = 0.33f
 
 /**
  * A horizontal line of [width], wobbling around [centerY].
  *
- * [roughness] is the half-span of the broad sweep, and [tremor] scales a finer
- * wobble layered on top of it, as a fraction of [roughness]. The line therefore
- * reaches `roughness * (1 + tremor)` away from [centerY] at most.
+ * [roughness] is the half-span of the broad sweep and [tremor] that of the finer
+ * wobble layered on top of it, both in dp, so the line reaches `roughness + tremor`
+ * away from [centerY] at most.
  */
 internal fun Density.sketchLinePath(
     width: Float,
     centerY: Float,
     roughness: Dp,
-    tremor: Float,
+    tremor: Dp,
+    tremorWavelength: Dp,
     seed: Int,
 ): Path {
-    val amplitude = roughness.toPx()
-    val sweepWavelength = SweepWavelength.toPx()
-    val tremorWavelength = TremorWavelength.toPx()
+    val sweepAmplitude = roughness.toPx()
+    val tremorAmplitude = tremor.toPx()
+    val sweepWavelengthPx = SweepWavelength.toPx()
+    val tremorWavelengthPx = tremorWavelength.toPx()
 
     val random = Random(seed)
     val noise = ValueNoise(random, LINE_LATTICE_SIZE)
     val phase = random.nextFloat() * PHASE_RANGE
 
-    val segments = max(2, ceil(width / AnchorSpacing.toPx()).toInt())
+    val segments = max(2, ceil(width / anchorSpacingFor(tremorWavelength).toPx()).toInt())
     val xs = FloatArray(segments + 1) { width * it / segments }
-    val ys = FloatArray(segments + 1) { noise.at(phase + xs[it] / sweepWavelength) }
-    normalizeToPeak(ys, amplitude)
+    val ys = FloatArray(segments + 1) { noise.at(phase + xs[it] / sweepWavelengthPx) }
+    normalizeToPeak(ys, sweepAmplitude)
     // The tremor octave is added raw rather than normalized: normalizing it would
     // scale every fine wave down to the single largest one, flattening the effect.
     val tremorPhase = phase * SECOND_OCTAVE_SCALE + SECOND_OCTAVE_OFFSET
     for (index in ys.indices) {
-        ys[index] += centerY + noise.at(tremorPhase + xs[index] / tremorWavelength) * amplitude * tremor
+        ys[index] += centerY + noise.at(tremorPhase + xs[index] / tremorWavelengthPx) * tremorAmplitude
     }
 
     return Path().apply {
@@ -87,7 +101,7 @@ internal fun Density.sketchLinePath(
  * A closed round rect of [width] by [height], wobbling around its outline.
  *
  * Each anchor is displaced along the outward normal by the same two octaves
- * [sketchLinePath] uses, so the outline reaches `roughness * (1 + tremor)` beyond
+ * [sketchLinePath] uses, so the outline reaches `roughness + tremor` beyond
  * the nominal rectangle at most. Pass a [roughness] already scaled by
  * [swingCapRatio] and inset by the same amount, so the swing stays inside the
  * bounds and cannot fold the outline onto itself.
@@ -97,10 +111,12 @@ internal fun Density.sketchRoundRectPath(
     height: Float,
     cornerRadius: Dp,
     roughness: Dp,
-    tremor: Float,
+    tremor: Dp,
+    tremorWavelength: Dp,
     seed: Int,
 ): Path {
-    val amplitude = roughness.toPx()
+    val sweepAmplitude = roughness.toPx()
+    val tremorAmplitude = tremor.toPx()
     val radius = cornerRadius.toPx().coerceIn(0f, min(width, height) / 2f)
     val straightWidth = width - radius * 2f
     val straightHeight = height - radius * 2f
@@ -117,14 +133,14 @@ internal fun Density.sketchRoundRectPath(
     )
     val perimeter = lengths.sum()
 
-    val distances = anchorDistances(lengths, AnchorSpacing.toPx())
+    val distances = anchorDistances(lengths, anchorSpacingFor(tremorWavelength).toPx())
     val random = Random(seed)
     val sweepNoise = ValueNoise(random, cellsFor(perimeter, SweepWavelength.toPx()))
-    val tremorNoise = ValueNoise(random, cellsFor(perimeter, TremorWavelength.toPx()))
+    val tremorNoise = ValueNoise(random, cellsFor(perimeter, tremorWavelength.toPx()))
     val offsets = FloatArray(distances.size) { sweepNoise.atCyclic(distances[it] / perimeter) }
-    normalizeToPeak(offsets, amplitude)
+    normalizeToPeak(offsets, sweepAmplitude)
     for (index in offsets.indices) {
-        offsets[index] += tremorNoise.atCyclic(distances[index] / perimeter) * amplitude * tremor
+        offsets[index] += tremorNoise.atCyclic(distances[index] / perimeter) * tremorAmplitude
     }
 
     val xs = FloatArray(distances.size)
@@ -173,8 +189,8 @@ internal fun Density.sketchRoundRectPath(
  * The ratio is taken against the full box, not the inset outline: the inset depends on
  * the capped swing, so measuring the cap against the inset would be circular.
  */
-internal fun Density.swingCapRatio(width: Float, height: Float, roughness: Dp, tremor: Float): Float {
-    val requested = roughness.toPx() * (1f + tremor)
+internal fun Density.swingCapRatio(width: Float, height: Float, roughness: Dp, tremor: Dp): Float {
+    val requested = roughness.toPx() + tremor.toPx()
     if (requested <= 0f) return 1f
     return min(1f, min(width, height) / 4f / requested)
 }
@@ -380,7 +396,7 @@ private fun normalizeToPeak(values: FloatArray, amplitude: Float) {
 }
 
 private fun cellsFor(perimeter: Float, wavelength: Float): Int =
-    max(3, (perimeter / wavelength).roundToInt())
+    max(MIN_SWEEP_CELLS, (perimeter / wavelength).roundToInt())
 
 private class ValueNoise(random: Random, size: Int) {
     private val lattice = FloatArray(size) { random.nextFloat() * 2f - 1f }

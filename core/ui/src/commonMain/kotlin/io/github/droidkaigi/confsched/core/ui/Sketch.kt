@@ -40,9 +40,14 @@ import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 
+/** How finely the tremor octave ripples: shorter is a faster, tighter shake. */
+private val DefaultTremorWavelength = 42.dp
+private val DefaultRoughness = 1.dp
+private val DefaultTremor = 0.3.dp
+
 // Swept as the horizontal axis of both taste grids, so the divider grid and the
 // border grid can be read against each other.
-private val TREMOR_STEPS = listOf(0f, 0.5f, 1f)
+private val TREMOR_STEPS = listOf(0.dp, 0.3.dp, 1.dp)
 
 /**
  * A horizontal rule drawn as a single hand-sketched stroke.
@@ -51,8 +56,9 @@ private val TREMOR_STEPS = listOf(0f, 0.5f, 1f)
  * across recompositions; use a different [seed] per call site to avoid two
  * neighbouring dividers sharing an identical wobble.
  *
- * [roughness] sets how far the broad sweep departs from a straight line, and
- * [tremor] adds a finer wobble on top of it, as a fraction of [roughness].
+ * [roughness] sets how far the broad sweep departs from a straight line, [tremor]
+ * the swing of the finer wobble laid over it, and [tremorWavelength] how tightly
+ * that wobble ripples.
  */
 @Composable
 fun SketchDivider(
@@ -60,19 +66,21 @@ fun SketchDivider(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.outline,
     thickness: Dp = 2.dp,
-    roughness: Dp = 3.dp,
-    tremor: Float = 0.25f,
+    roughness: Dp = DefaultRoughness,
+    tremor: Dp = DefaultTremor,
+    tremorWavelength: Dp = DefaultTremorWavelength,
 ) {
     Spacer(
         modifier = modifier
             .fillMaxWidth()
-            .height(thickness + roughness * (1f + tremor) * 2)
+            .height(thickness + (roughness + tremor) * 2)
             .drawWithCache {
                 val path = sketchLinePath(
                     width = size.width,
                     centerY = size.height / 2f,
                     roughness = roughness,
                     tremor = tremor,
+                    tremorWavelength = tremorWavelength,
                     seed = seed,
                 )
                 val stroke = Stroke(width = thickness.toPx(), cap = StrokeCap.Round)
@@ -93,12 +101,15 @@ fun Modifier.sketchBorder(
     seed: Int,
     color: Color,
     thickness: Dp = 2.dp,
-    roughness: Dp = 3.dp,
-    tremor: Float = 0.25f,
+    roughness: Dp = DefaultRoughness,
+    tremor: Dp = DefaultTremor,
+    tremorWavelength: Dp = DefaultTremorWavelength,
     cornerRadius: Dp = 0.dp,
 ): Modifier = drawWithCache {
-    val swing = roughness * swingCapRatio(size.width, size.height, roughness, tremor)
-    val inset = swing.toPx() * (1f + tremor) + thickness.toPx() / 2f
+    val ratio = swingCapRatio(size.width, size.height, roughness, tremor)
+    val effectiveRoughness = roughness * ratio
+    val effectiveTremor = tremor * ratio
+    val inset = (effectiveRoughness + effectiveTremor).toPx() + thickness.toPx() / 2f
     val width = size.width - inset * 2f
     val height = size.height - inset * 2f
     if (width <= 0f || height <= 0f) return@drawWithCache onDrawBehind {}
@@ -107,8 +118,9 @@ fun Modifier.sketchBorder(
         width = width,
         height = height,
         cornerRadius = cornerRadius,
-        roughness = swing,
-        tremor = tremor,
+        roughness = effectiveRoughness,
+        tremor = effectiveTremor,
+        tremorWavelength = tremorWavelength,
         seed = seed,
     )
     path.translate(Offset(inset, inset))
@@ -126,7 +138,7 @@ fun Modifier.sketchBorder(
  * The hand-sketched rectangle as a [Shape], for `Modifier.clip`, `Modifier.background`
  * or any `shape` parameter.
  *
- * The outline is inset by `roughness * (1 + tremor)` so the whole wobble stays within
+ * The outline is inset by `roughness + tremor` so the whole wobble stays within
  * the bounds. [Modifier.sketchBorder] insets a further half of its stroke width to keep
  * the line itself inside, so pairing the two leaves that half-width between them.
  *
@@ -136,8 +148,9 @@ fun Modifier.sketchBorder(
 @Immutable
 data class SketchShape(
     val seed: Int,
-    val roughness: Dp = 3.dp,
-    val tremor: Float = 0.25f,
+    val roughness: Dp = DefaultRoughness,
+    val tremor: Dp = DefaultTremor,
+    val tremorWavelength: Dp = DefaultTremorWavelength,
     val cornerRadius: Dp = 0.dp,
 ) : Shape {
     override fun createOutline(
@@ -145,8 +158,10 @@ data class SketchShape(
         layoutDirection: LayoutDirection,
         density: Density,
     ): Outline = with(density) {
-        val swing = roughness * swingCapRatio(size.width, size.height, roughness, tremor)
-        val inset = swing.toPx() * (1f + tremor)
+        val ratio = swingCapRatio(size.width, size.height, roughness, tremor)
+        val effectiveRoughness = roughness * ratio
+        val effectiveTremor = tremor * ratio
+        val inset = (effectiveRoughness + effectiveTremor).toPx()
         val width = size.width - inset * 2f
         val height = size.height - inset * 2f
         if (width <= 0f || height <= 0f) return Outline.Rectangle(size.toRect())
@@ -155,8 +170,9 @@ data class SketchShape(
             width = width,
             height = height,
             cornerRadius = cornerRadius,
-            roughness = swing,
-            tremor = tremor,
+            roughness = effectiveRoughness,
+            tremor = effectiveTremor,
+            tremorWavelength = tremorWavelength,
             seed = seed,
         )
         path.translate(Offset(inset, inset))
@@ -199,9 +215,9 @@ private fun SketchDividerTastePreview(
 @Composable
 private fun DividerTasteGrid() {
     Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        DividerTasteRow(roughness = 0.5.dp)
         DividerTasteRow(roughness = 1.dp)
         DividerTasteRow(roughness = 3.dp)
-        DividerTasteRow(roughness = 6.dp)
     }
 }
 
@@ -215,6 +231,34 @@ private fun DividerTasteRow(roughness: Dp) {
                     modifier = Modifier.width(150.dp),
                     roughness = roughness,
                     tremor = tremor,
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun SketchDividerFinenessPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        PreviewSurface {
+            FinenessSamples()
+        }
+    }
+}
+
+@Composable
+private fun FinenessSamples() {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        listOf(80.dp, 42.dp, 20.dp, 10.dp).forEach { wavelength ->
+            LabelledSample(label = "${wavelength.value.toInt()}dp") {
+                SketchDivider(
+                    seed = 4,
+                    modifier = Modifier.width(320.dp),
+                    tremor = 1.dp,
+                    tremorWavelength = wavelength,
                 )
             }
         }
@@ -294,9 +338,9 @@ private fun SketchBorderTastePreview(
 @Composable
 private fun BorderTasteGrid() {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        BorderTasteRow(roughness = 0.5.dp)
         BorderTasteRow(roughness = 1.dp)
         BorderTasteRow(roughness = 3.dp)
-        BorderTasteRow(roughness = 6.dp)
     }
 }
 
@@ -362,7 +406,7 @@ private fun SketchShapePreview(
                     Box(
                         Modifier
                             .size(90.dp, 64.dp)
-                            .clip(SketchShape(seed = 53, tremor = 1f, cornerRadius = 12.dp))
+                            .clip(SketchShape(seed = 53, tremor = 1.dp, cornerRadius = 12.dp))
                             .background(MaterialTheme.colorScheme.primaryContainer),
                     )
                 }
