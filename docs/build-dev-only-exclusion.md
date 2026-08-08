@@ -13,7 +13,7 @@ Dev-only assets and screens are excluded from production **by the shape of the d
 | Platform | Wiring | Included when |
 | --- | --- | --- |
 | Android | `"devImplementation"(project(":feature:debug"))` in `app-android` (dev/prod product flavors; dev installs alongside prod via the `.dev` id suffix) | the dev flavor is built |
-| Desktop | conditional dependency on `jvmMain` in `app-desktop` | `run` is among the requested Gradle tasks |
+| Desktop | conditional dependency on `jvmMain` in `app-desktop` | `run`, or one of Compose Hot Reload's run tasks, is among the requested Gradle tasks |
 | Web | conditional dependency on `wasmJsMain` in `app-web` | `wasmJsBrowserDevelopmentRun` is among the requested Gradle tasks |
 | iOS | conditional dependency on `iosMain` in `app-shared` | Xcode exports `CONFIGURATION=Debug` to `embedAndSignAppleFrameworkForXcode` |
 

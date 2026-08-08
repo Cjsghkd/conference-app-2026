@@ -1,5 +1,5 @@
 import droidkaigi.includeDebugFeature
-import droidkaigi.isTaskRequested
+import droidkaigi.isAnyTaskRequested
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -9,7 +9,17 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
-val includeDebugFeature = project.includeDebugFeature(developmentBuild = project.isTaskRequested("run"))
+// Besides `run`, Compose Hot Reload contributes its own launchers; `jvmRunHot` is its deprecated alias for `hotRunJvm`.
+val includeDebugFeature = project.includeDebugFeature(
+    developmentBuild = project.isAnyTaskRequested(
+        "run",
+        "hotRunJvm",
+        "hotRunJvmAsync",
+        "hotDevJvm",
+        "hotDevJvmAsync",
+        "jvmRunHot",
+    ),
+)
 
 kotlin {
     jvm()

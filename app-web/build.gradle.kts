@@ -1,5 +1,5 @@
 import droidkaigi.includeDebugFeature
-import droidkaigi.isTaskRequested
+import droidkaigi.isAnyTaskRequested
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -10,7 +10,7 @@ plugins {
 }
 
 val includeDebugFeature = project.includeDebugFeature(
-    developmentBuild = project.isTaskRequested("wasmJsBrowserDevelopmentRun"),
+    developmentBuild = project.isAnyTaskRequested("wasmJsBrowserDevelopmentRun"),
 )
 
 kotlin {
