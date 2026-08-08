@@ -11,10 +11,8 @@ import io.github.droidkaigi.confsched.core.common.ScreenChannel
 import io.github.droidkaigi.confsched.core.common.toUserMessage
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.Timetable
-import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.feature.favorites.component.FavoritesListSectionUiState
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
+import io.github.droidkaigi.confsched.feature.favorites.component.toTimeSlots
 import soil.query.compose.rememberMutation
 
 @Composable
@@ -47,16 +45,3 @@ fun favoritesScreenPresenter(
         favoritesListSection = FavoritesListSectionUiState(timeSlots = favoriteItems.toTimeSlots()),
     )
 }
-
-private fun List<TimetableItem>.toTimeSlots(): PersistentList<FavoritesListSectionUiState.TimeSlot> =
-    groupBy { item -> Triple(item.day, item.startsAt, item.endsAt) }
-        .map { entry ->
-            FavoritesListSectionUiState.TimeSlot(
-                day = entry.key.first,
-                startsAt = entry.key.second,
-                endsAt = entry.key.third,
-                items = entry.value.sortedBy { item -> item.room }.toPersistentList(),
-            )
-        }
-        .sortedWith(compareBy({ slot -> slot.day }, { slot -> slot.startsAt }, { slot -> slot.endsAt }))
-        .toPersistentList()

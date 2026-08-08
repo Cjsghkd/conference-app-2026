@@ -24,12 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
-import io.github.droidkaigi.confsched.core.model.Language
-import io.github.droidkaigi.confsched.core.model.Room
-import io.github.droidkaigi.confsched.core.model.TimetableItem
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClick
@@ -107,19 +102,7 @@ fun TimetableItemDetailScreenPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         TimetableItemDetailScreen(
-            uiState = TimetableItemDetailScreenUiState(
-                item = TimetableItem(
-                    id = TimetableItemId("d1a"),
-                    title = "Compose Multiplatform in Practice",
-                    room = Room.NARWHAL,
-                    speaker = "Speaker A",
-                    language = Language.MIXED,
-                    day = DroidKaigi2026Day.Day1,
-                    startsAt = "10:00",
-                    endsAt = "10:40",
-                ),
-                isFavorite = true,
-            ),
+            uiState = TimetableItemDetailScreenUiState.fake(),
             onBookmarkClick = {},
             onBack = {},
         )

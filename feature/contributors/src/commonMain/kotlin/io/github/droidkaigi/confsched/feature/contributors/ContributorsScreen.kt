@@ -17,17 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import io.github.droidkaigi.confsched.core.model.Contributor
-import io.github.droidkaigi.confsched.core.model.ContributorId
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
-import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorItem
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsCountText
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsEmptyView
-import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,21 +63,6 @@ fun ContributorsScreen(
     }
 }
 
-private fun previewUiState() = ContributorsScreenUiState(
-    contributors = persistentListOf(
-        previewContributor(1L, "user-a"),
-        previewContributor(2L, "user-b"),
-        previewContributor(3L, "user-c"),
-    ),
-)
-
-private fun previewContributor(id: Long, username: String) = Contributor(
-    id = ContributorId(id),
-    username = username,
-    iconUrl = PreviewImage.SpeakerAvatarA.imageUrl,
-    profileUrl = "https://example.com/$username",
-)
-
 @Preview
 @Composable
 fun ContributorsScreenPreview(
@@ -89,7 +70,7 @@ fun ContributorsScreenPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         ContributorsScreen(
-            uiState = previewUiState(),
+            uiState = ContributorsScreenUiState.fake(),
             onContributorClick = {},
             onBackClick = {},
         )

@@ -15,9 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
-import io.github.droidkaigi.confsched.core.model.Language
-import io.github.droidkaigi.confsched.core.model.Room
-import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
@@ -62,30 +59,6 @@ fun FavoritesScreen(
     }
 }
 
-private fun previewUiState() = FavoritesScreenUiState(
-    selectedDayFilter = null,
-    favoritesListSection = FavoritesListSectionUiState(
-        timeSlots = persistentListOf(
-            FavoritesListSectionUiState.TimeSlot(
-                day = DroidKaigi2026Day.Day1,
-                startsAt = "10:00",
-                endsAt = "10:40",
-                items = persistentListOf(
-                    TimetableItem(TimetableItemId("d1a"), "Compose Multiplatform in Practice", Room.NARWHAL, "Sp1", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
-                ),
-            ),
-            FavoritesListSectionUiState.TimeSlot(
-                day = DroidKaigi2026Day.Day2,
-                startsAt = "10:00",
-                endsAt = "10:40",
-                items = persistentListOf(
-                    TimetableItem(TimetableItemId("d2a"), "Metro DI: graphs without Dagger", Room.OTTER, "Sp2", Language.MIXED, DroidKaigi2026Day.Day2, "10:00", "10:40"),
-                ),
-            ),
-        ),
-    ),
-)
-
 @Preview
 @Composable
 fun FavoritesScreenPreview(
@@ -93,7 +66,7 @@ fun FavoritesScreenPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         FavoritesScreen(
-            uiState = previewUiState(),
+            uiState = FavoritesScreenUiState.fake(),
             onBookmarkClick = {},
             onDayFilterClick = {},
             onItemClick = {},
@@ -108,7 +81,7 @@ fun FavoritesScreenEmptyPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         FavoritesScreen(
-            uiState = previewUiState().copy(favoritesListSection = FavoritesListSectionUiState(timeSlots = persistentListOf())),
+            uiState = FavoritesScreenUiState.fake().copy(favoritesListSection = FavoritesListSectionUiState(timeSlots = persistentListOf())),
             onBookmarkClick = {},
             onDayFilterClick = {},
             onItemClick = {},

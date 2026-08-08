@@ -20,7 +20,9 @@ data class TimetableItem(
     val day: DroidKaigi2026Day,
     val startsAt: String,
     val endsAt: String,
-)
+) {
+    companion object
+}
 
 data class Timetable(
     val items: PersistentList<TimetableItem>,
@@ -30,4 +32,6 @@ data class Timetable(
         items.filter { it.day == day }.toPersistentList()
 
     fun isFavorite(id: TimetableItemId): Boolean = id in bookmarks
+
+    companion object
 }
