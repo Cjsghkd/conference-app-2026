@@ -11,14 +11,35 @@ End-to-end screen behaviour is tested with the **Robot pattern** in a BDD (behav
 
 Screen-level Compose testing runs on the **JVM** through Compose Multiplatform's `runComposeUiTest` (from `org.jetbrains.compose.ui:ui-test`; the desktop actual and — via `compose.desktop.currentOs` — the Skiko native runtime ship alongside it). The BDD DSL itself is pure Kotlin in `commonMain`, so Android/iOS Robots can follow later via `expect/actual`; the Robot base is JVM-first for now.
 
-A Robot builds the screen with a concrete [`ScreenContext`](./screen-context.md) constructed directly (no Metro graph) from **fake Soil keys** — `buildQueryKey` / `buildSubscriptionKey` / `buildMutationKey` with immediate, network-free lambdas — and wires the `SwrClient` locals via `SwrClientProvider`. The screen reads `LocalSnackbarHostState` (provided in production by `snackbarNavEntryDecorator`), so the test scaffold provides one too.
+A Robot takes the screen's [`ScreenContext`](./screen-context.md) from a [test graph](./testing-graph.md). Arranging the data and showing the screen are separate steps, so a scenario reads as a state the data layer is in followed by the screen opening on it:
+
+```kotlin
+private val graph = createGraph<SponsorsScreenTestGraph>()
+
+fun setupSponsors(sponsors: Sponsors) {
+    graph.sponsorsQueryKey.set(sponsors)
+}
+
+fun setupContent() {
+    setScreenContent {
+        context(graph.screenContext) { SponsorsScreenRoot(…) }
+    }
+}
+```
+
+`setScreenContent` is the harness on `Robot`: it stands in for what a nav entry supplies in production — a fresh `SwrClient`, the `LocalSnackbarHostState` that `snackbarNavEntryDecorator` provides, and `LocalSafeClickInvoker` with the debounce zeroed so consecutive taps in one scenario are not swallowed — then waits for idle.
+
+Because the Root owns the [`SoilDataBoundary`](./soil-data-boundary.md), the loading and error fallbacks are a Robot concern rather than a presenter one: `hold()` keeps a query suspended so the loading fallback can be asserted, and `failWith(…)` sends the boundary to its error fallback. See [Test graph](./testing-graph.md).
 
 ## The real scenario
 
 ```kotlin
 runRobotTest(robotFactory = { TimetableScreenRobot(this) }) {
     describe("when the timetable has loaded") {
-        doIt { setupContent(sampleTimetable) }
+        doIt {
+            setupTimetable(sampleTimetable)
+            setupContent()
+        }
         itShould("show Day1 sessions") {
             checkSessionDisplayed("Day1 A")
             checkSessionDoesNotExist("Day2 A")
@@ -36,4 +57,4 @@ runRobotTest(robotFactory = { TimetableScreenRobot(this) }) {
 
 Complements the per-screen [Preview screenshot tests](./testing-preview-screenshot.md) (which cover static rendering) by exercising interaction and state.
 
-Related: [Testing overview](./testing.md) · [Presenter unit tests (Molecule)](./testing-presenter.md)
+Related: [Testing overview](./testing.md) · [Test graph (TestingScope)](./testing-graph.md) · [Presenter unit tests (Molecule)](./testing-presenter.md)

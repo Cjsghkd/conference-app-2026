@@ -1,7 +1,7 @@
 package io.github.droidkaigi.confsched.feature.favorites
 
+import dev.zacsweers.metro.createGraph
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
-import io.github.droidkaigi.confsched.core.model.FavoriteTimetableItemIdMutationKey
 import io.github.droidkaigi.confsched.core.model.Language
 import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.Timetable
@@ -10,14 +10,13 @@ import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.testing.runPresenterTest
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.channels.Channel
-import soil.query.MutationId
-import soil.query.buildMutationKey
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class FavoritesScreenPresenterTest {
+
+    private val graph = createGraph<FavoritesScreenTestGraph>()
 
     private val sampleTimetable = Timetable(
         items = persistentListOf(
@@ -31,12 +30,8 @@ class FavoritesScreenPresenterTest {
 
     @Test
     fun initial_state_lists_only_favorited_items_grouped_by_day_and_time() {
-        val favoriteKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
-            id = MutationId("test-favorite"),
-            mutate = { },
-        )
         runPresenterTest(
-            presenterContext = FavoritesPresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey),
+            presenterContext = graph.presenterContext,
             presenter = { channel -> favoritesScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
         ) {
             val initial = uiStates.awaitItem()
@@ -59,12 +54,8 @@ class FavoritesScreenPresenterTest {
 
     @Test
     fun selecting_a_day_filter_narrows_the_list_to_that_day() {
-        val favoriteKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
-            id = MutationId("test-favorite-filter"),
-            mutate = { },
-        )
         runPresenterTest(
-            presenterContext = FavoritesPresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey),
+            presenterContext = graph.presenterContext,
             presenter = { channel -> favoritesScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
         ) {
             uiStates.awaitItem()
@@ -81,30 +72,22 @@ class FavoritesScreenPresenterTest {
 
     @Test
     fun bookmark_action_forwards_the_id_to_the_mutation() {
-        val mutateInvocations = Channel<TimetableItemId>(Channel.UNLIMITED)
-        val favoriteKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
-            id = MutationId("test-favorite-bookmark"),
-            mutate = { id -> mutateInvocations.trySend(id) },
-        )
         runPresenterTest(
-            presenterContext = FavoritesPresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey),
+            presenterContext = graph.presenterContext,
             presenter = { channel -> favoritesScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
         ) {
             uiStates.awaitItem()
 
             send(FavoritesScreenAction.Bookmark(TimetableItemId("d1a")))
-            assertEquals(TimetableItemId("d1a"), mutateInvocations.receive())
+            assertEquals(TimetableItemId("d1a"), graph.favoriteMutationKey.invocations.receive())
         }
     }
 
     @Test
     fun mutation_failure_surfaces_ShowMessage_on_channel() {
-        val failingKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
-            id = MutationId("test-favorite-failing"),
-            mutate = { _ -> error("boom") },
-        )
+        graph.favoriteMutationKey.failWith(IllegalStateException("boom"))
         runPresenterTest(
-            presenterContext = FavoritesPresenterContext(favoriteTimetableItemIdMutationKey = failingKey),
+            presenterContext = graph.presenterContext,
             presenter = { channel -> favoritesScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
         ) {
             uiStates.awaitItem()

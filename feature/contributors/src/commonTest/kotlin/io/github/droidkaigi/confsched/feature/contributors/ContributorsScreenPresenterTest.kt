@@ -1,5 +1,6 @@
 package io.github.droidkaigi.confsched.feature.contributors
 
+import dev.zacsweers.metro.createGraph
 import io.github.droidkaigi.confsched.core.model.Contributor
 import io.github.droidkaigi.confsched.core.model.ContributorId
 import io.github.droidkaigi.confsched.core.model.Contributors
@@ -9,6 +10,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ContributorsScreenPresenterTest {
+
+    private val graph = createGraph<ContributorsScreenTestGraph>()
 
     private val sampleContributors = Contributors(
         items = persistentListOf(
@@ -20,7 +23,7 @@ class ContributorsScreenPresenterTest {
     @Test
     fun the_loaded_contributors_reach_the_ui_state_in_order() {
         runPresenterTest<ContributorsPresenterContext, Unit, Unit, ContributorsScreenUiState>(
-            presenterContext = ContributorsPresenterContext(),
+            presenterContext = graph.presenterContext,
             presenter = { _ -> contributorsScreenPresenter(sampleContributors) },
         ) {
             val contributors = uiStates.awaitItem().contributors

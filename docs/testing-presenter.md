@@ -5,17 +5,7 @@ A Composable presenter is a **function that returns the state of a screen**: it 
 ## Tools
 
 - **Molecule** (`app.cash.molecule:molecule-runtime`) … drives a `@Composable` and observes its return value (UiState) as a `Flow`.
-- **Named fake keys** (small test classes delegating to `buildQueryKey {}` / `buildMutationKey {}` from `soil-query-core`) … a key whose fetcher returns a fixture (or throws) drives Soil's query/mutation state from a test:
-
-  ```kotlin
-  class FakeFavoriteTimetableItemIdMutationKey(
-      mutate: suspend (TimetableItemId) -> Unit = {},
-  ) : FavoriteTimetableItemIdMutationKey by buildMutationKey(
-      id = MutationId("fake-favorite"),
-      mutate = { mutate(it) },
-  )
-  ```
-- **A minimal Fake of the role context (`<Feature>PresenterContext`)** … since it is a narrow interface, a minimal implementation can be passed in (a dividend of adopting role contexts for testability).
+- **A [test graph](./testing-graph.md)** … the `<Feature>PresenterContext` is resolved from DI rather than constructed by hand, so a new dependency on it reaches every test through one fake.
 - **Turbine** … asserts `Flow` emissions.
 - **kotlinx-coroutines-test** (`runTest` / `TestDispatcher`) … drives virtual time.
 
@@ -87,20 +77,20 @@ fun <T> compositionLocalProviderWithReturnValue(
 }
 ```
 
-Each feature test is then just the faked context, the presenter call, and the actions/assertions:
+Each feature test is then just the resolved context, the presenter call, and the actions/assertions:
 
 ```kotlin
+private val graph = createGraph<TimetableScreenTestGraph>()
+
 @Test
 fun bookmark_event_marks_session() = runPresenterTest(
-    presenterContext = TimetablePresenterContext(           // directly new up the concrete @Inject class
-        favoriteTimetableItemIdMutationKey = FakeFavoriteTimetableItemIdMutationKey(),
-    ),
+    presenterContext = graph.presenterContext,
     presenter = { channel -> timetableScreenPresenter(channel, fakeTimetable) },
 ) {
     assertEquals(expectedInitial, uiStates.awaitItem())
     send(TimetableScreenAction.Bookmark(id))
     assertEquals(expectedBookmarked, uiStates.awaitItem())
-    assertEquals(TimetableScreenActionResult.ShowMessage(bookmarked), results.awaitItem())
+    assertEquals(TimetableItemId("d1a"), graph.favoriteMutationKey.invocations.receive())
 }
 ```
 
@@ -111,9 +101,9 @@ The presenter has no loading-to-content transition: the Root's [`SoilDataBoundar
 ## Points of craft
 
 1. **`RecompositionMode.Immediate`**: executes recomposition immediately without waiting for the frame clock (the crux of the test).
-2. **Supplying dependencies**: the presenter requires `rememberMutation` / `SwrClientProvider` / `LocalClock` plus a `PresenterContext` (supplied via `context(presenterContext){}`). Inside the test composition, supply **a real `SwrCachePlus(backgroundScope)` (no `TestSwrClientPlus` needed) plus per-key `buildQueryKey{}`/`buildMutationKey{}` plus `runTest` virtual time plus a Fake of the role interface**.
-3. **Verifying success/failure**: to fire a `MutationSuccessEffect` / `MutationErrorEffect`, **give the fake key a `mutate` that succeeds or throws** and **assert the emission on the `results` turbine** → even the one-off wiring can be verified.
-4. **Input/output**: feed actions via the scope's `send(action)` to drive UiState transitions, and assert the result side on the `results` turbine.
+2. **Supplying dependencies**: the presenter requires `rememberMutation` / `SwrClientProvider` / `LocalClock` plus a `PresenterContext` (supplied via `context(presenterContext){}`). Inside the test composition, supply **a real `SwrCachePlus(backgroundScope)` (no `TestSwrClientPlus` needed) plus `runTest` virtual time plus the `PresenterContext` the test graph resolves**.
+3. **Verifying success/failure**: to fire a `MutationSuccessEffect` / `MutationErrorEffect`, **arm the fake key with `failWith(…)` or leave it succeeding** and **assert the emission on the `results` turbine** → even the one-off wiring can be verified.
+4. **Input/output**: feed actions via the scope's `send(action)` to drive UiState transitions. There are two assertion surfaces beyond `uiStates` — what the action reached in the data layer, on the fake's `invocations`, and what the presenter emitted back, on the `results` turbine. An action that only mutates state reaches neither.
 5. **Multiplatform**: the presenter is pure logic in commonMain, so **running it on the JVM is sufficient** (rendering-free logic verification does not need any UI target).
 
 ## Position in the test pyramid
@@ -123,4 +113,4 @@ The presenter has no loading-to-content transition: the Root's [`SoilDataBoundar
 
 The presenter layer sits beneath Robot/Roborazzi: cheap to run, so state transitions are covered here, leaving the screen layer to rendering concerns.
 
-Related: [Testing overview](./testing.md) · [Robot pattern tests](./testing-robot.md)
+Related: [Testing overview](./testing.md) · [Test graph (TestingScope)](./testing-graph.md) · [Robot pattern tests](./testing-robot.md)

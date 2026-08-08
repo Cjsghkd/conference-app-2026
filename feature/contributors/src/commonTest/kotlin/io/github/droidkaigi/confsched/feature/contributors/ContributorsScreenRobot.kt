@@ -1,60 +1,37 @@
 package io.github.droidkaigi.confsched.feature.contributors
 
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import io.github.droidkaigi.confsched.core.common.LocalSafeClickInvoker
-import io.github.droidkaigi.confsched.core.common.SafeClickInvoker
+import dev.zacsweers.metro.createGraph
 import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.model.Contributors
-import io.github.droidkaigi.confsched.core.model.ContributorsQueryKey
 import io.github.droidkaigi.confsched.core.testing.Robot
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import soil.query.QueryId
-import soil.query.SwrCachePlus
-import soil.query.buildQueryKey
-import soil.query.compose.SwrClientProvider
 import kotlin.test.assertEquals
-import kotlin.time.Duration
 
 @OptIn(ExperimentalTestApi::class)
 class ContributorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
 
+    private val graph = createGraph<ContributorsScreenTestGraph>()
     private val openedProfiles = mutableListOf<String>()
     private var backCount = 0
 
-    fun setupContent(contributors: Contributors) {
-        val queryKey: ContributorsQueryKey = buildQueryKey(
-            id = QueryId("robot-contributors"),
-            fetch = { contributors },
-        )
-        val screenContext = ContributorsScreenContext(
-            contributorsQueryKey = queryKey,
-            presenterContext = ContributorsPresenterContext(),
-        )
-        val client = SwrCachePlus(CoroutineScope(SupervisorJob() + Dispatchers.Unconfined))
+    fun setupContributors(contributors: Contributors) {
+        graph.contributorsQueryKey.set(contributors)
+    }
 
-        composeUiTest.setContent {
-            SwrClientProvider(client = client) {
-                CompositionLocalProvider(
-                    LocalSafeClickInvoker provides SafeClickInvoker(interval = Duration.ZERO),
-                ) {
-                    context(screenContext) {
-                        ContributorsScreenRoot(
-                            onNavigateBack = { backCount++ },
-                            onNavigateToContributorProfile = openedProfiles::add,
-                        )
-                    }
-                }
+    fun setupContent() {
+        setScreenContent {
+            context(graph.screenContext) {
+                ContributorsScreenRoot(
+                    onNavigateBack = { backCount++ },
+                    onNavigateToContributorProfile = openedProfiles::add,
+                )
             }
         }
-        composeUiTest.waitForIdle()
     }
 
     fun clickContributor(username: String) {

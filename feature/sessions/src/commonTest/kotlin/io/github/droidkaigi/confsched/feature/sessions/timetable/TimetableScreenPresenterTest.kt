@@ -8,9 +8,9 @@ import androidx.compose.runtime.setValue
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
+import dev.zacsweers.metro.createGraph
 import io.github.droidkaigi.confsched.core.common.ScreenContext
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
-import io.github.droidkaigi.confsched.core.model.FavoriteTimetableItemIdMutationKey
 import io.github.droidkaigi.confsched.core.model.Language
 import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.Timetable
@@ -20,13 +20,10 @@ import io.github.droidkaigi.confsched.core.model.TimetableQueryKey
 import io.github.droidkaigi.confsched.core.testing.runPresenterTest
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.test.runTest
-import soil.query.MutationId
 import soil.query.QueryId
 import soil.query.SwrCachePlus
-import soil.query.buildMutationKey
 import soil.query.buildQueryKey
 import soil.query.compose.SwrClientProvider
 import soil.query.compose.rememberQuery
@@ -36,6 +33,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class TimetableScreenPresenterTest {
+
+    private val graph = createGraph<TimetableScreenTestGraph>()
 
     private val sampleTimetable = Timetable(
         items = persistentListOf(
@@ -48,13 +47,8 @@ class TimetableScreenPresenterTest {
 
     @Test
     fun initial_state_and_actions_drive_state_mutation_and_channel() {
-        val mutateInvocations = Channel<TimetableItemId>(Channel.UNLIMITED)
-        val favoriteKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
-            id = MutationId("test-favorite"),
-            mutate = { id -> mutateInvocations.trySend(id) },
-        )
         runPresenterTest(
-            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey, logger = FakeKaigiLogger()),
+            presenterContext = graph.presenterContext,
             presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
         ) {
             val initial = uiStates.awaitItem()
@@ -68,16 +62,12 @@ class TimetableScreenPresenterTest {
             assertEquals(listOf("d2a"), onDay2.timetableListSection.timeSlots.flatMap { slot -> slot.items.map { it.id.value } })
 
             send(TimetableScreenAction.Bookmark(TimetableItemId("d2a")))
-            assertEquals(TimetableItemId("d2a"), mutateInvocations.receive())
+            assertEquals(TimetableItemId("d2a"), graph.favoriteMutationKey.invocations.receive())
         }
     }
 
     @Test
     fun sessions_sharing_a_time_are_grouped_into_one_slot() {
-        val favoriteKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
-            id = MutationId("test-favorite-slots"),
-            mutate = { },
-        )
         val concurrent = Timetable(
             items = persistentListOf(
                 TimetableItem(TimetableItemId("d1a"), "Day1 A", Room.NARWHAL, "Sp1", Language.ENGLISH, DroidKaigi2026Day.Day1, "10:00", "10:40"),
@@ -86,7 +76,7 @@ class TimetableScreenPresenterTest {
             ),
         )
         runPresenterTest(
-            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey, logger = FakeKaigiLogger()),
+            presenterContext = graph.presenterContext,
             presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = concurrent) },
         ) {
             val slots = uiStates.awaitItem().timetableListSection.timeSlots
@@ -98,30 +88,22 @@ class TimetableScreenPresenterTest {
 
     @Test
     fun switching_to_the_grid_view_only_logs_until_the_grid_exists() {
-        val favoriteKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
-            id = MutationId("test-favorite-grid"),
-            mutate = { },
-        )
-        val logger = FakeKaigiLogger()
         runPresenterTest(
-            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = favoriteKey, logger = logger),
+            presenterContext = graph.presenterContext,
             presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
         ) {
             uiStates.awaitItem()
 
             send(TimetableScreenAction.SwitchToGridView)
-            assertEquals("TODO: render the grid view", logger.debugMessages.receive())
+            assertEquals("TODO: render the grid view", graph.logger.debugMessages.receive())
         }
     }
 
     @Test
     fun mutation_failure_surfaces_ShowMessage_on_channel() {
-        val failingKey: FavoriteTimetableItemIdMutationKey = buildMutationKey(
-            id = MutationId("test-failing"),
-            mutate = { _ -> error("boom") },
-        )
+        graph.favoriteMutationKey.failWith(IllegalStateException("boom"))
         runPresenterTest(
-            presenterContext = TimetablePresenterContext(favoriteTimetableItemIdMutationKey = failingKey, logger = FakeKaigiLogger()),
+            presenterContext = graph.presenterContext,
             presenter = { channel -> timetableScreenPresenter(screenChannel = channel, timetable = sampleTimetable) },
         ) {
             uiStates.awaitItem()
