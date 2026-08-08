@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -201,64 +202,39 @@ fun SketchVerticalWavyLine(
 }
 
 /**
- * Outlines the content as a hand-sketched rectangle.
+ * Outlines the content along the very outline [shape] reports, stroked at the
+ * [SketchShape.borderThickness] the shape reserves its inset for, so content clipped to
+ * the same instance meets the stroke down its centre.
  *
- * The stroke is inset so that the whole wobble stays inside the layout bounds,
- * which costs `roughness * (1 + tremor) + thickness / 2` of padding on every edge.
+ * Compose's `Modifier.border` is not a substitute: handed an [Outline.Generic] it strokes
+ * into an offscreen mask whose clear pass misses fractional path bounds, leaving a stray
+ * line along the right and bottom edges of the layout.
  */
-fun Modifier.sketchBorder(
-    seed: Int,
-    color: Color,
-    thickness: Dp = 2.dp,
-    roughness: Dp = DefaultRoughness,
-    tremor: Dp = DefaultTremor,
-    sweepWavelength: Dp = DefaultSweepWavelength,
-    tremorWavelength: Dp = DefaultTremorWavelength,
-    cornerRadius: Dp = 0.dp,
-): Modifier {
-    requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
-    require(thickness >= 0.dp) { "thickness must not be negative, was $thickness" }
-    require(cornerRadius >= 0.dp) { "cornerRadius must not be negative, was $cornerRadius" }
+fun Modifier.sketchBorder(shape: SketchShape, color: Color): Modifier {
+    require(shape.borderThickness > 0.dp) {
+        "sketchBorder needs a shape with a positive borderThickness, was ${shape.borderThickness}"
+    }
     return drawWithCache {
-        val ratio = swingCapRatio(size.width, size.height, roughness, tremor, thickness)
-        val effectiveRoughness = roughness * ratio
-        val effectiveTremor = tremor * ratio
-        val inset = (effectiveRoughness + effectiveTremor).toPx() + thickness.toPx() / 2f
-        val width = size.width - inset * 2f
-        val height = size.height - inset * 2f
-        if (width <= 0f || height <= 0f) return@drawWithCache onDrawBehind {}
-
-        val path = sketchRoundRectPath(
-            width = width,
-            height = height,
-            cornerRadius = cornerRadius,
-            roughness = effectiveRoughness,
-            tremor = effectiveTremor,
-            sweepWavelength = sweepWavelength,
-            tremorWavelength = tremorWavelength,
-            seed = seed,
-        )
-        path.translate(Offset(inset, inset))
+        val outline = shape.createOutline(size, layoutDirection, this)
         val stroke = Stroke(
-            width = thickness.toPx(),
+            width = shape.borderThickness.toPx(),
             cap = StrokeCap.Round,
             join = StrokeJoin.Round,
         )
         onDrawBehind {
-            drawPath(path = path, color = color, style = stroke)
+            drawOutline(outline = outline, color = color, style = stroke)
         }
     }
 }
 
 /**
- * The hand-sketched rectangle as a [Shape], for `Modifier.clip`, `Modifier.background`
- * or any `shape` parameter.
+ * The hand-sketched rectangle as a [Shape], for `Modifier.clip`, `Modifier.background`,
+ * any `shape` parameter, and [Modifier.sketchBorder].
  *
- * The outline is inset by `roughness + tremor` so the whole wobble stays within the
- * bounds. Give [borderThickness] the `thickness` of the [Modifier.sketchBorder] this shape
- * is paired with and the two land on the same vertices, so a region clipped to the shape
- * meets the line down its centre instead of spilling a stroke's width past it. Left at
- * zero the outline sits where an unaccompanied fill wants it.
+ * The outline is inset by the swing plus half of [borderThickness], so both the wobble
+ * and the stroke [Modifier.sketchBorder] draws over this same instance stay inside the
+ * bounds, with the fill meeting that stroke down its centre. Leave [borderThickness] at
+ * zero for a fill no border accompanies.
  *
  * On a box too small to hold the requested swing, both octaves shrink together rather
  * than letting the outline fold onto itself.
@@ -487,9 +463,12 @@ private fun CornerRadiusSamples() {
                     Modifier
                         .size(90.dp, 64.dp)
                         .sketchBorder(
-                            seed = 20 + index,
+                            shape = SketchShape(
+                                seed = 20 + index,
+                                cornerRadius = radius,
+                                borderThickness = 2.dp,
+                            ),
                             color = MaterialTheme.colorScheme.outline,
-                            cornerRadius = radius,
                         ),
                 )
             }
@@ -527,11 +506,14 @@ private fun BorderTasteRow(roughness: Dp) {
                     Modifier
                         .size(132.dp, 84.dp)
                         .sketchBorder(
-                            seed = 9,
+                            shape = SketchShape(
+                                seed = 9,
+                                roughness = roughness,
+                                tremor = tremor,
+                                cornerRadius = 10.dp,
+                                borderThickness = 2.dp,
+                            ),
                             color = MaterialTheme.colorScheme.outline,
-                            roughness = roughness,
-                            tremor = tremor,
-                            cornerRadius = 10.dp,
                         ),
                 )
             }
@@ -556,16 +538,13 @@ private fun SketchShapePreview(
                     )
                 }
                 LabelledSample(label = "clip + border") {
+                    val shape = SketchShape(seed = 51, cornerRadius = 12.dp, borderThickness = 2.dp)
                     Box(
                         Modifier
                             .size(90.dp, 64.dp)
-                            .clip(SketchShape(seed = 51, cornerRadius = 12.dp))
+                            .clip(shape)
                             .background(MaterialTheme.colorScheme.primaryContainer)
-                            .sketchBorder(
-                                seed = 51,
-                                color = MaterialTheme.colorScheme.outline,
-                                cornerRadius = 12.dp,
-                            ),
+                            .sketchBorder(shape, MaterialTheme.colorScheme.outline),
                     )
                 }
                 LabelledSample(label = "Surface") {
@@ -606,26 +585,17 @@ private fun SketchSegmentedPreview(
 
 @Composable
 private fun SegmentedSample(selectedFirst: Boolean) {
-    val thickness = 2.dp
-    val roughness = 0.4.dp
-    val tremor = 0.15.dp
-    val cornerRadius = 16.dp
+    val shape = SketchShape(
+        seed = 900,
+        roughness = 0.4.dp,
+        tremor = 0.15.dp,
+        cornerRadius = 16.dp,
+        borderThickness = 2.dp,
+    )
     Box(Modifier.size(208.dp, 40.dp)) {
-        // Clipping the fill out of the outline the border strokes is what keeps its edge
+        // Clipping the fill to the same shape the border strokes is what keeps its edge
         // under the middle of the line instead of beside it.
-        Box(
-            Modifier
-                .matchParentSize()
-                .clip(
-                    SketchShape(
-                        seed = 900,
-                        roughness = roughness,
-                        tremor = tremor,
-                        cornerRadius = cornerRadius,
-                        borderThickness = thickness,
-                    ),
-                ),
-        ) {
+        Box(Modifier.matchParentSize().clip(shape)) {
             Box(
                 Modifier
                     .fillMaxWidth(0.5f)
@@ -642,18 +612,7 @@ private fun SegmentedSample(selectedFirst: Boolean) {
                 roughness = 0.3.dp,
             )
         }
-        Box(
-            Modifier
-                .matchParentSize()
-                .sketchBorder(
-                    seed = 900,
-                    color = MaterialTheme.colorScheme.outline,
-                    thickness = thickness,
-                    roughness = roughness,
-                    tremor = tremor,
-                    cornerRadius = cornerRadius,
-                ),
-        )
+        Box(Modifier.matchParentSize().sketchBorder(shape, MaterialTheme.colorScheme.outline))
     }
 }
 
@@ -668,9 +627,8 @@ private fun SketchCardPreview(
                 Modifier
                     .width(260.dp)
                     .sketchBorder(
-                        seed = 40,
+                        shape = SketchShape(seed = 40, cornerRadius = 16.dp, borderThickness = 2.dp),
                         color = MaterialTheme.colorScheme.outline,
-                        cornerRadius = 16.dp,
                     )
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
