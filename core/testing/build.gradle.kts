@@ -2,12 +2,14 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveKmp)
     alias(libs.plugins.droidkaigiPrimitiveKmpCompose)
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
+    alias(libs.plugins.metro)
 }
 
 kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":core:common"))
+            api(project(":core:model"))
             api(libs.molecule)
             api(libs.turbine)
             api(libs.kotlinxCoroutinesTest)
