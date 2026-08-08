@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirSimpleFunctionC
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.ExpressionCheckers
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirFunctionCallChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirPropertyAccessExpressionChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.expression.FirQualifiedAccessExpressionChecker
 import org.jetbrains.kotlin.fir.analysis.extensions.FirAdditionalCheckersExtension
 
 class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersExtension(session) {
@@ -27,6 +28,9 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
         )
         override val propertyAccessExpressionCheckers: Set<FirPropertyAccessExpressionChecker> = setOf(
             NoDirectMutateChecker,
+        )
+        override val qualifiedAccessExpressionCheckers: Set<FirQualifiedAccessExpressionChecker> = setOf(
+            RememberResultMustBeBoundChecker,
         )
     }
 

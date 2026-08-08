@@ -29,6 +29,7 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             UiComponentParameterErrors,
             CallbackArgumentErrors,
             ComposableTrailingLambdaErrors,
+            RememberBindingErrors,
         )
     }
 }
