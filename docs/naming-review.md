@@ -1,6 +1,6 @@
 # Naming review
 
-A name is read far more often than the declaration it labels, and it is the only part of a declaration that reaches a call site. This page states when a name and its type disagree, when a name leaves out what it applies to, and how a reviewer applies the rules. It covers value declarations — properties, parameters, and return values; Compose view naming is defined in [Building a screen](./building-a-screen.md#naming-conventions-for-compose-views).
+A name is read far more often than the declaration it labels, and it is the only part of a declaration that reaches a call site. This page states when a name and its type disagree, when a name leaves out what it applies to or which of several like values it holds, and how a reviewer applies the rules. It covers value declarations — properties, parameters, and return values; Compose view naming is defined in [Building a screen](./building-a-screen.md#naming-conventions-for-compose-views).
 
 ## Name and type
 
@@ -59,6 +59,19 @@ The question is asked of the whole API, not of one signature. `KaigiNavigationBa
 
 The rule generalises past seeds: wherever a declaration selects among several parts of what its owner renders, its name states the part. A colour, a shape, or a size reaching one element of a composite is named for that element.
 
+## Category names
+
+Where more than one member of a category is in reach, a name that states the category rather than which member it holds under-qualifies.
+
+```kotlin
+val scope = rememberCoroutineScope()           // rejected
+val coroutineScope = rememberCoroutineScope()  // required
+```
+
+`scope: CoroutineScope` passes the question in [Name and type](#name-and-type) — the value is a scope — and the reader still cannot tell which one. Compose code is full of scopes: `RowScope`, `BoxScope`, `CoroutineScope`, and the component scopes this repository declares (`KaigiNavigationBarScope`, `KaigiSingleChoiceSegmentedButtonRowScope`). The bare word names the category they all belong to, so the name states the member: `coroutineScope`, `rowScope`, `navigationBarScope`.
+
+This is [under-qualification](#under-qualification) seen along the other axis. There the name omits which part of its owner the value reaches; here it omits which of several like values it holds. As there, the question is asked of the surroundings rather than of the declaration alone — a second member of the category arriving in the same file leaves the bare word ambiguous without the declaration itself changing.
+
 ## Related mismatches
 
 The same disagreement appears wherever the type carries less structure than the name promises.
@@ -79,10 +92,14 @@ For each declaration in the diff whose type is general-purpose (`String`, `Int`,
 2. Compare that promise against the type. On a mismatch, pick a correction from [Choosing the correction](#choosing-the-correction) and report it together with the call site that reads worst under the current name.
 3. On agreement, ask whether the owner has more than one part the value could reach. If it does, the name states which one; see [Under-qualification](#under-qualification).
 
+The type gate covers those three steps only. [Category names](#category-names) applies to every declaration in the diff whatever its type: read the name as a common noun, and where it names a category with more than one member in reach, the name states the member.
+
 Domain models in `:core:model` and `UiState` properties come first: their names reach every feature that renders them.
 
 ## Scope of static enforcement
 
 Separating an entity word from an attribute word requires the domain vocabulary — `title` and `speaker` are both nouns, and only the conference domain tells them apart. A FIR checker would need that vocabulary as a hard-coded list, and curating the list is the review it would replace. The rule therefore stays at level 3 of the [Enforcement](./enforcement.md) hierarchy.
+
+[Category names](#category-names) stay at level 3 for a second reason: whether a second member of the category is in reach at a given point is not a property a checker can settle. A rule that permitted the bare word while only one member is in scope would turn a correct declaration into a violation the moment an unrelated edit brought a second one in, and the diagnostic would land on a line that edit never touched.
 
 Related: [Enforcement](./enforcement.md) · [Building a screen](./building-a-screen.md)

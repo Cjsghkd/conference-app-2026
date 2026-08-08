@@ -48,7 +48,7 @@ Work through every section. For each item, verify in the actual code, not by fil
 ### 2. Action / ActionResult / UiState
 - [ ] Each of the three lives in its own file, named after the declaration it holds.
 - [ ] `UiState` is a plain data class of render-ready values — no callbacks, no mutable state, no Soil objects.
-- [ ] Property names agree with their types: no entity-shaped name on a general-purpose type (`speaker: String` → `speakerName`). Run the procedure in `docs/naming-review.md` over the UiState, the Action/ActionResult payloads, and any model the screen adds.
+- [ ] Property names agree with their types: no entity-shaped name on a general-purpose type (`speaker: String` → `speakerName`), and no name stating a category where more than one member of it is in reach (`scope` → `coroutineScope`). Run the procedure in `docs/naming-review.md` over the UiState, the Action/ActionResult payloads, and any model the screen adds.
 - [ ] Actions represent real work handled by the presenter. Navigation-only clicks are wired straight from Root to the nav lambda, not routed through the channel (the `NoForwardOnlyActionHandler` checker catches the emit-only shape, but not a handler that does trivial non-work).
 - [ ] ActionResults are one-shot outcomes (messages, navigation triggers) consumed in Root via `ActionResultEffect`.
 
