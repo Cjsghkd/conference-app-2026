@@ -40,6 +40,10 @@ import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 
+// Swept as the horizontal axis of both taste grids, so the divider grid and the
+// border grid can be read against each other.
+private val TREMOR_STEPS = listOf(0f, 0.5f, 1f)
+
 /**
  * A horizontal rule drawn as a single hand-sketched stroke.
  *
@@ -182,22 +186,63 @@ private fun SketchDividerPreview(
 
 @Preview
 @Composable
-private fun SketchDividerTremorPreview(
+private fun SketchDividerTastePreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
         PreviewSurface {
-            TremorSamples()
+            DividerTasteGrid()
         }
     }
 }
 
 @Composable
-private fun TremorSamples() {
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        listOf(0f, 0.25f, 0.6f, 1f).forEach { tremor ->
-            LabelledSample(label = "tremor=$tremor") {
-                SketchDivider(seed = 7, tremor = tremor)
+private fun DividerTasteGrid() {
+    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        DividerTasteRow(roughness = 1.dp)
+        DividerTasteRow(roughness = 3.dp)
+        DividerTasteRow(roughness = 6.dp)
+    }
+}
+
+@Composable
+private fun DividerTasteRow(roughness: Dp) {
+    Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+        TREMOR_STEPS.forEach { tremor ->
+            LabelledSample(label = "${roughness.value.toInt()}dp / $tremor") {
+                SketchDivider(
+                    seed = 7,
+                    modifier = Modifier.width(150.dp),
+                    roughness = roughness,
+                    tremor = tremor,
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun SketchDividerWeightPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        PreviewSurface {
+            DividerWeightSamples()
+        }
+    }
+}
+
+@Composable
+private fun DividerWeightSamples() {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        listOf(0.75.dp, 1.5.dp, 3.dp, 6.dp).forEach { thickness ->
+            LabelledSample(label = "${thickness.value}dp") {
+                SketchDivider(
+                    seed = 12,
+                    modifier = Modifier.width(320.dp),
+                    thickness = thickness,
+                )
             }
         }
     }
@@ -236,29 +281,39 @@ private fun CornerRadiusSamples() {
 
 @Preview
 @Composable
-private fun SketchBorderRoughnessPreview(
+private fun SketchBorderTastePreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
         PreviewSurface {
-            RoughnessSamples()
+            BorderTasteGrid()
         }
     }
 }
 
 @Composable
-private fun RoughnessSamples() {
+private fun BorderTasteGrid() {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        BorderTasteRow(roughness = 1.dp)
+        BorderTasteRow(roughness = 3.dp)
+        BorderTasteRow(roughness = 6.dp)
+    }
+}
+
+@Composable
+private fun BorderTasteRow(roughness: Dp) {
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        listOf(1.dp, 3.dp, 5.dp, 8.dp).forEachIndexed { index, roughness ->
-            LabelledSample(label = "±${roughness.value.toInt()}") {
+        TREMOR_STEPS.forEach { tremor ->
+            LabelledSample(label = "${roughness.value.toInt()}dp / $tremor") {
                 Box(
                     Modifier
-                        .size(90.dp, 64.dp)
+                        .size(132.dp, 84.dp)
                         .sketchBorder(
-                            seed = 30 + index,
+                            seed = 9,
                             color = MaterialTheme.colorScheme.outline,
                             roughness = roughness,
-                            cornerRadius = 12.dp,
+                            tremor = tremor,
+                            cornerRadius = 10.dp,
                         ),
                 )
             }
