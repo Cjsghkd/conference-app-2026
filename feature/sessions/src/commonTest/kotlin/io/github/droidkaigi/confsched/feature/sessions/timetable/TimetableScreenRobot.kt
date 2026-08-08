@@ -1,7 +1,5 @@
 package io.github.droidkaigi.confsched.feature.sessions.timetable
 
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
@@ -9,9 +7,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import dev.zacsweers.metro.createGraph
-import io.github.droidkaigi.confsched.core.common.LocalSafeClickInvoker
-import io.github.droidkaigi.confsched.core.common.LocalSnackbarHostState
-import io.github.droidkaigi.confsched.core.common.SafeClickInvoker
 import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.Timetable
@@ -19,12 +14,6 @@ import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.testing.Robot
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import soil.query.SwrCachePlus
-import soil.query.compose.SwrClientProvider
-import kotlin.time.Duration
 
 @OptIn(ExperimentalTestApi::class)
 class TimetableScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
@@ -37,21 +26,12 @@ class TimetableScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) 
     ) {
         graph.timetableQueryKey.set(timetable)
         graph.favoriteIdsSubscriptionKey.set(favoriteIds)
-        val client = SwrCachePlus(CoroutineScope(SupervisorJob() + Dispatchers.Unconfined))
 
-        composeUiTest.setContent {
-            SwrClientProvider(client = client) {
-                CompositionLocalProvider(
-                    LocalSnackbarHostState provides SnackbarHostState(),
-                    LocalSafeClickInvoker provides SafeClickInvoker(interval = Duration.ZERO),
-                ) {
-                    context(graph.screenContext) {
-                        TimetableScreenRoot(onNavigateToDetail = {}, onNavigateToSearch = {})
-                    }
-                }
+        setScreenContent {
+            context(graph.screenContext) {
+                TimetableScreenRoot(onNavigateToDetail = {}, onNavigateToSearch = {})
             }
         }
-        composeUiTest.waitForIdle()
     }
 
     fun clickDayTab(day: DroidKaigi2026Day) {
