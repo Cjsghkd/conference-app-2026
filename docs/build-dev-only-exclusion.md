@@ -8,17 +8,19 @@ Dev-only assets and screens are excluded from production **by the shape of the d
 
 ## The debug screen — per-platform gating
 
-`:feature:debug` contributes its screen purely via Metro `@ContributesIntoSet`, so removing the module from a compile classpath cleanly removes the screen. It is wired per platform:
+`:feature:debug` contributes its screen purely via Metro `@ContributesIntoSet`, so removing the module from a compile classpath cleanly removes the screen. Every platform **excludes it by default** and adds it back only for a build that identifies itself as a development build:
 
-| Platform | Wiring | Excluded when |
+| Platform | Wiring | Included when |
 | --- | --- | --- |
-| Android | `"devImplementation"(project(":feature:debug"))` in `app-android` (dev/prod product flavors; dev installs alongside prod via the `.dev` id suffix) | prod flavor variants |
-| Desktop | `-PincludeDebugFeature` Gradle property (default `true`) in `app-desktop` | distribution builds pass `-PincludeDebugFeature=false` |
-| Web | `-PincludeDebugFeature` Gradle property (default `true`) conditionally adds the dependency to `wasmJsMain` | production bundles pass `-PincludeDebugFeature=false` |
-| iOS | same property, but it **defaults from Xcode's `CONFIGURATION` env var** (`embedAndSignAppleFrameworkForXcode` exports it) | automatically on Release builds from Xcode; `-PincludeDebugFeature` overrides either way |
+| Android | `"devImplementation"(project(":feature:debug"))` in `app-android` (dev/prod product flavors; dev installs alongside prod via the `.dev` id suffix) | the dev flavor is built |
+| Desktop | conditional dependency on `jvmMain` in `app-desktop` | `run`, or one of Compose Hot Reload's run tasks, is among the requested Gradle tasks |
+| Web | conditional dependency on `wasmJsMain` in `app-web` | `wasmJsBrowserDevelopmentRun` is among the requested Gradle tasks |
+| iOS | conditional dependency on `iosMain` in `app-shared` | Xcode exports `CONFIGURATION=Debug` to `embedAndSignAppleFrameworkForXcode` |
 
-Web and iOS need the property because their debug/release outputs (webpack modes; debug/release frameworks) share **one compilation** — a per-buildType dependency is not expressible there.
+`-PincludeDebugFeature=true|false` overrides the platform default in either direction. It is the only way to put the debug screen into a desktop distributable, a web bundle, or a Gradle-driven iOS framework — for example `./gradlew :app-shared:linkDebugFrameworkIosSimulatorArm64 -PincludeDebugFeature=true` to compile the iOS graph with the debug feature present.
 
-Verify exclusion by inspecting the classpath, e.g. `./gradlew :app-android:dependencies --configuration releaseCompileClasspath | grep debug` (expect nothing).
+Android expresses the gate as a product flavor, which cannot be bypassed. The other three platforms have no such variant to hang the dependency on: the webpack modes, the debug and release frameworks, and Compose Desktop's release distribution each reuse **one compilation**, so the gate has to read the requested tasks or Xcode's build configuration instead. Because neither signal is exhaustive, the fallback is exclusion — an unrecognised build loses the debug screen, which surfaces immediately in development, rather than shipping it. `droidkaigi.includeDebugFeature` in `gradle-conventions` holds that rule for all three.
+
+Verify exclusion by inspecting the classpath, e.g. `./gradlew :app-desktop:dependencies --configuration jvmRuntimeClasspath | grep debug` (expect nothing).
 
 Related: [Module structure](./project-structure.md) · [Debugging](./debugging.md)

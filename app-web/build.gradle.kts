@@ -1,3 +1,6 @@
+import droidkaigi.includeDebugFeature
+import droidkaigi.isAnyTaskRequested
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.droidkaigiPrimitiveKmpCompose)
@@ -6,7 +9,9 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 
-val includeDebugFeature = (project.findProperty("includeDebugFeature") as String?)?.toBoolean() ?: true
+val includeDebugFeature = project.includeDebugFeature(
+    developmentBuild = project.isAnyTaskRequested("wasmJsBrowserDevelopmentRun"),
+)
 
 kotlin {
     @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
