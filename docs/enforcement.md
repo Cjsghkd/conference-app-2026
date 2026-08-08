@@ -48,6 +48,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | A feature UI composable reads every property of the state it takes | FIR `UiComponentTakesWhatItReads` |
 | A callback does not report back a value its own composable was given | FIR `NoCallerSuppliedCallbackArgument` |
 | A remembered value is bound to a local before it is used | FIR `RememberResultMustBeBound` |
+| A state read only through `.value` is declared with `by` | FIR `StateMustBeDelegated` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -430,6 +431,37 @@ Why: a call written directly as a receiver reads as a computation performed at t
 The subject is the family that remembers a **value**: `remember`, `rememberSaveable`, `rememberSerializable`, `rememberUpdatedState`, and `retain` — matched by resolved callable id, so every overload of each name qualifies and a same-named function in another package does not. A call that returns a **handle** whose immediate use is the idiomatic form is not in the family, which is why `rememberCoroutineScope().launch { … }` compiles. The Soil reads (`rememberQuery`, `rememberMutation`, `rememberSubscription`) and the `remember*`/`retain*` factories that produce navigation and scroll infrastructure are left out on the same ground.
 
 Only the receiver position is in scope. Argument position is idiomatic and stays out, which also leaves `with(remember { … }) { … }` and every other paraphrase that passes the value as an argument alone; closing those would take a list of scoping functions, which [the principles above](#principles-priority-order-of-enforcement-mechanisms) reserve for review. The receiver position itself is read from the resolved call, so a receiver reached through `?.`, through an index access, or as the subject of a `for` loop counts, and so does a scoping call written as a receiver (`remember { … }.let { … }`).
+
+### `StateMustBeDelegated`
+
+```kotlin
+val selectedDay = remember { mutableStateOf(DroidKaigi2026Day.Day1) } // ERROR
+selectedDay.value = day
+Text(selectedDay.value.name)
+
+// OK: the delegate reads and writes the same state
+var selectedDay by remember { mutableStateOf(DroidKaigi2026Day.Day1) }
+selectedDay = day
+Text(selectedDay.name)
+
+// OK: the object leaves the scope, so `by` is unavailable
+val selectedDay = remember { mutableStateOf(DroidKaigi2026Day.Day1) }
+return selectedDay
+```
+
+Why: `.value` at every use is noise the language already removes. `androidx.compose.runtime.getValue` and `setValue` make `by` read and write the same state, so the delegated form is the declaration plus the plain name everywhere else — and the import pair is the only thing the rewrite adds.
+
+The rule is stated over a **declaration**, not a use, because a delegate hands out the value and takes the object away. A declaration is rejected when it is a `val` without a delegate whose type is `androidx.compose.runtime.State` or a subtype, and **every** reference to it is a read or a write of its `value`. One use of the object itself — passed as an argument, returned, destructured, or the receiver of anything else — leaves it out, since demanding `by` there would demand a rewrite that does not exist. A declaration with no reference at all is out for the same reason: there is nothing to shorten.
+
+That exclusion records what `by` cannot express, and is not a reason to reach for the object. A screen renders an immutable `UiState` and reports interaction through a callback, so a state type does not belong in a composable's parameter list — see [Building a screen](./building-a-screen.md#action--actionresult--uistate).
+
+Visibility bounds the rule to what the compiler can see: only a local variable or a `private` property qualifies, because those are the declarations whose every reference lives in the file being compiled. A wider property may be read as an object from another module, and the checker would be judging it on partial evidence.
+
+Three further exclusions follow from the rewrite rather than from visibility:
+
+- A `var` is never reported. It is reassignable, and under `by` an assignment writes the state's value instead of rebinding the variable.
+- A property with a custom getter, and a property the declaration does not initialize, are never reported. `by` needs a delegate expression at the declaration, and it does not recompute per read.
+- `kotlinx.coroutines.flow.StateFlow` and `MutableStateFlow` are never reported. Their `value` is a different member on an unrelated type and no `getValue` operator applies; the checker matches the Compose `State` class id rather than the member name, so a value class whose property happens to be named `value` is out for the same reason.
 
 ## Review + tests (fuzzy)
 

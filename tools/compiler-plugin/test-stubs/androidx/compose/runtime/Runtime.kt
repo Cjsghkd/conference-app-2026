@@ -28,19 +28,29 @@ fun <T> remember(key1: Any?, calculation: () -> T): T = calculation()
 fun rememberCoroutineScope(): CoroutineScope = throw UnsupportedOperationException()
 
 @Composable
-fun <T> rememberUpdatedState(newValue: T): MutableState<T> = mutableStateOf(newValue)
+fun <T> rememberUpdatedState(newValue: T): State<T> = mutableStateOf(newValue)
 
-interface MutableState<T> {
-    var value: T
+interface State<out T> {
+    val value: T
 }
 
-operator fun <T> MutableState<T>.getValue(thisRef: Any?, property: KProperty<*>): T = value
+interface MutableState<T> : State<T> {
+    override var value: T
+
+    operator fun component1(): T
+
+    operator fun component2(): (T) -> Unit
+}
+
+operator fun <T> State<T>.getValue(thisRef: Any?, property: KProperty<*>): T = value
 
 operator fun <T> MutableState<T>.setValue(thisRef: Any?, property: KProperty<*>, value: T) {
     this.value = value
 }
 
 fun <T> mutableStateOf(value: T): MutableState<T> = throw UnsupportedOperationException()
+
+fun <T> derivedStateOf(calculation: () -> T): State<T> = throw UnsupportedOperationException()
 
 class CompositionLocal<T>
 
