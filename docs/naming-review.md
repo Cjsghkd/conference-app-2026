@@ -1,6 +1,6 @@
 # Naming review
 
-A name is read far more often than the declaration it labels, and it is the only part of a declaration that reaches a call site. This page states when a name and its type disagree, and how a reviewer applies the rule. It covers value declarations — properties, parameters, and return values; Compose view naming is defined in [Building a screen](./building-a-screen.md#naming-conventions-for-compose-views).
+A name is read far more often than the declaration it labels, and it is the only part of a declaration that reaches a call site. This page states when a name and its type disagree, when a name leaves out what it applies to, and how a reviewer applies the rules. It covers value declarations — properties, parameters, and return values; Compose view naming is defined in [Building a screen](./building-a-screen.md#naming-conventions-for-compose-views).
 
 ## Name and type
 
@@ -40,6 +40,25 @@ Two corrections satisfy the rule; the difference is whether the entity already e
 
 The suffix names the attribute, not the type. `title: String` is already an attribute name and stays as it is; `titleString` and `titleText` restate what the type declares. A suffix is added only where the name currently denotes an entity.
 
+## Under-qualification
+
+A name can agree with its type and still fail, by leaving out which part of the declaration's subject it reaches. The question in [Name and type](#name-and-type) answers yes — the value of `seed: Int` is a seed — and the reader is still left without the one fact needed to pass an argument.
+
+```kotlin
+@Composable
+fun KaigiNavigationBarScope.KaigiNavigationBarItem(
+    selected: Boolean,
+    seed: Int,   // rejected: the destination draws an icon and an indicator, and this reaches only the indicator
+    icon: @Composable () -> Unit,
+)
+```
+
+The correction names the element: `indicatorSeed`, `dividerSeed`, `outlineSeed`. The bare word is reserved for a declaration whose whole subject is the one thing it applies to — `SketchShape.seed` seeds the shape it belongs to, and nothing else is in reach.
+
+The question is asked of the whole API, not of one signature. `KaigiNavigationBar` draws a single outline, so `seed` reads unambiguously inside its body; but the bar and its items are written together, and the item already takes an `indicatorSeed`. Read side by side, a bare `seed` on the bar asks which of the two the caller is holding. It is `outlineSeed`.
+
+The rule generalises past seeds: wherever a declaration selects among several parts of what its owner renders, its name states the part. A colour, a shape, or a size reaching one element of a composite is named for that element.
+
 ## Related mismatches
 
 The same disagreement appears wherever the type carries less structure than the name promises.
@@ -57,8 +76,8 @@ An adjective or a participle already reads as an assertion and stands on its own
 For each declaration in the diff whose type is general-purpose (`String`, `Int`, `Boolean`, or a collection of those):
 
 1. Read the name on its own and state the value it promises.
-2. Compare that promise against the type. Agreement ends the check.
-3. On a mismatch, pick a correction from [Choosing the correction](#choosing-the-correction) and report it together with the call site that reads worst under the current name.
+2. Compare that promise against the type. On a mismatch, pick a correction from [Choosing the correction](#choosing-the-correction) and report it together with the call site that reads worst under the current name.
+3. On agreement, ask whether the owner has more than one part the value could reach. If it does, the name states which one; see [Under-qualification](#under-qualification).
 
 Domain models in `:core:model` and `UiState` properties come first: their names reach every feature that renders them.
 
