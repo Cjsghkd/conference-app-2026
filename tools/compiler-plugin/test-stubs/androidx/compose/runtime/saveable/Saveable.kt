@@ -5,6 +5,9 @@ import androidx.compose.runtime.MutableState
 import kotlinx.serialization.KSerializer
 
 @Composable
+fun <T : Any> rememberSaveable(vararg inputs: Any?, init: () -> T): T = init()
+
+@Composable
 inline fun <reified T : Any> rememberSerializable(vararg inputs: Any?, noinline init: () -> T): T = init()
 
 @Composable

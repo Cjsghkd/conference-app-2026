@@ -14,7 +14,8 @@ import com.kitakkun.jetwhale.plugins.semantics.agent.JetWhaleSemanticsProbe
 @Composable
 internal actual fun SemanticsProbe() {
     val window = LocalAwtWindow.current as? ComposeWindow ?: return
-    remember(window) { ProbeWindowScope(window) }.JetWhaleSemanticsProbe()
+    val windowScope = remember(window) { ProbeWindowScope(window) }
+    windowScope.JetWhaleSemanticsProbe()
 }
 
 private class ProbeWindowScope(override val window: ComposeWindow) : FrameWindowScope

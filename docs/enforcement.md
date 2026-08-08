@@ -47,6 +47,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | A feature UI composable carries a preview in its file | FIR `UiComponentRequiresPreview` |
 | A feature UI composable reads every property of the state it takes | FIR `UiComponentTakesWhatItReads` |
 | A callback does not report back a value its own composable was given | FIR `NoCallerSuppliedCallbackArgument` |
+| A remembered value is bound to a local before it is used | FIR `RememberResultMustBeBound` |
 
 > All implemented FIR checkers live in `:tools:compiler-plugin` and are applied to every module. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
@@ -409,6 +410,26 @@ items(slot.items) { item ->
 Why: a callback parameter exists to carry information the caller does not have. A value the caller passed in a moment earlier is not such information — the caller can close over it at the call site, and the round trip only widens the component's signature and forces the identifier into a state type that exists for rendering. A `@Composable` therefore must not invoke a `Unit`-returning function-typed parameter with one of its own value parameters, or with a property selected from one.
 
 The argument must be a plain read to be rejected: an element bound by a `forEach`/`items` lambda, a `remember`ed value, and any computed expression (`count + 1`) are all values the component owns. `@Composable` and `suspend` function types carry their own function-type kinds, so content slots and suspending handlers are out of scope.
+
+### `RememberResultMustBeBound`
+
+```kotlin
+remember { SafeClickInvoker() }.invoke(onClick)          // ERROR
+retain { mutableStateOf(DroidKaigi2026Day.Day1) }.value  // ERROR
+
+val invoker = remember { SafeClickInvoker() }            // OK
+invoker.invoke(onClick)
+
+var selectedDay by retain { mutableStateOf(DroidKaigi2026Day.Day1) } // OK: a delegate
+SnackbarHost(retain { SnackbarHostState() })                         // OK: argument position
+rememberCoroutineScope().launch { … }                                // OK: a handle, not a value
+```
+
+Why: a call written directly as a receiver reads as a computation performed at that point, while what it produces is a value held across recompositions. The name a local gives it says so at the point it is created, and every later use then reads as a use of the held value. The chained form also hides the keys the call was given, which is what decides when the value is recomputed.
+
+The subject is the family that remembers a **value**: `remember`, `rememberSaveable`, `rememberSerializable`, `rememberUpdatedState`, and `retain` — matched by resolved callable id, so every overload of each name qualifies and a same-named function in another package does not. A call that returns a **handle** whose immediate use is the idiomatic form is not in the family, which is why `rememberCoroutineScope().launch { … }` compiles. The Soil reads (`rememberQuery`, `rememberMutation`, `rememberSubscription`) and the `remember*`/`retain*` factories that produce navigation and scroll infrastructure are left out on the same ground.
+
+Only the receiver position is in scope. Argument position is idiomatic and stays out, which also leaves `with(remember { … }) { … }` and every other paraphrase that passes the value as an argument alone; closing those would take a list of scoping functions, which [the principles above](#principles-priority-order-of-enforcement-mechanisms) reserve for review. The receiver position itself is read from the resolved call, so a receiver reached through `?.`, through an index access, or as the subject of a `for` loop counts, and so does a scoping call written as a receiver (`remember { … }.let { … }`).
 
 ## Review + tests (fuzzy)
 
