@@ -82,6 +82,33 @@ class SponsorsScreenRobotTest {
             }
         }
 
+        describe("when the sponsors have not arrived yet") {
+            doIt {
+                setupLoadingContent()
+            }
+            itShould("show the loading fallback") {
+                checkLoadingDisplayed()
+                checkPlanSectionDoesNotExist("Platinum Sponsors")
+            }
+            describe("and they arrive") {
+                doIt {
+                    releaseLoad(sampleSponsors)
+                }
+                itShould("swap the fallback for the content") {
+                    checkSponsorDisplayed("Arctic Fox Inc.")
+                }
+            }
+        }
+
+        describe("when the sponsors fail to load") {
+            doIt {
+                setupFailingContent()
+            }
+            itShould("show the error fallback") {
+                checkErrorDisplayed()
+            }
+        }
+
         describe("when the payload carries no sponsors") {
             doIt {
                 setupContent(Sponsors(groups = persistentListOf()))

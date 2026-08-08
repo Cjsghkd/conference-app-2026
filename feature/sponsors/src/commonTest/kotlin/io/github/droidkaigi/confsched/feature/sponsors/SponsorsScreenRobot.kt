@@ -1,25 +1,26 @@
 package io.github.droidkaigi.confsched.feature.sponsors
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasProgressBarRangeInfo
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import dev.zacsweers.metro.createGraph
 import io.github.droidkaigi.confsched.core.common.LocalSafeClickInvoker
 import io.github.droidkaigi.confsched.core.common.SafeClickInvoker
 import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.model.Sponsors
-import io.github.droidkaigi.confsched.core.model.SponsorsQueryKey
 import io.github.droidkaigi.confsched.core.testing.Robot
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import soil.query.QueryId
 import soil.query.SwrCachePlus
-import soil.query.buildQueryKey
 import soil.query.compose.SwrClientProvider
 import kotlin.test.assertEquals
 import kotlin.time.Duration
@@ -27,18 +28,12 @@ import kotlin.time.Duration
 @OptIn(ExperimentalTestApi::class)
 class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
 
+    private val graph = createGraph<SponsorsScreenTestGraph>()
     private val openedSites = mutableListOf<String>()
     private var backCount = 0
 
     fun setupContent(sponsors: Sponsors) {
-        val queryKey: SponsorsQueryKey = buildQueryKey(
-            id = QueryId("robot-sponsors"),
-            fetch = { sponsors },
-        )
-        val screenContext = SponsorsScreenContext(
-            sponsorsQueryKey = queryKey,
-            presenterContext = SponsorsPresenterContext(),
-        )
+        graph.sponsorsQueryKey.set(sponsors)
         val client = SwrCachePlus(CoroutineScope(SupervisorJob() + Dispatchers.Unconfined))
 
         composeUiTest.setContent {
@@ -46,7 +41,7 @@ class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
                 CompositionLocalProvider(
                     LocalSafeClickInvoker provides SafeClickInvoker(interval = Duration.ZERO),
                 ) {
-                    context(screenContext) {
+                    context(graph.screenContext) {
                         SponsorsScreenRoot(
                             onNavigateBack = { backCount++ },
                             onNavigateToSponsorSite = openedSites::add,
@@ -55,6 +50,22 @@ class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
                 }
             }
         }
+        composeUiTest.waitForIdle()
+    }
+
+    fun setupLoadingContent() {
+        graph.sponsorsQueryKey.hold()
+        setupContent(Sponsors(groups = persistentListOf()))
+    }
+
+    fun setupFailingContent() {
+        graph.sponsorsQueryKey.failWith(IllegalStateException("boom"))
+        setupContent(Sponsors(groups = persistentListOf()))
+    }
+
+    fun releaseLoad(sponsors: Sponsors) {
+        graph.sponsorsQueryKey.set(sponsors)
+        graph.sponsorsQueryKey.release()
         composeUiTest.waitForIdle()
     }
 
@@ -90,6 +101,14 @@ class SponsorsScreenRobot(composeUiTest: ComposeUiTest) : Robot(composeUiTest) {
 
     fun checkBackInvoked(times: Int) {
         assertEquals(times, backCount)
+    }
+
+    fun checkLoadingDisplayed() {
+        composeUiTest.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
+    }
+
+    fun checkErrorDisplayed() {
+        composeUiTest.onNodeWithText("Failed to load").assertIsDisplayed()
     }
 
     fun checkEmptyStateDisplayed() {

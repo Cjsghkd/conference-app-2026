@@ -1,5 +1,6 @@
 package io.github.droidkaigi.confsched.feature.sponsors
 
+import dev.zacsweers.metro.createGraph
 import io.github.droidkaigi.confsched.core.model.Sponsor
 import io.github.droidkaigi.confsched.core.model.SponsorGroup
 import io.github.droidkaigi.confsched.core.model.SponsorPlan
@@ -10,6 +11,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SponsorsScreenPresenterTest {
+
+    private val graph = createGraph<SponsorsScreenTestGraph>()
 
     private val sampleSponsors = Sponsors(
         groups = persistentListOf(
@@ -30,7 +33,7 @@ class SponsorsScreenPresenterTest {
     @Test
     fun the_loaded_groups_reach_the_ui_state_in_order() {
         runPresenterTest<SponsorsPresenterContext, Unit, Unit, SponsorsScreenUiState>(
-            presenterContext = SponsorsPresenterContext(),
+            presenterContext = graph.presenterContext,
             presenter = { _ -> sponsorsScreenPresenter(sampleSponsors) },
         ) {
             assertEquals(sampleSponsors.groups, uiStates.awaitItem().groups)
