@@ -1,7 +1,7 @@
 package io.github.droidkaigi.confsched.app
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.DateRange
@@ -9,12 +9,9 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavBackStack
@@ -22,6 +19,8 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
+import io.github.droidkaigi.confsched.core.ui.KaigiNavigationBar
+import io.github.droidkaigi.confsched.core.ui.KaigiNavigationBarItem
 import io.github.droidkaigi.confsched.feature.about.AboutNavKey
 import io.github.droidkaigi.confsched.feature.eventmap.EventMapNavKey
 import io.github.droidkaigi.confsched.feature.favorites.FavoritesNavKey
@@ -76,22 +75,16 @@ private class RootTabScene(
     override val entries get() = delegate.entries
     override val previousEntries get() = delegate.previousEntries
 
+    // The bar takes no layout space, so a scrollable destination must add
+    // KaigiNavigationBarDefaults.occupiedHeight to its bottom content padding.
     override val content: @Composable () -> Unit = {
-        Scaffold(
-            bottomBar = {
-                NavigationBar {
-                    RootTab.entries.forEach { tab ->
-                        NavigationBarItem(
-                            selected = tab == currentTab,
-                            onClick = { onSelectTab(tab) },
-                            icon = { Icon(tab.icon, contentDescription = tab.label) },
-                            label = { Text(tab.label) },
-                        )
-                    }
-                }
-            },
-        ) { innerPadding ->
-            Box(Modifier.padding(innerPadding)) { delegate.content() }
+        Box(Modifier.fillMaxSize()) {
+            delegate.content()
+            RootTabBar(
+                currentTab = currentTab,
+                onSelectTab = onSelectTab,
+                modifier = Modifier.align(Alignment.BottomCenter),
+            )
         }
     }
 
@@ -99,6 +92,31 @@ private class RootTabScene(
         other is RootTabScene && delegate == other.delegate && currentTab == other.currentTab
 
     override fun hashCode(): Int = delegate.hashCode() * 31 + currentTab.hashCode()
+}
+
+/** The tab bar the shell shows under every root destination. */
+@Composable
+private fun RootTabBar(
+    currentTab: RootTab,
+    onSelectTab: (RootTab) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KaigiNavigationBar(outlineSeed = RootTabBarSeeds.OUTLINE, modifier = modifier) {
+        RootTab.entries.forEachIndexed { index, tab ->
+            KaigiNavigationBarItem(
+                selected = tab == currentTab,
+                onClick = { onSelectTab(tab) },
+                indicatorSeed = RootTabBarSeeds.FIRST_INDICATOR + index,
+            ) {
+                Icon(tab.icon, contentDescription = tab.label)
+            }
+        }
+    }
+}
+
+private object RootTabBarSeeds {
+    const val OUTLINE = 955
+    const val FIRST_INDICATOR = OUTLINE + 1
 }
 
 @Composable
