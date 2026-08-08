@@ -18,47 +18,35 @@ fun kaigiAppViewController(appGraph: IosAppGraph): UIViewController = ComposeUIV
 }
 ```
 
-The Swift side owns the graph in a singleton, `KaigiAppGraphOwner` (modeled on the 2025 app's `Container.shared`), so native code anywhere — the Liquid Glass tab bar, deep-link handling — reaches the same graph the Compose UI runs on:
+The `App` struct owns the graph and hands it to the view that hosts the Compose controller, so one graph serves the process and the native tab bar takes it the same way. Its `init` runs the app initializer before the first composition ([AppGraph and UiGraph](./di-app-graph.md)). A `UIViewControllerRepresentable` wraps the Kotlin `UIViewController` for SwiftUI (top-level Kotlin functions surface as a generated `…Kt` class named after the file):
 
 ```swift
 import AppShared
+import SwiftUI
 
-// Swift-implemented owner of the KMP app graph. Built once, accessible globally.
-final class KaigiAppGraphOwner: Sendable {
-    static let shared = KaigiAppGraphOwner()
+@main
+struct KaigiAppApp: App {
+    private let appGraph = IosAppGraphKt.createIosAppGraph()
 
-    let appGraph: IosAppGraph
+    init() {
+        appGraph.appInitializer.initialize()
+    }
 
-    private init() {
-        appGraph = IosAppGraphKt.createIosAppGraph()
+    var body: some Scene {
+        WindowGroup {
+            KaigiAppView(appGraph: appGraph).ignoresSafeArea()
+        }
     }
 }
-```
 
-A `UIViewControllerRepresentable` wraps the Kotlin `UIViewController` for SwiftUI (top-level Kotlin functions surface as a generated `…Kt` class named after the file):
+private struct KaigiAppView: UIViewControllerRepresentable {
+    let appGraph: IosAppGraph
 
-```swift
-import SwiftUI
-import AppShared
-
-struct CMPKaigiAppViewController: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
-        KaigiAppViewController_iosKt.kaigiAppViewController(
-            appGraph: KaigiAppGraphOwner.shared.appGraph,
-        )
+        KaigiAppViewController_iosKt.kaigiAppViewController(appGraph: appGraph)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
-}
-
-@main
-struct KaigiIosApp: App {
-    var body: some Scene {
-        WindowGroup {
-            CMPKaigiAppViewController()
-                .ignoresSafeArea()
-        }
-    }
 }
 ```
 
