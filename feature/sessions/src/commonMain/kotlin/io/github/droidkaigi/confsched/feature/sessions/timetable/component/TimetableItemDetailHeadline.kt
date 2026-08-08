@@ -83,7 +83,7 @@ fun TimetableItemDetailHeadlinePreview(
         TimetableItemDetailHeadline(
             room = "Arctic Fox",
             title = "Compose Multiplatform in Practice",
-            speaker = "Alice",
+            speaker = "Speaker A",
         )
     }
 }

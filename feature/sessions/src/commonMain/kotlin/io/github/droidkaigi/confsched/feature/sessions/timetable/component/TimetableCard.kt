@@ -57,7 +57,7 @@ fun TimetableCardPreview() {
     TimetableCard(
         title = "Compose Multiplatform in Practice",
         room = "Arctic Fox",
-        speaker = "Alice",
+        speaker = "Speaker A",
         isFavorite = true,
         onBookmarkClick = {},
         onClick = {},

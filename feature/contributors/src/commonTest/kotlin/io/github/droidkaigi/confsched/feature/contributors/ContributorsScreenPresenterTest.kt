@@ -12,8 +12,8 @@ class ContributorsScreenPresenterTest {
 
     private val sampleContributors = Contributors(
         items = persistentListOf(
-            contributor(2L, "bob"),
-            contributor(1L, "alice"),
+            contributor(2L, "user-b"),
+            contributor(1L, "user-a"),
         ),
     )
 
@@ -25,7 +25,7 @@ class ContributorsScreenPresenterTest {
         ) {
             val contributors = uiStates.awaitItem().contributors
             assertEquals(sampleContributors.items, contributors)
-            assertEquals(listOf("bob", "alice"), contributors.map { it.username })
+            assertEquals(listOf("user-b", "user-a"), contributors.map { it.username })
         }
     }
 
@@ -33,6 +33,6 @@ class ContributorsScreenPresenterTest {
         id = ContributorId(id),
         username = username,
         iconUrl = "https://example.com/$username.png",
-        profileUrl = "https://github.com/$username",
+        profileUrl = "https://example.com/$username",
     )
 }

@@ -18,6 +18,19 @@ A comment exists for exactly one reason: to state, in one line, a constraint the
 - OSS-quality wording everywhere (docs, comments, commit messages): no slang or in-house jargon, spell out acronyms on first mention, never reference symbols that no longer exist in the codebase.
 - Documentation register: neutral, declarative, present tense — the tone of official library documentation. Prefer the standard rule vocabulary (`forbid` / `reject` / `require` / `must not`) over informal or policy-flavored words (`ban`, `block`); no exclamation marks, marketing adjectives, or first-person narration. When the user supplies wording, treat it as intent, not final phrasing — propose the conventional term if one exists.
 
+## Sample content
+
+Sample data ships with the repository and is held to the same standard as the rest of it.
+
+- Sample values must not name a real person or organization, and must not read as one. This
+  covers names, affiliations, handles, account ids, email addresses, and URLs that resolve to a
+  real page or avatar.
+- Keep placeholders recognizable as placeholders: `Speaker A`, `Session 1`, a role without an
+  employer, `https://example.com/...`.
+- Naming a technology is fine — a session title about Jetpack Compose or Kotlin Multiplatform
+  describes subject matter. Naming an employer is not.
+- The design file follows the same rule.
+
 ## Documentation (docs/)
 
 - Every page is one of three kinds: rules (normative, `must` / `must not`), map (structure), or guide (procedural). Keep each page at one altitude — module and overview pages state responsibilities, never class lists; class-level detail lives on the page that owns the topic.

@@ -12,7 +12,7 @@ import kotlin.test.Test
 class ContributorsScreenRobotTest {
 
     private val sampleContributors = Contributors(
-        items = persistentListOf(contributor(1L, "alice"), contributor(2L, "bob")),
+        items = persistentListOf(contributor(1L, "user-a"), contributor(2L, "user-b")),
     )
 
     @Test
@@ -24,18 +24,18 @@ class ContributorsScreenRobotTest {
                 setupContent(sampleContributors)
             }
             itShould("list every contributor") {
-                checkContributorDisplayed("alice")
-                checkContributorDisplayed("bob")
+                checkContributorDisplayed("user-a")
+                checkContributorDisplayed("user-b")
             }
             itShould("show how many there are") {
                 checkCountDisplayed(2)
             }
             describe("and a contributor is tapped") {
                 doIt {
-                    clickContributor("bob")
+                    clickContributor("user-b")
                 }
                 itShould("open that contributor's profile") {
-                    checkOpenedProfiles("https://github.com/bob")
+                    checkOpenedProfiles("https://example.com/user-b")
                 }
             }
             describe("and back is tapped") {
@@ -62,6 +62,6 @@ class ContributorsScreenRobotTest {
         id = ContributorId(id),
         username = username,
         iconUrl = "https://example.com/$username.png",
-        profileUrl = "https://github.com/$username",
+        profileUrl = "https://example.com/$username",
     )
 }
