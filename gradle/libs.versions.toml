@@ -44,7 +44,7 @@ openapiGenerator = "7.14.0"
 kaml = "0.104.0"
 # Preview screenshot-test stack (Android host tests only — see docs/testing-preview-screenshot.md).
 # Roborazzi renders @Preview composables headlessly via Robolectric; ComposablePreviewScanner
-# discovers them (its :common artifact scans org.jetbrains.compose's @Preview / @PreviewParameter).
+# discovers them.
 roborazzi = "1.67.0"
 robolectric = "4.16.1"
 composablePreviewScanner = "0.9.1"
@@ -131,10 +131,8 @@ roborazziPreviewScannerSupport = { module = "io.github.takahirom.roborazzi:robor
 roborazziComposeDesktop = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop", version.ref = "roborazzi" }
 roborazziComposeIos = { module = "io.github.takahirom.roborazzi:roborazzi-compose-ios", version.ref = "roborazzi" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
-# The :common artifact scans org.jetbrains.compose.ui.tooling.preview.Preview (Compose Multiplatform
-# previews), which is what :tools:ksp-processor generates. It's deprecated upstream but the only
-# artifact that matches the JetBrains @Preview annotation this project uses.
-composablePreviewScannerCommon = { module = "io.github.sergio-sastre.ComposablePreviewScanner:common", version.ref = "composablePreviewScanner" }
+# The :android artifact scans androidx.compose.ui.tooling.preview.Preview, which is the annotation
+# Compose Multiplatform previews carry.
 composablePreviewScannerAndroid = { module = "io.github.sergio-sastre.ComposablePreviewScanner:android", version.ref = "composablePreviewScanner" }
 junit = { module = "junit:junit", version.ref = "junit" }
 composeUiTestJunit4 = { module = "org.jetbrains.compose.ui:ui-test-junit4", version.ref = "jetbrainsCompose" }
@@ -165,6 +163,5 @@ droidkaigiPrimitiveKmp = { id = "droidkaigi.primitive.kmp", version = "unspecifi
 droidkaigiPrimitiveOpenapi = { id = "droidkaigi.primitive.openapi", version = "unspecified" }
 droidkaigiPrimitiveKmpCompose = { id = "droidkaigi.primitive.kmp.compose", version = "unspecified" }
 droidkaigiPrimitiveBuildkonfig = { id = "droidkaigi.primitive.buildkonfig", version = "unspecified" }
-droidkaigiPrimitiveScreenshotTest = { id = "droidkaigi.primitive.screenshot-test", version = "unspecified" }
 droidkaigiPrimitiveSpotless = { id = "droidkaigi.primitive.spotless", version = "unspecified" }
 droidkaigiConventionKmpFeature = { id = "droidkaigi.convention.kmp-feature", version = "unspecified" }
