@@ -46,17 +46,18 @@ The fetch runs through `FakeFixture.await()`, which is where a test reaches the 
 A Robot exposes them as scenario steps:
 
 ```kotlin
-fun setupLoadingContent() {
+fun setupPendingSponsors() {
     graph.sponsorsQueryKey.hold()
-    setupContent(Sponsors(groups = persistentListOf()))
 }
 
-fun releaseLoad(sponsors: Sponsors) {
+fun releaseSponsors(sponsors: Sponsors) {
     graph.sponsorsQueryKey.set(sponsors)
     graph.sponsorsQueryKey.release()
     composeUiTest.waitForIdle()
 }
 ```
+
+Showing the screen stays a step of its own, so a scenario reads `setupPendingSponsors()` then `setupContent()`. See [Robot pattern tests](./testing-robot.md).
 
 Every `MutationKey` must carry a `MutationTag` ([Mutations](./soil-mutation.md)) — including a fake, since the checker also runs over test sources. `:core:testing` provides one tag for all test graphs; each test owns its `SwrClient`, so the per-screen cache isolation the tag exists for is already satisfied.
 

@@ -3,6 +3,7 @@ package io.github.droidkaigi.confsched.core.testing
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.runComposeUiTest
@@ -12,6 +13,7 @@ import io.github.droidkaigi.confsched.core.common.SafeClickInvoker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import soil.query.SwrCachePlus
 import soil.query.compose.SwrClientProvider
 import kotlin.time.Duration
@@ -23,10 +25,16 @@ abstract class Robot(protected val composeUiTest: ComposeUiTest) {
     // from snackbarNavEntryDecorator, and the click debounce — zeroed so consecutive taps in one
     // scenario are not swallowed. A fresh client per call lets a scenario set up more than once.
     protected fun setScreenContent(content: @Composable () -> Unit) {
-        val client = SwrCachePlus(CoroutineScope(SupervisorJob() + Dispatchers.Unconfined))
+        val clientScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val client = SwrCachePlus(clientScope)
         val snackbarHostState = SnackbarHostState()
 
         composeUiTest.setContent {
+            // A held query leaves a coroutine suspended in this scope, and a scenario may set up
+            // again, so the scope has to end with the composition that owns it.
+            DisposableEffect(Unit) {
+                onDispose(clientScope::cancel)
+            }
             SwrClientProvider(client = client) {
                 CompositionLocalProvider(
                     LocalSnackbarHostState provides snackbarHostState,

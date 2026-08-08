@@ -103,7 +103,7 @@ The presenter has no loading-to-content transition: the Root's [`SoilDataBoundar
 1. **`RecompositionMode.Immediate`**: executes recomposition immediately without waiting for the frame clock (the crux of the test).
 2. **Supplying dependencies**: the presenter requires `rememberMutation` / `SwrClientProvider` / `LocalClock` plus a `PresenterContext` (supplied via `context(presenterContext){}`). Inside the test composition, supply **a real `SwrCachePlus(backgroundScope)` (no `TestSwrClientPlus` needed) plus `runTest` virtual time plus the `PresenterContext` the test graph resolves**.
 3. **Verifying success/failure**: to fire a `MutationSuccessEffect` / `MutationErrorEffect`, **arm the fake key with `failWith(…)` or leave it succeeding** and **assert the emission on the `results` turbine** → even the one-off wiring can be verified.
-4. **Input/output**: feed actions via the scope's `send(action)` to drive UiState transitions, and assert the result side on the `results` turbine.
+4. **Input/output**: feed actions via the scope's `send(action)` to drive UiState transitions. There are two assertion surfaces beyond `uiStates` — what the action reached in the data layer, on the fake's `invocations`, and what the presenter emitted back, on the `results` turbine. An action that only mutates state reaches neither.
 5. **Multiplatform**: the presenter is pure logic in commonMain, so **running it on the JVM is sufficient** (rendering-free logic verification does not need any UI target).
 
 ## Position in the test pyramid
