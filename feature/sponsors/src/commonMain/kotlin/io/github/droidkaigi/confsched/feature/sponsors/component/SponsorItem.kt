@@ -48,7 +48,7 @@ fun SponsorItemPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         SponsorItem(
-            name = "Arctic Fox Inc.",
+            name = "Sponsor A",
             logoUrl = PreviewImage.SessionCover.imageUrl,
             onSponsorClick = {},
         )

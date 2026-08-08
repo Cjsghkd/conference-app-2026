@@ -65,18 +65,7 @@ fun FavoritesListSectionPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         FavoritesListSection(
-            uiState = FavoritesListSectionUiState(
-                timeSlots = persistentListOf(
-                    FavoritesListSectionUiState.TimeSlot(
-                        day = DroidKaigi2026Day.Day1,
-                        startsAt = "10:00",
-                        endsAt = "10:40",
-                        items = persistentListOf(
-                            TimetableItem(TimetableItemId("d1a"), "Compose Multiplatform in Practice", Room.NARWHAL, "Sp1", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
-                        ),
-                    ),
-                ),
-            ),
+            uiState = FavoritesListSectionUiState.fake(),
             onBookmarkClick = {},
             onItemClick = {},
         )

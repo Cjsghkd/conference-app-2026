@@ -15,4 +15,6 @@ data class Contributor(
 
 data class Contributors(
     val items: PersistentList<Contributor>,
-)
+) {
+    companion object
+}

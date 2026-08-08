@@ -20,17 +20,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
-import io.github.droidkaigi.confsched.core.model.Sponsor
-import io.github.droidkaigi.confsched.core.model.SponsorGroup
-import io.github.droidkaigi.confsched.core.model.SponsorPlan
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
-import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.feature.sponsors.component.SPONSOR_GRID_COLUMNS
 import io.github.droidkaigi.confsched.feature.sponsors.component.SponsorsEmptyView
 import io.github.droidkaigi.confsched.feature.sponsors.component.sponsorPlanSection
-import kotlinx.collections.immutable.persistentListOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,40 +63,6 @@ fun SponsorsScreen(
     }
 }
 
-private fun previewUiState() = SponsorsScreenUiState(
-    groups = persistentListOf(
-        SponsorGroup(
-            plan = SponsorPlan.Platinum,
-            sponsors = persistentListOf(
-                previewSponsor("Arctic Fox Inc.", SponsorPlan.Platinum),
-                previewSponsor("Bumblebee Corp.", SponsorPlan.Platinum),
-            ),
-        ),
-        SponsorGroup(
-            plan = SponsorPlan.Gold,
-            sponsors = persistentListOf(
-                previewSponsor("Chipmunk Ltd.", SponsorPlan.Gold),
-                previewSponsor("Dolphin Studio", SponsorPlan.Gold),
-            ),
-        ),
-        SponsorGroup(
-            plan = SponsorPlan.Supporter,
-            sponsors = persistentListOf(
-                previewSponsor("Electric Eel", SponsorPlan.Supporter),
-                previewSponsor("Flamingo Works", SponsorPlan.Supporter),
-                previewSponsor("Giraffe Labs", SponsorPlan.Supporter),
-            ),
-        ),
-    ),
-)
-
-private fun previewSponsor(name: String, plan: SponsorPlan) = Sponsor(
-    name = name,
-    logoUrl = PreviewImage.SessionCover.imageUrl,
-    plan = plan,
-    link = "https://droidkaigi.jp/2026/",
-)
-
 @Preview
 @Composable
 fun SponsorsScreenPreview(
@@ -109,7 +70,7 @@ fun SponsorsScreenPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         SponsorsScreen(
-            uiState = previewUiState(),
+            uiState = SponsorsScreenUiState.fake(),
             onSponsorClick = {},
             onBackClick = {},
         )

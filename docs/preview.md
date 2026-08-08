@@ -4,7 +4,7 @@ Compose `@Preview`s need sample data and images, but those assets must **not shi
 
 ## Module split (production isolation)
 
-- `:core:preview:api` — the pure contract: a type-safe `PreviewImage` enum, the `PreviewImageResolver` interface, `LocalPreviewImageResolver` (default `null`), the `PreviewScope` marker, and `NoopPreviewImageResolver` (the `@ContributesBinding(PreviewScope)` default, which resolves nothing). No image binaries.
+- `:core:preview:api` — the contract and the sample data: a type-safe `PreviewImage` enum, the `PreviewImageResolver` interface, `LocalPreviewImageResolver` (default `null`), the `PreviewScope` marker, `NoopPreviewImageResolver` (the `@ContributesBinding(PreviewScope)` default, which resolves nothing), and the model `fake()` builders. No image binaries.
 - `:core:preview:impl` — the image binaries (Compose Resources) and `DefaultPreviewImageResolver`, contributed with `@ContributesBinding(PreviewScope, replaces = [NoopPreviewImageResolver::class])` so it overrides the no-op default wherever `:impl` is on the classpath.
 - `:core:preview:wrapper` — the Metro `PreviewGraph` (`@DependencyGraph(PreviewScope)`), `KaigiPreviewTheme`, and the wrapper features attach to their previews.
 
@@ -15,6 +15,9 @@ core/preview/
 │    PreviewImageResolver.kt    # contract + LocalPreviewImageResolver
 │    PreviewScope.kt            # Metro scope marker
 │    NoopPreviewImageResolver.kt # @ContributesBinding(PreviewScope) default; resolves nothing
+│    TimetableFake.kt           # Timetable.fake(), TimetableItem.fake()
+│    ContributorsFake.kt        # Contributors.fake()
+│    SponsorsFake.kt            # Sponsors.fake()
 ├─ impl/src/commonMain/
 │    ├─ kotlin/.../preview/impl/
 │    │    DefaultPreviewImageResolver.kt   # @ContributesBinding(PreviewScope, replaces=[Noop]); URL -> resource
@@ -29,6 +32,28 @@ core/preview/
 `KaigiPreviewTheme` and `PreviewGraph` live in `:wrapper`, not `:impl` or `:api`. The wrapper takes `:core:preview:impl` as a `compileOnly` dependency: Metro aggregates the contributed `DefaultPreviewImageResolver` binding at the wrapper's compile time, while `:impl` stays off production classpaths. Kotlin/Native and wasm rely on partial linkage to tolerate the dangling reference, and neither ever runs in production. Keeping the graph out of `:api` also avoids a cycle: `:api -> :impl` would clash with `:impl -> :api`.
 
 Production depends on `:core:preview:wrapper` (through the feature convention, see below) but never on `:core:preview:impl`, so the image binaries are physically excluded from release. Only preview / test builds put `:impl` on the classpath, sharing the same sample data with screenshot tests and fake builds.
+
+## Sample data
+
+Sample values are `fake()` extensions on a companion object, declared next to the type they build. Model fakes live in `:core:preview:api`:
+
+```kotlin
+fun Timetable.Companion.fake(): Timetable = Timetable(/* sessions across both days, some bookmarked */)
+```
+
+A screen's `UiState` carries its own `fake()` beside its declaration in the feature module, assembled from the model fakes through the same mapping the presenter uses, so a preview renders a state production can also produce:
+
+```kotlin
+internal fun TimetableListSectionUiState.Companion.fake(): TimetableListSectionUiState {
+    val timetable = Timetable.fake()
+    return TimetableListSectionUiState(
+        timeSlots = timetable.itemsOn(DroidKaigi2026Day.Day1).toTimeSlots(),
+        bookmarks = timetable.bookmarks,
+    )
+}
+```
+
+A preview then passes `uiState = TimetableScreenUiState.fake()` and declares no fixture of its own; tests reach the same values through the same call.
 
 ## Preview wrappers
 

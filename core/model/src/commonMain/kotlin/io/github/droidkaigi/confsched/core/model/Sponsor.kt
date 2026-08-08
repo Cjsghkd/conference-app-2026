@@ -19,4 +19,6 @@ data class SponsorGroup(
 
 data class Sponsors(
     val groups: PersistentList<SponsorGroup>,
-)
+) {
+    companion object
+}
