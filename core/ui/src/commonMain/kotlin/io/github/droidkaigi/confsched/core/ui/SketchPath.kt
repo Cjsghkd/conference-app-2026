@@ -40,13 +40,22 @@ private const val TWO_PI = PI.toFloat() * 2f
 // sine rather than a zigzag.
 private const val POINTS_PER_WAVE = 6
 
-// A sweep wavelength longer than the perimeter would leave one lattice cell per edge,
-// which offsets each edge by a near-constant amount and reads as a trapezoid rather
-// than a drawn rectangle. Six cells put roughly one and a half undulations on a side.
-private const val MIN_SWEEP_CELLS = 6
+// Below about four cells the sweep offsets whole edges by a near-constant amount and the
+// rectangle tilts into a skewed quadrilateral. Four is where that stops showing at a
+// roughness well past anything in use; two is unmistakable.
+private const val MIN_SWEEP_CELLS = 4
+
+// The tremor lattice only has to stay a lattice. At one cell the interpolation reads the
+// same value at both ends and the octave flattens to a constant offset.
+private const val MIN_TREMOR_CELLS = 2
 
 // How far a Catmull-Rom tangent may reach, as a fraction of the segment it belongs to.
-private const val TANGENT_CLAMP = 0.33f
+// A circular arc needs a shade over a third of its chord however finely it is subdivided,
+// so a clamp at or below 1/3 facets every corner it passes through; a small radius drawn
+// from few anchors then reads as a polygon. Both values sit above that, leaving the clamp
+// to catch only the overshoot a sharp turn in the noise produces.
+private const val OUTLINE_TANGENT_CLAMP = 0.36f
+private const val WAVY_TANGENT_CLAMP = 0.4f
 
 /**
  * A horizontal line of [width], wobbling around [centerY].
@@ -64,38 +73,45 @@ internal fun Density.sketchHorizontalLinePath(
     tremorWavelength: Dp,
     seed: Int,
 ): Path {
-    val sweepAmplitude = roughness.toPx()
-    val tremorAmplitude = tremor.toPx()
-    val sweepWavelengthPx = sweepWavelength.toPx()
-    val tremorWavelengthPx = tremorWavelength.toPx()
+    val positions = sketchLinePositions(width, tremorWavelength)
+    val offsets = sketchLineOffsets(
+        positions = positions,
+        center = centerY,
+        roughness = roughness,
+        tremor = tremor,
+        sweepWavelength = sweepWavelength,
+        tremorWavelength = tremorWavelength,
+        seed = seed,
+    )
+    return openCurveThrough(positions, offsets, OUTLINE_TANGENT_CLAMP)
+}
 
-    val segments = max(2, ceil(width / anchorSpacingFor(tremorWavelength).toPx()).toInt())
-    val xs = FloatArray(segments + 1) { width * it / segments }
-    val ys = FloatArray(segments + 1) { coherentNoise(seed, xs[it], sweepWavelengthPx) }
-    normalizeToPeak(ys, sweepAmplitude)
-    // The tremor octave is added raw rather than normalized: normalizing it would
-    // scale every fine wave down to the single largest one, flattening the effect.
-    for (index in ys.indices) {
-        val tremorNoise = coherentNoise(seed + TREMOR_SEED_OFFSET, xs[index], tremorWavelengthPx)
-        ys[index] += centerY + tremorNoise * tremorAmplitude
-    }
-
-    return Path().apply {
-        moveTo(xs[0], ys[0])
-        val controls = FloatArray(4)
-        for (index in 0 until segments) {
-            val previous = max(index - 1, 0)
-            val next = min(index + 2, segments)
-            controlPointsFor(
-                p0x = xs[previous], p0y = ys[previous],
-                p1x = xs[index], p1y = ys[index],
-                p2x = xs[index + 1], p2y = ys[index + 1],
-                p3x = xs[next], p3y = ys[next],
-                out = controls,
-            )
-            cubicTo(controls[0], controls[1], controls[2], controls[3], xs[index + 1], ys[index + 1])
-        }
-    }
+/**
+ * A vertical line of [height], wobbling around [centerX].
+ *
+ * The stroke is the one [sketchHorizontalLinePath] draws laid on the other axis, so a
+ * given [seed] describes the same wobble whichever direction the line runs.
+ */
+internal fun Density.sketchVerticalLinePath(
+    height: Float,
+    centerX: Float,
+    roughness: Dp,
+    tremor: Dp,
+    sweepWavelength: Dp,
+    tremorWavelength: Dp,
+    seed: Int,
+): Path {
+    val positions = sketchLinePositions(height, tremorWavelength)
+    val offsets = sketchLineOffsets(
+        positions = positions,
+        center = centerX,
+        roughness = roughness,
+        tremor = tremor,
+        sweepWavelength = sweepWavelength,
+        tremorWavelength = tremorWavelength,
+        seed = seed,
+    )
+    return openCurveThrough(offsets, positions, OUTLINE_TANGENT_CLAMP)
 }
 
 /**
@@ -124,22 +140,7 @@ internal fun Density.sketchVerticalWavyLinePath(
         centerX + sin(turns * TWO_PI) * reach * swell
     }
 
-    return Path().apply {
-        moveTo(xs[0], ys[0])
-        val controls = FloatArray(4)
-        for (index in 0 until steps) {
-            val previous = max(index - 1, 0)
-            val next = min(index + 2, steps)
-            controlPointsFor(
-                p0x = xs[previous], p0y = ys[previous],
-                p1x = xs[index], p1y = ys[index],
-                p2x = xs[index + 1], p2y = ys[index + 1],
-                p3x = xs[next], p3y = ys[next],
-                out = controls,
-            )
-            cubicTo(controls[0], controls[1], controls[2], controls[3], xs[index + 1], ys[index + 1])
-        }
-    }
+    return openCurveThrough(xs, ys, WAVY_TANGENT_CLAMP)
 }
 
 /**
@@ -179,9 +180,14 @@ internal fun Density.sketchRoundRectPath(
     )
     val perimeter = lengths.sum()
 
-    val distances = anchorDistances(lengths, anchorSpacingFor(tremorWavelength).toPx())
-    val sweepCells = cellsFor(perimeter, sweepWavelength.toPx())
-    val tremorCells = cellsFor(perimeter, tremorWavelength.toPx())
+    val sweepCells = cellsFor(perimeter, sweepWavelength.toPx(), MIN_SWEEP_CELLS)
+    val tremorCells = cellsFor(perimeter, tremorWavelength.toPx(), MIN_TREMOR_CELLS)
+    // Anchors have to resolve the lattice the closed path ends up with, not the one the
+    // nominal wavelength describes. Wrapping rounds the lattice to a whole number of cells,
+    // and on a short perimeter that lands far finer than the wavelength asked for; spacing
+    // the anchors by the nominal figure would drop the tremor between them.
+    val anchorSpacing = min(perimeter / tremorCells / ANCHORS_PER_WAVE, MaxAnchorSpacing.toPx())
+    val distances = anchorDistances(lengths, anchorSpacing)
     val offsets = FloatArray(distances.size) { coherentNoiseCyclic(seed, distances[it] / perimeter, sweepCells) }
     normalizeToPeak(offsets, sweepAmplitude)
     for (index in offsets.indices) {
@@ -215,6 +221,7 @@ internal fun Density.sketchRoundRectPath(
                 p1x = xs[current], p1y = ys[current],
                 p2x = xs[next], p2y = ys[next],
                 p3x = xs[following], p3y = ys[following],
+                tangentClamp = OUTLINE_TANGENT_CLAMP,
                 out = controls,
             )
             cubicTo(controls[0], controls[1], controls[2], controls[3], xs[next], ys[next])
@@ -227,18 +234,88 @@ internal fun Density.sketchRoundRectPath(
  * How much the requested swing has to shrink to fit a box of [width] by [height].
  *
  * Anchors move along the outward normal, so a swing wider than a quarter of the shorter
- * side carries opposing edges through each other and folds the outline into a ribbon.
+ * side of the outline carries opposing edges through each other and folds it into a ribbon.
  * Both octaves are scaled by this one ratio, which caps the swing while keeping their
  * proportion, so a shape small enough to reach the cap draws calmer rather than
  * differently.
  *
- * The ratio is taken against the full box, not the inset outline: the inset depends on
- * the capped swing, so measuring the cap against the inset would be circular.
+ * The outline is drawn inside a box already inset by the swing itself plus half of
+ * [strokeWidth], so the bound is solved rather than read off the box: with `a` the swing,
+ * the inner side measures `min(width, height) - 2a - strokeWidth`, and holding `a` within a
+ * quarter of that gives `a <= (min(width, height) - strokeWidth) / 6`. Measuring against the
+ * full box instead lets a large swing shrink the outline faster than the cap tightens, and
+ * the shape folds anyway.
  */
-internal fun Density.swingCapRatio(width: Float, height: Float, roughness: Dp, tremor: Dp): Float {
+internal fun Density.swingCapRatio(
+    width: Float,
+    height: Float,
+    roughness: Dp,
+    tremor: Dp,
+    strokeWidth: Dp,
+): Float {
     val requested = roughness.toPx() + tremor.toPx()
     if (requested <= 0f) return 1f
-    return min(1f, min(width, height) / 4f / requested)
+    val cap = (min(width, height) - strokeWidth.toPx()) / 6f
+    if (cap <= 0f) return 0f
+    return min(1f, cap / requested)
+}
+
+/** Anchor positions spread evenly along a line of [length], dense enough to carry the tremor. */
+private fun Density.sketchLinePositions(length: Float, tremorWavelength: Dp): FloatArray {
+    val segments = max(2, ceil(length / anchorSpacingFor(tremorWavelength).toPx()).toInt())
+    return FloatArray(segments + 1) { length * it / segments }
+}
+
+/** How far each of [positions] departs from [center], as the two octaves displace it. */
+private fun Density.sketchLineOffsets(
+    positions: FloatArray,
+    center: Float,
+    roughness: Dp,
+    tremor: Dp,
+    sweepWavelength: Dp,
+    tremorWavelength: Dp,
+    seed: Int,
+): FloatArray {
+    val sweepWavelengthPx = sweepWavelength.toPx()
+    val tremorWavelengthPx = tremorWavelength.toPx()
+    val tremorAmplitude = tremor.toPx()
+
+    val offsets = FloatArray(positions.size) { coherentNoise(seed, positions[it], sweepWavelengthPx) }
+    normalizeToPeak(offsets, roughness.toPx())
+    // The tremor octave is added raw rather than normalized: normalizing it would
+    // scale every fine wave down to the single largest one, flattening the effect.
+    for (index in offsets.indices) {
+        val tremorNoise = coherentNoise(seed + TREMOR_SEED_OFFSET, positions[index], tremorWavelengthPx)
+        offsets[index] += center + tremorNoise * tremorAmplitude
+    }
+    return offsets
+}
+
+/**
+ * The open curve through every `(x, y)` of [xs] and [ys].
+ *
+ * The two anchors at either end have no neighbour to take a tangent from, so the index is
+ * clamped there rather than wrapped: the curve leaves and arrives straight along itself.
+ */
+private fun openCurveThrough(xs: FloatArray, ys: FloatArray, tangentClamp: Float): Path {
+    val segments = xs.size - 1
+    return Path().apply {
+        moveTo(xs[0], ys[0])
+        val controls = FloatArray(4)
+        for (index in 0 until segments) {
+            val previous = max(index - 1, 0)
+            val next = min(index + 2, segments)
+            controlPointsFor(
+                p0x = xs[previous], p0y = ys[previous],
+                p1x = xs[index], p1y = ys[index],
+                p2x = xs[index + 1], p2y = ys[index + 1],
+                p3x = xs[next], p3y = ys[next],
+                tangentClamp = tangentClamp,
+                out = controls,
+            )
+            cubicTo(controls[0], controls[1], controls[2], controls[3], xs[index + 1], ys[index + 1])
+        }
+    }
 }
 
 /**
@@ -260,6 +337,7 @@ private fun controlPointsFor(
     p2y: Float,
     p3x: Float,
     p3y: Float,
+    tangentClamp: Float,
     out: FloatArray,
 ) {
     val d1 = knotSpacing(p0x, p0y, p1x, p1y)
@@ -284,7 +362,7 @@ private fun controlPointsFor(
         c2y = (d3 * d3 * p1y - d2 * d2 * p3y + weight * p2y) / scale
     }
 
-    val reach = hypot(p2x - p1x, p2y - p1y) * TANGENT_CLAMP
+    val reach = hypot(p2x - p1x, p2y - p1y) * tangentClamp
     clampToReach(p1x, p1y, c1x, c1y, reach, out, 0)
     clampToReach(p2x, p2y, c2x, c2y, reach, out, 2)
 }
@@ -334,11 +412,15 @@ private fun anchorDistances(lengths: FloatArray, anchorSpacing: Float): FloatArr
     val distances = ArrayList<Float>(lengths.size * 4)
     var start = 0f
     lengths.forEachIndexed { index, length ->
+        val isArc = index % 2 == 1
         if (length <= 0f) {
-            distances += start
+            // A zero-length arc is a square corner, and the duplicated anchor it leaves
+            // behind is what breaks the tangent there. A zero-length straight edge means
+            // something else: the radius has grown to meet the side, and the outline runs
+            // smoothly across that point. A cusp there facets a pill or a circle.
+            if (isArc) distances += start
         } else {
-            val minimumSteps = if (index % 2 == 1) 2 else 1
-            val steps = max(minimumSteps, (length / anchorSpacing).roundToInt())
+            val steps = max(if (isArc) 2 else 1, (length / anchorSpacing).roundToInt())
             for (step in 0 until steps) {
                 distances += start + length * step / steps
             }
@@ -441,8 +523,8 @@ private fun normalizeToPeak(values: FloatArray, amplitude: Float) {
     }
 }
 
-private fun cellsFor(perimeter: Float, wavelength: Float): Int =
-    max(MIN_SWEEP_CELLS, (perimeter / wavelength).roundToInt())
+private fun cellsFor(perimeter: Float, wavelength: Float, minimumCells: Int): Int =
+    max(minimumCells, (perimeter / wavelength).roundToInt())
 
 /**
  * A deterministic value in `[-1, 1)` for a lattice point, specified so that a second

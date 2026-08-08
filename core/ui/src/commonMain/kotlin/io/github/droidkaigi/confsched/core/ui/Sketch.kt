@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,8 +43,15 @@ import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 /** How finely the tremor octave ripples: shorter is a faster, tighter shake. */
 private val DefaultTremorWavelength = 42.dp
 
-/** How far apart the broad sweep turns: the design spec recommends 300dp. */
-private val DefaultSweepWavelength = 300.dp
+/**
+ * How far apart the broad sweep turns.
+ *
+ * A closed outline wraps its noise lattice onto the perimeter and so rounds the wavelength
+ * to a whole number of cells. At this figure the components in the design spec land on four
+ * to six cells, which is where the parameter starts governing the result instead of being
+ * overridden by the floor that keeps a rectangle from reading as a skewed quadrilateral.
+ */
+private val DefaultSweepWavelength = 140.dp
 
 /**
  * A wavelength divides, so zero would put the noise lookup at infinity, and a
@@ -110,11 +118,53 @@ fun SketchHorizontalDivider(
 }
 
 /**
+ * A vertical rule drawn as a single hand-sketched stroke.
+ *
+ * The line [SketchHorizontalDivider] draws, running down instead of across: a given
+ * [seed] describes the same wobble either way.
+ */
+@Composable
+fun SketchVerticalDivider(
+    seed: Int,
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.outline,
+    thickness: Dp = 2.dp,
+    roughness: Dp = DefaultRoughness,
+    tremor: Dp = DefaultTremor,
+    sweepWavelength: Dp = DefaultSweepWavelength,
+    tremorWavelength: Dp = DefaultTremorWavelength,
+) {
+    requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
+    require(thickness >= 0.dp) { "thickness must not be negative, was $thickness" }
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .width(thickness + (roughness + tremor) * 2)
+            .drawWithCache {
+                val path = sketchVerticalLinePath(
+                    height = size.height,
+                    centerX = size.width / 2f,
+                    roughness = roughness,
+                    tremor = tremor,
+                    sweepWavelength = sweepWavelength,
+                    tremorWavelength = tremorWavelength,
+                    seed = seed,
+                )
+                val stroke = Stroke(width = thickness.toPx(), cap = StrokeCap.Round)
+                onDrawBehind {
+                    drawPath(path = path, color = color, style = stroke)
+                }
+            },
+    )
+}
+
+/**
  * A vertical wavy line, for a timeline running down a column.
  *
- * The caller sets the height; the width follows from [amplitude] and [thickness].
+ * The caller sets the height; the width follows from the reach of the widest crest.
  * [noiseAmount] decides how mechanical the ripple looks, from an even sine at `0`
- * to visibly uneven crests at `1`.
+ * to visibly uneven crests at `1`, and it swells [amplitude] as well as shrinking it,
+ * so the line needs `amplitude * (1 + noiseAmount)` either side of centre.
  */
 @Composable
 fun SketchVerticalWavyLine(
@@ -132,7 +182,7 @@ fun SketchVerticalWavyLine(
     require(noiseAmount >= 0f) { "noiseAmount must not be negative, was $noiseAmount" }
     Box(
         modifier = modifier
-            .width(amplitude * 2 + thickness)
+            .width(amplitude * (1f + noiseAmount) * 2 + thickness)
             .drawWithCache {
                 val path = sketchVerticalWavyLinePath(
                     height = size.height,
@@ -170,7 +220,7 @@ fun Modifier.sketchBorder(
     require(thickness >= 0.dp) { "thickness must not be negative, was $thickness" }
     require(cornerRadius >= 0.dp) { "cornerRadius must not be negative, was $cornerRadius" }
     return drawWithCache {
-        val ratio = swingCapRatio(size.width, size.height, roughness, tremor)
+        val ratio = swingCapRatio(size.width, size.height, roughness, tremor, thickness)
         val effectiveRoughness = roughness * ratio
         val effectiveTremor = tremor * ratio
         val inset = (effectiveRoughness + effectiveTremor).toPx() + thickness.toPx() / 2f
@@ -204,9 +254,11 @@ fun Modifier.sketchBorder(
  * The hand-sketched rectangle as a [Shape], for `Modifier.clip`, `Modifier.background`
  * or any `shape` parameter.
  *
- * The outline is inset by `roughness + tremor` so the whole wobble stays within
- * the bounds. [Modifier.sketchBorder] insets a further half of its stroke width to keep
- * the line itself inside, so pairing the two leaves that half-width between them.
+ * The outline is inset by `roughness + tremor` so the whole wobble stays within the
+ * bounds. Give [borderThickness] the `thickness` of the [Modifier.sketchBorder] this shape
+ * is paired with and the two land on the same vertices, so a region clipped to the shape
+ * meets the line down its centre instead of spilling a stroke's width past it. Left at
+ * zero the outline sits where an unaccompanied fill wants it.
  *
  * On a box too small to hold the requested swing, both octaves shrink together rather
  * than letting the outline fold onto itself.
@@ -219,10 +271,12 @@ data class SketchShape(
     val sweepWavelength: Dp = DefaultSweepWavelength,
     val tremorWavelength: Dp = DefaultTremorWavelength,
     val cornerRadius: Dp = 0.dp,
+    val borderThickness: Dp = 0.dp,
 ) : Shape {
     init {
         requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
         require(cornerRadius >= 0.dp) { "cornerRadius must not be negative, was $cornerRadius" }
+        require(borderThickness >= 0.dp) { "borderThickness must not be negative, was $borderThickness" }
     }
 
     override fun createOutline(
@@ -230,10 +284,10 @@ data class SketchShape(
         layoutDirection: LayoutDirection,
         density: Density,
     ): Outline = with(density) {
-        val ratio = swingCapRatio(size.width, size.height, roughness, tremor)
+        val ratio = swingCapRatio(size.width, size.height, roughness, tremor, borderThickness)
         val effectiveRoughness = roughness * ratio
         val effectiveTremor = tremor * ratio
-        val inset = (effectiveRoughness + effectiveTremor).toPx()
+        val inset = (effectiveRoughness + effectiveTremor).toPx() + borderThickness.toPx() / 2f
         val width = size.width - inset * 2f
         val height = size.height - inset * 2f
         if (width <= 0f || height <= 0f) return Outline.Rectangle(size.toRect())
@@ -532,6 +586,74 @@ private fun SketchShapePreview(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun SketchSegmentedPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        PreviewSurface {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                SegmentedSample(selectedFirst = true)
+                SegmentedSample(selectedFirst = false)
+            }
+        }
+    }
+}
+
+@Composable
+private fun SegmentedSample(selectedFirst: Boolean) {
+    val thickness = 2.dp
+    val roughness = 0.4.dp
+    val tremor = 0.15.dp
+    val cornerRadius = 16.dp
+    Box(Modifier.size(208.dp, 40.dp)) {
+        // Clipping the fill out of the outline the border strokes is what keeps its edge
+        // under the middle of the line instead of beside it.
+        Box(
+            Modifier
+                .matchParentSize()
+                .clip(
+                    SketchShape(
+                        seed = 900,
+                        roughness = roughness,
+                        tremor = tremor,
+                        cornerRadius = cornerRadius,
+                        borderThickness = thickness,
+                    ),
+                ),
+        ) {
+            Box(
+                Modifier
+                    .fillMaxWidth(0.5f)
+                    .fillMaxHeight()
+                    .align(if (selectedFirst) Alignment.CenterStart else Alignment.CenterEnd)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+            )
+            // Inside the clip, so the rule stops at the outline instead of running the
+            // full height and poking out past the top and bottom of the border.
+            SketchVerticalDivider(
+                seed = 902,
+                modifier = Modifier.align(Alignment.Center),
+                thickness = 1.dp,
+                roughness = 0.3.dp,
+            )
+        }
+        Box(
+            Modifier
+                .matchParentSize()
+                .sketchBorder(
+                    seed = 900,
+                    color = MaterialTheme.colorScheme.outline,
+                    thickness = thickness,
+                    roughness = roughness,
+                    tremor = tremor,
+                    cornerRadius = cornerRadius,
+                ),
+        )
     }
 }
 
