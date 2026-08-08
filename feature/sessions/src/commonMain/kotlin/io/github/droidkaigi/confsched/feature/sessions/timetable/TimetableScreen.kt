@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
+import io.github.droidkaigi.confsched.core.model.Language
+import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
@@ -79,15 +81,15 @@ private fun previewUiState() = TimetableScreenUiState(
                 startsAt = "10:00",
                 endsAt = "10:40",
                 items = persistentListOf(
-                    TimetableItem(TimetableItemId("d1a"), "Compose Multiplatform in Practice", "Arctic Fox", "Sp1", DroidKaigi2026Day.Day1, "10:00", "10:40"),
-                    TimetableItem(TimetableItemId("d1b"), "Themed previews without codegen", "Bumblebee", "Sp2", DroidKaigi2026Day.Day1, "10:00", "10:40"),
+                    TimetableItem(TimetableItemId("d1a"), "Compose Multiplatform in Practice", Room.NARWHAL, "Sp1", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
+                    TimetableItem(TimetableItemId("d1b"), "Themed previews without codegen", Room.OTTER, "Sp2", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
                 ),
             ),
             TimetableListSectionUiState.TimeSlot(
                 startsAt = "11:00",
                 endsAt = "11:40",
                 items = persistentListOf(
-                    TimetableItem(TimetableItemId("d1c"), "Metro DI: graphs without Dagger", "Arctic Fox", "Sp3", DroidKaigi2026Day.Day1, "11:00", "11:40"),
+                    TimetableItem(TimetableItemId("d1c"), "Metro DI: graphs without Dagger", Room.NARWHAL, "Sp3", Language.MIXED, DroidKaigi2026Day.Day1, "11:00", "11:40"),
                 ),
             ),
         ),

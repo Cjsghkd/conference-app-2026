@@ -4,6 +4,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 
@@ -175,13 +177,31 @@ private fun KaigiColorScheme.toMaterialColorScheme() = when (this) {
     KaigiColorScheme.CampfireNight -> CampfireNight
 }
 
+/**
+ * Whether the scheme in force is a dark one.
+ *
+ * Read this rather than sampling a color: Terracotta's surface sits close enough to the midpoint
+ * that a luminance threshold would flip on a small change to its value.
+ */
+internal val LocalSchemeIsDark = staticCompositionLocalOf { false }
+
+private fun KaigiColorScheme.isDark() = when (this) {
+    KaigiColorScheme.MorningMist -> false
+    KaigiColorScheme.DeepTeal -> true
+    KaigiColorScheme.SakuraPlum -> false
+    KaigiColorScheme.Terracotta -> false
+    KaigiColorScheme.CampfireNight -> true
+}
+
 @Composable
 fun KaigiTheme(
     colorScheme: KaigiColorScheme,
     content: @Composable () -> Unit,
 ) {
-    MaterialTheme(
-        colorScheme = colorScheme.toMaterialColorScheme(),
-        content = content,
-    )
+    CompositionLocalProvider(LocalSchemeIsDark provides colorScheme.isDark()) {
+        MaterialTheme(
+            colorScheme = colorScheme.toMaterialColorScheme(),
+            content = content,
+        )
+    }
 }

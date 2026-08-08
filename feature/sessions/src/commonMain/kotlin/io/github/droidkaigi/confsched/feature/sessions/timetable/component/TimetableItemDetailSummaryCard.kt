@@ -94,7 +94,7 @@ fun TimetableItemDetailSummaryCardPreview(
             day = DroidKaigi2026Day.Day1,
             startsAt = "10:00",
             endsAt = "10:40",
-            room = "Arctic Fox",
+            room = "NARWHAL",
         )
     }
 }

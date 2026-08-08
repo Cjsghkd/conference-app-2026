@@ -15,6 +15,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
+import io.github.droidkaigi.confsched.core.model.Language
+import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
@@ -46,7 +48,7 @@ internal fun FavoritesListSection(
                 FavoriteCard(
                     day = item.day,
                     title = item.title,
-                    room = item.room,
+                    room = item.room.name,
                     speaker = item.speaker,
                     onBookmarkClick = { onBookmarkClick(item.id) },
                     onClick = { onItemClick(item.id) },
@@ -70,7 +72,7 @@ fun FavoritesListSectionPreview(
                         startsAt = "10:00",
                         endsAt = "10:40",
                         items = persistentListOf(
-                            TimetableItem(TimetableItemId("d1a"), "Compose Multiplatform in Practice", "Arctic Fox", "Sp1", DroidKaigi2026Day.Day1, "10:00", "10:40"),
+                            TimetableItem(TimetableItemId("d1a"), "Compose Multiplatform in Practice", Room.NARWHAL, "Sp1", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:40"),
                         ),
                     ),
                 ),
