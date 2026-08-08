@@ -9,6 +9,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":core:common"))
             api(project(":core:preview:api"))
+            implementation(project(":core:preview:wrapper"))
             api(libs.composeRuntime)
             api(libs.composeComponentsResources)
             api(libs.composeFoundation)
