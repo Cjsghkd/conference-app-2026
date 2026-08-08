@@ -33,7 +33,6 @@ kotlin {
             api(libs.roborazziPreviewScannerSupport)
             api(libs.composeUiTestJunit4)
             api(libs.androidxTestExtJunit)
-            api(libs.composablePreviewScannerCommon)
         }
     }
 }

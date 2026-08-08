@@ -12,15 +12,13 @@ plugins {
 val libs = the<LibrariesForLibs>()
 
 // The scan scope always matches the module package (derived from the project path, the same rule
-// as the android namespace). The custom tester scans Compose Multiplatform's @Preview annotation,
-// which the default (androidx-only) tester cannot see.
+// as the android namespace).
 val screenshotPackage = "io.github.droidkaigi.confsched" + project.path.replace(":", ".")
 
 configure<RoborazziExtension> {
     generateComposePreviewRobolectricTests {
         enable.set(true)
         packages.set(listOf(screenshotPackage))
-        testerQualifiedClassName.set("io.github.droidkaigi.confsched.core.testing.KaigiComposePreviewTester")
         robolectricConfig.set(
             mapOf(
                 "sdk" to "[34]",
@@ -87,6 +85,9 @@ kotlin {
     sourceSets.named("commonTest") {
         kotlin.srcDir(generatePreviewScreenshotTest)
         dependencies {
+            // The generated PreviewScreenshotTest is a kotlin.test class, so the module needs the
+            // dependency whether or not it writes tests of its own.
+            implementation(kotlin("test"))
             implementation(project(":core:testing"))
         }
     }
@@ -98,7 +99,6 @@ kotlin {
             implementation(libs.roborazziPreviewScannerSupport)
             implementation(libs.junit)
             implementation(libs.robolectric)
-            implementation(libs.composablePreviewScannerCommon)
             implementation(libs.composablePreviewScannerAndroid)
             implementation(project(":core:testing"))
             implementation(libs.androidxActivityCompose)

@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.droidkaigiConventionKmpFeature)
-    alias(libs.plugins.droidkaigiPrimitiveScreenshotTest)
 }
 
 kotlin {

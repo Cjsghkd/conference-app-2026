@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 plugins {
     id("droidkaigi.primitive.kmp")
     id("droidkaigi.primitive.kmp.compose")
+    id("droidkaigi.primitive.screenshot-test")
     id("droidkaigi.primitive.spotless")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("dev.zacsweers.metro")
