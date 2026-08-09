@@ -35,6 +35,13 @@ from setting up your environment to submitting a pull request.
 > picking up the next. An assigned Issue with no activity receives a reminder after a few days and
 > is unassigned automatically about a week later. A comment, or an open pull request linked to
 > the Issue (a draft counts), keeps it yours, and you are welcome to pick it up again at any time.
+>
+> **今年からIssueのアサイン運用が変わりました。**
+> より多くの方に参加していただけるよう、一人が同時に持てるIssueは**1件まで**としています。
+> 次のIssueに取りかかる前に、いま持っているものを完了させてください。
+> アサインされたIssueに動きがない場合はリマインドのコメントが入り、その後も動きがなければ自動的にアサインが解除されます。
+> Issueへのコメント、または紐づいたオープンなPull Request（ドラフトでも構いません）があれば、アサインは維持されます。
+> 解除されたあとも、いつでも再度お引き受けいただけます。
 
 ## Design
 
