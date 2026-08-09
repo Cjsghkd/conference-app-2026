@@ -7,13 +7,14 @@ import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.Timetable
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
+import io.github.droidkaigi.confsched.core.testing.RobotTest
 import io.github.droidkaigi.confsched.core.testing.runRobotTest
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class TimetableScreenRobotTest {
+class TimetableScreenRobotTest : RobotTest() {
 
     private val sampleTimetable = Timetable(
         items = persistentListOf(

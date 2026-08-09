@@ -66,11 +66,13 @@ val generatePreviewScreenshotTest = tasks.register("generatePreviewScreenshotTes
     }
 }
 
-// The Android host-test task runs only the Roborazzi-generated preview tests: the shared
-// robot/presenter tests in commonTest expect a plain JVM or native environment and fail under
-// Robolectric, and they already run via jvmTest / iosSimulatorArm64Test.
+// The Android host-test task renders: the Roborazzi-generated preview tests, and the Robot tests
+// that capture the states a preview cannot reach. Allow-listed rather than excluding, so a kind of
+// test added later has to be let in deliberately — the presenter tests, for one, want a plain JVM
+// and already run via jvmTest / iosSimulatorArm64Test.
 tasks.withType<Test>().matching { it.name == "testAndroidHostTest" }.configureEach {
     filter.includeTestsMatching("com.github.takahirom.roborazzi.*")
+    filter.includeTestsMatching("*RobotTest")
     // Hardware pixel-copy rendering keeps the captured images faithful (the Roborazzi warning).
     systemProperty("robolectric.pixelCopyRenderMode", "hardware")
 }

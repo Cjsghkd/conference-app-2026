@@ -2,6 +2,8 @@
 
 Compose `@Preview`s double as screenshot tests. **ComposablePreviewScanner** discovers every `@Preview`, and **Roborazzi** renders each one through Robolectric and compares it to a recorded golden image. The pipeline runs as an **Android host (unit) test** — no device or emulator.
 
+[Robot scenarios](./testing-robot.md) are captured by the same task, one image per `itShould`, so the states a preview cannot reach — loading, error, and whatever a tap leads to — are covered too.
+
 ## How it is wired
 
 Every feature module is covered: the `droidkaigi.convention.kmp-feature` convention applies the `droidkaigi.primitive.screenshot-test` primitive ([Convention plugins](./build-convention-plugins.md)), so a module needs no line of its own.
