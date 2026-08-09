@@ -87,40 +87,27 @@ Enforcement is applied in a fixed order of preference:
    express.
 3. **Review and tests**, for what cannot be decided statically.
 
-`:tools:compiler-plugin` implements over twenty FIR checkers on that second layer. They cover API
-misuse that would otherwise surface only at runtime, the boundaries between the parts of a screen,
-and the conventions that keep code readable. Each one is a compile error — a few examples:
+`:tools:compiler-plugin` implements over twenty FIR checkers on that second layer. They fall into
+two kinds — rules about how code is written, and rules that make an architectural boundary
+explicit. Both are compile errors:
 
 ```kotlin
-data class SearchResponse(…)   // no @Serializable
-
-buildPersistedQueryKey(          // this key caches its response on disk
-    fetchResponse = { searchResponse },
-    …
-)
-// ERROR: MustBeSerializable — persistence would fail at runtime
-```
-
-```kotlin
-// TimetableCard.kt — no @Preview in this file renders it
-@Composable
-internal fun TimetableCard(item: TimetableItem) { … }
-// ERROR: UiComponentRequiresPreview
-```
-
-```kotlin
-Scaffold { padding ->                     // 1
-    Column(Modifier.padding(padding)) {   // 2
-        LazyColumn {                      // 3
-            items(sessions) { item ->     // 4
-                Card {                    // ERROR: 5
-                    Text(item.title)
-                }
+// how code is written
+Scaffold { padding ->                    // 1
+    Column(Modifier.padding(padding)) {  // 2
+        LazyColumn {                     // 3
+            items(sessions) { item ->    // 4
+                Card { … }               // ERROR: ComposableNestingDepth
             }
         }
     }
 }
-// ComposableNestingDepth — move level 5 into its own composable
+
+// where a call is allowed
+@Composable
+fun SearchResultList(…) {                // no ScreenContext in scope
+    val items = rememberQuery(key)       // ERROR: SoilReadConfinement
+}
 ```
 
 Every checker is covered by the Kotlin compiler test framework, so the rules themselves are
