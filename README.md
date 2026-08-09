@@ -189,15 +189,18 @@ iOS builds through the Xcode project in `app-ios/`, which embeds the `app-shared
 
 ## Documentation
 
-The architecture and implementation guide lives in [`docs/`](./docs/index.md), served as a VitePress site:
+The architecture and implementation guide is published at
+**[droidkaigi.github.io/conference-app-2026/docs](https://droidkaigi.github.io/conference-app-2026/docs/)**.
+Start with [Module structure](https://droidkaigi.github.io/conference-app-2026/docs/project-structure)
+and the [Architecture overview](https://droidkaigi.github.io/conference-app-2026/docs/architecture-overview).
+
+The pages live in [`docs/`](./docs/index.md) and are built with VitePress. To preview a change locally:
 
 ```sh
 cd docs-site
 npm install   # first time only
 npm run docs:dev
 ```
-
-Start with [Module structure](./docs/project-structure.md) and the [Architecture overview](./docs/architecture-overview.md).
 
 ## Verification
 
