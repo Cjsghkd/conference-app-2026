@@ -1,3 +1,5 @@
+![DroidKaigi 2026](assets/readme_header.png)
+
 # DroidKaigi 2026 official app
 
 [DroidKaigi](https://2026.droidkaigi.jp) is a conference for Android developers, now in its
