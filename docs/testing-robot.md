@@ -21,7 +21,7 @@ class TimetableScreenRobotTest : RobotTest() {
 }
 ```
 
-Each `itShould` is captured after its assertions, so the image shows the state the sentence describes. The file is named after the scenario — `when_the_libraries_fail_to_load___show_the_error_fallback.png` — and lands beside the preview goldens; see [Preview screenshot tests](./testing-preview-screenshot.md) for how the goldens are recorded and compared.
+Each `itShould` is captured after its assertions, so the image shows the state the sentence describes. The file is named after the Robot's screen and the scenario — `LicensesScreen.when_the_libraries_fail_to_load___show_the_error_fallback.png` — and lands beside the preview goldens; see [Preview screenshot tests](./testing-preview-screenshot.md) for how the goldens are recorded and compared.
 
 A Robot takes the screen's [`ScreenContext`](./screen-context.md) from a [test graph](./testing-graph.md). Arranging the data and showing the screen are separate steps, so a scenario reads as a state the data layer is in followed by the screen opening on it:
 

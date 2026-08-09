@@ -61,13 +61,18 @@ fun <R : Robot> runRobotTest(
                 leaf.setups.forEach { step -> step(robot) }
                 leaf.check(robot)
                 // After the assertions, so the capture shows the state the scenario describes.
-                captureRobotScreen(leaf.screenshotName())
+                captureRobotScreen(robot.screenshotPrefix() + leaf.screenshotName())
             }
         } catch (error: Throwable) {
             throw AssertionError("Scenario failed: ${leaf.name}", error)
         }
     }
 }
+
+// Scenario sentences repeat across screens — "and back is tapped ... leave the screen once" is on
+// three of them — so the screen the Robot drives has to be part of the name.
+private fun Robot.screenshotPrefix(): String =
+    (this::class.simpleName ?: "Robot").removeSuffix("Robot") + "."
 
 // A scenario name reads as a sentence, and the screenshot id travels through file names, git refs
 // and a Markdown link, so everything outside the portable set collapses to an underscore.
