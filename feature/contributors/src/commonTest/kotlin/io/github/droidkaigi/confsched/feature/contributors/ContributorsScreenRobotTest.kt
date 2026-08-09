@@ -4,12 +4,13 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import io.github.droidkaigi.confsched.core.model.Contributor
 import io.github.droidkaigi.confsched.core.model.ContributorId
 import io.github.droidkaigi.confsched.core.model.Contributors
+import io.github.droidkaigi.confsched.core.testing.RobotTest
 import io.github.droidkaigi.confsched.core.testing.runRobotTest
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class ContributorsScreenRobotTest {
+class ContributorsScreenRobotTest : RobotTest() {
 
     private val sampleContributors = Contributors(
         items = persistentListOf(contributor(1L, "user-a"), contributor(2L, "user-b")),

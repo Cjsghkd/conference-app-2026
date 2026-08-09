@@ -5,12 +5,13 @@ import io.github.droidkaigi.confsched.core.model.Sponsor
 import io.github.droidkaigi.confsched.core.model.SponsorGroup
 import io.github.droidkaigi.confsched.core.model.SponsorPlan
 import io.github.droidkaigi.confsched.core.model.Sponsors
+import io.github.droidkaigi.confsched.core.testing.RobotTest
 import io.github.droidkaigi.confsched.core.testing.runRobotTest
 import kotlinx.collections.immutable.persistentListOf
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class SponsorsScreenRobotTest {
+class SponsorsScreenRobotTest : RobotTest() {
 
     private val sampleSponsors = Sponsors(
         groups = persistentListOf(

@@ -1,11 +1,12 @@
 package io.github.droidkaigi.confsched.feature.about
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import io.github.droidkaigi.confsched.core.testing.RobotTest
 import io.github.droidkaigi.confsched.core.testing.runRobotTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-class LicensesScreenRobotTest {
+class LicensesScreenRobotTest : RobotTest() {
 
     private val sampleLibs = LicensesScreenUiState.fake().libs
 

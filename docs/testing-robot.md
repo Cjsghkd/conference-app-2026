@@ -9,7 +9,19 @@ End-to-end screen behaviour is tested with the **Robot pattern** in a BDD (behav
 
 ## How
 
-Screen-level Compose testing runs on the **JVM** through Compose Multiplatform's `runComposeUiTest` (from `org.jetbrains.compose.ui:ui-test`; the desktop actual and — via `compose.desktop.currentOs` — the Skiko native runtime ship alongside it). The BDD DSL itself is pure Kotlin in `commonMain`, so Android/iOS Robots can follow later via `expect/actual`; the Robot base is JVM-first for now.
+Screen-level Compose testing runs through Compose Multiplatform's `runComposeUiTest` (from `org.jetbrains.compose.ui:ui-test`; the desktop actual and — via `compose.desktop.currentOs` — the Skiko native runtime ship alongside it). The BDD DSL itself is pure Kotlin in `commonMain`, so a scenario runs on every target: `jvmTest` and `iosSimulatorArm64Test` for its assertions, and the Android host test for those plus a screenshot of each `itShould`.
+
+A test class extends `RobotTest`. Robolectric renders only for a class carrying a JUnit runner, and that annotation cannot be written in common code, so it rides on `RobotTest`, where `@RunWith` being `@Inherited` carries it to every subclass. The Robolectric configuration and the `ComponentActivity` the test host launches are declared once in `:core:testing` and reach a module through the merged manifest and the test classpath.
+
+```kotlin
+class TimetableScreenRobotTest : RobotTest() {
+
+    @Test
+    fun timetable_screen_behaviour() = runRobotTest(…)
+}
+```
+
+Each `itShould` is captured after its assertions, so the image shows the state the sentence describes. The file is named after the Robot's screen and the scenario — `LicensesScreen.when_the_libraries_fail_to_load___show_the_error_fallback.png` — and lands beside the preview goldens; see [Preview screenshot tests](./testing-preview-screenshot.md) for how the goldens are recorded and compared.
 
 A Robot takes the screen's [`ScreenContext`](./screen-context.md) from a [test graph](./testing-graph.md). Arranging the data and showing the screen are separate steps, so a scenario reads as a state the data layer is in followed by the screen opening on it:
 
