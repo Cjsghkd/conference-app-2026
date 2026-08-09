@@ -50,27 +50,28 @@ TBD
 
 **Designers**: [@kitakkun](https://github.com/kitakkun), [@chihokotaro](https://x.com/chihokotaro)
 
-## Documentation
+## Architecture
 
-The architecture and implementation guide is published at
+This year the architecture and design are written up in detail, and the whole set is published at
 **[droidkaigi.github.io/conference-app-2026/docs](https://droidkaigi.github.io/conference-app-2026/docs/)**.
+
+The overall structure has not changed much from last year: Compose Multiplatform shares the UI
+across platforms, [Metro](https://github.com/ZacSweers/metro) resolves dependencies at compile
+time, [Soil](https://github.com/soil-kt/soil) backs the data layer, and Navigation3 owns the back
+stack. If you contributed to the 2025 app, the shape will be familiar.
+
 Start with [Module structure](https://droidkaigi.github.io/conference-app-2026/docs/project-structure)
-and the [Architecture overview](https://droidkaigi.github.io/conference-app-2026/docs/architecture-overview).
+for how the modules divide up, then the
+[Architecture overview](https://droidkaigi.github.io/conference-app-2026/docs/architecture-overview)
+for how a screen works end to end.
 
-The pages live in [`docs/`](./docs/index.md) and are built with VitePress. To preview a change locally:
-
-```sh
-cd docs-site
-npm install   # first time only
-npm run docs:dev
-```
+The pages live in [`docs/`](./docs/index.md); `docs-site/` holds the VitePress setup for previewing
+them locally.
 
 ## This Year's Challenges
 
-The stack underneath: Compose Multiplatform for the shared UI,
-[Metro](https://github.com/ZacSweers/metro) for compile-time dependency injection,
-[Soil](https://github.com/soil-kt/soil) for the data layer, and Navigation3 for moving between
-screens.
+The work this year sits on top of that stack: refining the architecture above it, and shaping the
+way the code is written around AI being a primary author.
 
 ### An architecture the compiler keeps in shape
 
