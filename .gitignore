@@ -34,6 +34,9 @@ screenshots/
 # --- VitePress docs site ---
 docs-site/node_modules/
 docs/node_modules
-# srcDir points at docs/, so VitePress writes its cache and build output there
-docs/.vitepress/cache/
-docs/.vitepress/dist/
+# vitepress build/dev resolve outDir and cache against the config's cwd (docs-site/),
+# not srcDir, despite srcDir pointing at docs/.
+docs-site/.vitepress/cache/
+docs-site/.vitepress/dist/
+# Combined GitHub Pages artifact staged by .github/workflows/deploy-pages.yml
+/dist/
