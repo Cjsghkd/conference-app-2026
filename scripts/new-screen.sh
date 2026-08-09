@@ -191,7 +191,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import $base_pkg.core.model.KaigiColorScheme
+import $base_pkg.core.preview.KaigiSchemeProvider
+import $base_pkg.core.preview.wrapper.KaigiPreviewTheme
 import $base_pkg.core.ui.safeClick
 
 @Composable
@@ -208,6 +213,20 @@ fun ${screen}Screen(
         Text("Reloaded \${uiState.reloadCount} times")
         Button(onClick = safeClick(onReloadClick)) { Text("Reload") }
         Button(onClick = safeClick(onBackClick)) { Text("Back") }
+    }
+}
+
+@Preview
+@Composable
+fun ${screen}ScreenPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        ${screen}Screen(
+            uiState = ${screen}ScreenUiState(title = "${screen}", reloadCount = 0),
+            onReloadClick = {},
+            onBackClick = {},
+        )
     }
 }
 EOF
