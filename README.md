@@ -15,7 +15,6 @@ The DroidKaigi 2026 official app offers a variety of features to enhance your co
 experience:
 
 - **Timetable**: Browse the schedule and bookmark the sessions you want to see.
-- **Profile cards**: Create a card and share it with the people you meet.
 - **Event map**: Find your way around the venue.
 - **Contributors**: Discover the contributors behind the app.
 
