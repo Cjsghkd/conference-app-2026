@@ -6,11 +6,9 @@ import dev.zacsweers.metro.SingleIn
 import io.github.droidkaigi.confsched.core.common.AppNavigator
 import io.github.droidkaigi.confsched.core.common.DebugNavKeyProvider
 import io.github.droidkaigi.confsched.core.model.AboutScreenScope
-import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.feature.about.AboutScreenNavigator
 import io.github.droidkaigi.confsched.feature.about.LicensesNavKey
 import io.github.droidkaigi.confsched.feature.contributors.ContributorsNavKey
-import io.github.droidkaigi.confsched.feature.sessions.timetable.TimetableItemDetailNavKey
 import io.github.droidkaigi.confsched.feature.sponsors.SponsorsNavKey
 
 @Inject
@@ -20,10 +18,6 @@ class DefaultAboutScreenNavigator(
     private val appNavigator: AppNavigator,
     private val debugNavKeyProvider: DebugNavKeyProvider,
 ) : AboutScreenNavigator {
-    override fun openSessionDetail(id: TimetableItemId) {
-        appNavigator.goTo(TimetableItemDetailNavKey(id))
-    }
-
     override fun openSponsors() {
         appNavigator.goTo(SponsorsNavKey)
     }

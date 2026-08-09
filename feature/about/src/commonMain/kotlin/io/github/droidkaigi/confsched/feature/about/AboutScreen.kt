@@ -24,7 +24,6 @@ import io.github.droidkaigi.confsched.core.ui.safeClickable
 @Composable
 fun AboutScreen(
     uiState: AboutScreenUiState,
-    onOpenFeaturedSession: () -> Unit,
     onOpenSponsors: () -> Unit,
     onOpenContributors: () -> Unit,
     onOpenLicenses: () -> Unit,
@@ -47,14 +46,6 @@ fun AboutScreen(
             ListItem(
                 headlineContent = { Text("Version") },
                 trailingContent = { Text(uiState.versionName) },
-            )
-            HorizontalDivider()
-            ListItem(
-                modifier = Modifier.safeClickable(onClick = onOpenFeaturedSession),
-                headlineContent = { Text("Open featured session detail") },
-                supportingContent = {
-                    Text("Navigates to the sessions feature through AboutScreenNavigator")
-                },
             )
             HorizontalDivider()
             ListItem(
@@ -93,7 +84,6 @@ fun AboutScreenPreview() {
             title = "About DroidKaigi 2026",
             versionName = "1.0.0",
         ),
-        onOpenFeaturedSession = {},
         onOpenSponsors = {},
         onOpenContributors = {},
         onOpenLicenses = {},
@@ -111,7 +101,6 @@ fun AboutScreenWithoutDebugMenuPreview() {
             title = "About DroidKaigi 2026",
             versionName = "1.0.0",
         ),
-        onOpenFeaturedSession = {},
         onOpenSponsors = {},
         onOpenContributors = {},
         onOpenLicenses = {},
