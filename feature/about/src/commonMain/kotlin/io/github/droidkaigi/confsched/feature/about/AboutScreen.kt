@@ -27,6 +27,7 @@ fun AboutScreen(
     onOpenFeaturedSession: () -> Unit,
     onOpenSponsors: () -> Unit,
     onOpenContributors: () -> Unit,
+    onOpenLicenses: () -> Unit,
     isDebugMenuAvailable: Boolean,
     onOpenDebug: () -> Unit,
 ) {
@@ -65,6 +66,12 @@ fun AboutScreen(
                 modifier = Modifier.safeClickable(onClick = onOpenContributors),
                 headlineContent = { Text("Contributors") },
             )
+            HorizontalDivider()
+            ListItem(
+                modifier = Modifier.safeClickable(onClick = onOpenLicenses),
+                headlineContent = { Text("Licenses") },
+                supportingContent = { Text("Open source libraries this build depends on") },
+            )
             if (isDebugMenuAvailable) {
                 HorizontalDivider()
                 ListItem(
@@ -89,6 +96,7 @@ fun AboutScreenPreview() {
         onOpenFeaturedSession = {},
         onOpenSponsors = {},
         onOpenContributors = {},
+        onOpenLicenses = {},
         isDebugMenuAvailable = true,
         onOpenDebug = {},
     )
@@ -106,6 +114,7 @@ fun AboutScreenWithoutDebugMenuPreview() {
         onOpenFeaturedSession = {},
         onOpenSponsors = {},
         onOpenContributors = {},
+        onOpenLicenses = {},
         isDebugMenuAvailable = false,
         onOpenDebug = {},
     )
