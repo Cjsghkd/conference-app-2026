@@ -6,6 +6,7 @@ A comment exists for exactly one reason: to state, in one line, a constraint the
 
 - Never restate what the code shows (what the next line does, a role the name already says, rationale that lives in docs/).
 - Never repeat architecture-level knowledge at usage sites. A pattern documented in docs/ or enforced by a FIR checker is explained once, there; copies at every call site rot on the next design change.
+- Keep a comment true from its own line. A fact borrowed from elsewhere — a declaration in another module, a version, a count — turns the comment false when that other place changes, with nothing nearby to prompt the edit; give the reason the line exists rather than the contents of what it refers to.
 - This applies to NEW files too: do not open a class or file with a comment describing its layer's role, who calls it, or how it fits the architecture — that is docs/ material, and the class name plus its signature already carry the role.
 - Write comments in English.
 

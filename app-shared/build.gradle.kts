@@ -1,56 +1,16 @@
-@file:OptIn(ExperimentalSwiftExportDsl::class, ExperimentalKotlinGradlePluginApi::class)
-
-import droidkaigi.includeDebugFeature
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.swiftexport.ExperimentalSwiftExportDsl
-
 plugins {
     alias(libs.plugins.droidkaigiPrimitiveKmp)
     alias(libs.plugins.droidkaigiPrimitiveKmpCompose)
     alias(libs.plugins.droidkaigiPrimitiveBuildkonfig)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.metro)
-    alias(libs.plugins.droidkaigiPrimitiveLicensesExport)
+    alias(libs.plugins.droidkaigiPrimitiveIosFramework)
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
-
-// embedAndSignAppleFrameworkForXcode inherits Xcode's CONFIGURATION; a Gradle-driven framework link has none.
-val includeDebugFeature = project.includeDebugFeature(
-    developmentBuild = providers.environmentVariable("CONFIGURATION").orNull.equals("Debug", ignoreCase = true),
-)
 
 kotlin {
     android {
         namespace = "io.github.droidkaigi.confsched.app.shared"
-    }
-
-    listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
-        target.binaries.framework {
-            baseName = "AppShared"
-            isStatic = false
-            // Exported so Swift sees core:common types (CrashReporter) without the module-name prefix.
-            export(project(":core:common"))
-        }
-    }
-
-    swiftPMDependencies {
-        iosMinimumDeploymentTarget.set("16.0")
-        swiftPackage(
-            url = "https://github.com/firebase/firebase-ios-sdk",
-            version = "12.0.0",
-            products = listOf("FirebaseCrashlytics"),
-            importedClangModules = listOf("FirebaseCrashlytics", "FirebaseCore"),
-        )
-    }
-
-    swiftExport {
-        moduleName.set("AppShared")
-        flattenPackage.set("io.github.droidkaigi.confsched.app")
-        // Export :core:common so its navigation types reachable from the iOS shell surface
-        // as first-class Swift types instead of opaque Kotlin references.
-        export(project(":core:common")) {
-            flattenPackage.set("io.github.droidkaigi.confsched.core.common")
-        }
     }
 
     sourceSets {
@@ -70,20 +30,5 @@ kotlin {
             api(project(":feature:eventmap"))
             implementation(libs.composeMaterial3AdaptiveNavigation3)
         }
-        iosMain.dependencies {
-            implementation(libs.okio)
-            // Metro aggregates the debug feature from the iosMain compile classpath, so the dependency must sit here.
-            if (includeDebugFeature) implementation(project(":feature:debug"))
-        }
     }
-}
-
-// app-ios is an Xcode shell with no Gradle dependency graph, so the iOS dependencies are exported
-// from here. Compose resources carry one directory per source set and the two iOS targets share
-// iosMain, so one of them has to stand for both: they compile the same source set and therefore
-// resolve the same libraries, and the device target is the one that ships. A simulator build shows
-// the same list, differing only in the artifact suffix of the coordinates that carry one.
-licensesExport {
-    target = "iosArm64"
-    sourceSet = "iosMain"
 }
