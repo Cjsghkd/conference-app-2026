@@ -20,7 +20,6 @@ class AboutNavEntryProvider(
             val graph = retain(screenGraphFactory::createAboutScreenGraph)
             context(graph.screenContext) {
                 AboutScreenRoot(
-                    onNavigateToSessionDetail = graph.screenNavigator::openSessionDetail,
                     onNavigateToSponsors = graph.screenNavigator::openSponsors,
                     onNavigateToContributors = graph.screenNavigator::openContributors,
                     onNavigateToLicenses = graph.screenNavigator::openLicenses,
