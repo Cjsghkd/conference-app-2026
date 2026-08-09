@@ -142,6 +142,14 @@ one single-method interface, and the shell never names the feature back:
 class TimetableNavEntryProvider(…) : NavEntryProvider {
     override fun EntryProviderScope<NavKey>.register() { … }
 }
+
+// in app-shared — no feature is named here
+@Inject
+class AppEntryProvider(private val providers: Set<NavEntryProvider>) {
+    val entryProvider = entryProvider {
+        providers.forEach { with(it) { register() } }
+    }
+}
 ```
 
 Metro collects every implementation into one set at compile time, and Kotlin Symbol Processing
