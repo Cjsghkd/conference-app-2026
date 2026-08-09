@@ -29,6 +29,15 @@ Build and run the `app-android` module. Click the run button in Android Studio.
 
 ![The run button in Android Studio](assets/contributing/how-to-run-app.png)
 
+The app also runs on desktop and in a browser:
+
+```bash
+./gradlew :app-desktop:run                       # Desktop (JVM)
+./gradlew :app-web:wasmJsBrowserDevelopmentRun   # Web (wasmJs)
+```
+
+For iOS, open the Xcode project in `app-ios/`, which embeds the `app-shared` framework.
+
 ### 3. Find a Task
 
 We use GitHub Issues for task management. Please look for an Issue you'd like to contribute to. [Issues labeled `contributions welcome` or `easy`](https://github.com/DroidKaigi/conference-app-2026/issues?q=is%3Aissue+is%3Aopen+label%3A%22difficulty%3Aeasy+%F0%9F%8C%B1%22+label%3A%22contributions+welcome%22+) are recommended for first-time contributors.
