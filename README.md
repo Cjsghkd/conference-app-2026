@@ -32,8 +32,8 @@ from setting up your environment to submitting a pull request.
 > [!NOTE]
 > **Issue assignment rules changed this year.** To give as many people as possible a chance to take
 > part, each contributor holds **one open Issue at a time** — finish the one you have before
-> picking up the next. An assigned Issue with no activity receives a reminder after a few days and
-> is unassigned automatically about a week later. A comment, or an open pull request linked to
+> picking up the next. An assigned Issue with no activity receives a reminder, and is unassigned
+> automatically if it stays quiet after that. A comment, or an open pull request linked to
 > the Issue (a draft counts), keeps it yours, and you are welcome to pick it up again at any time.
 >
 > **今年からIssueのアサイン運用が変わりました。**
