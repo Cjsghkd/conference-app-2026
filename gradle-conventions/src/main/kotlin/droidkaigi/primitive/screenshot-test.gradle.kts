@@ -21,7 +21,7 @@ configure<RoborazziExtension> {
         packages.set(listOf(screenshotPackage))
         robolectricConfig.set(
             mapOf(
-                "sdk" to "[34]",
+                "sdk" to "[36]",
                 "qualifiers" to "\"w360dp-h800dp-xhdpi\"",
             ),
         )
