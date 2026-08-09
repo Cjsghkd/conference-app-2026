@@ -6,6 +6,9 @@ export default withMermaid(defineConfig({
   // VitePress uses srcDir as the Vite root, so docs/ needs a node_modules link
   // back to this directory; scripts/link-docs-node-modules.mjs creates it on install.
   srcDir: '../docs',
+  // Served from https://droidkaigi.github.io/conference-app-2026/docs/; the web app
+  // (app-web, wasm) is planned to occupy the site root alongside this subpath.
+  base: '/conference-app-2026/docs/',
   lang: 'en-US',
   title: 'conference-app-2026',
   description: 'Architecture and implementation guide for the DroidKaigi 2026 conference app',
