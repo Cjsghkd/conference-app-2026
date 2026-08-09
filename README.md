@@ -40,6 +40,8 @@ from setting up your environment to submitting a pull request.
 
 TBD
 
+**Designers**: [@kitakkun](https://github.com/kitakkun), [@chihokotaro](https://x.com/chihokotaro)
+
 ## This Year's Challenges
 
 The stack underneath: Compose Multiplatform for the shared UI,
