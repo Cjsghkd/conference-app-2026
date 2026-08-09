@@ -1,0 +1,174 @@
+name: Assign issue
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [assigned]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue to simulate the assignment request for'
+        required: true
+      login:
+        description: 'Login to simulate as the requester'
+        required: true
+      dry_run:
+        description: 'When true, log the decision without assigning or commenting'
+        type: boolean
+        default: true
+
+permissions:
+  issues: write
+
+concurrency:
+  group: assign-issue-${{ github.event.issue.number || github.event.inputs.issue_number }}
+  cancel-in-progress: false
+
+jobs:
+  assign-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const TRIGGER = /🙋|:raising_hand(_woman|_man)?:|^\/assign\b/m
+
+            const { owner, repo } = context.repo
+            const takenMarker = (login) => `<!-- assign-taken:${login} -->`
+
+            function resolveRequest() {
+              if (context.eventName === 'issue_comment') {
+                if (context.payload.issue.pull_request) return null
+                const comment = context.payload.comment
+                if (comment.user?.type === 'Bot') return null
+                if (!TRIGGER.test(comment.body ?? '')) return null
+                return {
+                  mode: 'request',
+                  issueNumber: context.payload.issue.number,
+                  login: comment.user.login,
+                  commentId: comment.id,
+                  dryRun: false,
+                }
+              }
+              if (context.eventName === 'issues') {
+                return {
+                  mode: 'enforce',
+                  issueNumber: context.payload.issue.number,
+                  login: context.payload.assignee.login,
+                  dryRun: false,
+                }
+              }
+              const inputs = context.payload.inputs ?? {}
+              return {
+                mode: 'request',
+                issueNumber: Number(inputs.issue_number),
+                login: inputs.login,
+                dryRun: inputs.dry_run !== false && inputs.dry_run !== 'false',
+              }
+            }
+
+            const request = resolveRequest()
+            if (!request) return
+
+            const { mode, issueNumber, login, commentId, dryRun } = request
+            core.info(`mode=${mode} issue=#${issueNumber} login=${login} dry_run=${dryRun}`)
+
+            const plan = (message) => core.info(dryRun ? `would ${message}` : message)
+
+            async function comment(body) {
+              plan(`comment on #${issueNumber}: ${body}`)
+              if (dryRun) return
+              await github.rest.issues.createComment({ owner, repo, issue_number: issueNumber, body })
+            }
+
+            // The webhook payload is a snapshot taken before any concurrent run of this workflow assigned anyone.
+            const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number: issueNumber })
+            if (issue.state !== 'open') {
+              core.info(`#${issueNumber} is not open, skipping`)
+              return
+            }
+
+            const assigned = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: 'open',
+              assignee: login,
+              per_page: 100,
+            })
+            const blocking = assigned.filter((other) => !other.pull_request && other.number !== issueNumber)
+            const blockingLinks = blocking.map((other) => `#${other.number}`).join(', ')
+            const limitMessage = () =>
+              `@${login} you are already assigned to ${blockingLinks}. Only one open issue can be assigned to you at a time — please finish that one first before taking on this issue.`
+
+            if (mode === 'enforce') {
+              if (blocking.length === 0) return
+              plan(`unassign ${login} from #${issueNumber} (already assigned to ${blockingLinks})`)
+              if (!dryRun) {
+                await github.rest.issues.removeAssignees({
+                  owner,
+                  repo,
+                  issue_number: issueNumber,
+                  assignees: [login],
+                })
+              }
+              await comment(limitMessage())
+              return
+            }
+
+            const assignees = (issue.assignees ?? []).map((assignee) => assignee.login)
+
+            if (assignees.includes(login)) {
+              core.info(`#${issueNumber}: ${login} is already assigned, skipping`)
+              return
+            }
+
+            if (assignees.length > 0) {
+              const comments = await github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: issueNumber,
+                per_page: 100,
+              })
+              if (comments.some((posted) => posted.body?.includes(takenMarker(login)))) {
+                core.info(`#${issueNumber}: ${login} was already told this issue is taken, skipping`)
+                return
+              }
+              const holders = assignees.map((holder) => `\`${holder}\``).join(', ')
+              await comment(
+                `@${login} this issue is already assigned to ${holders}. Please pick another open issue.\n${takenMarker(login)}`
+              )
+              return
+            }
+
+            if (blocking.length > 0) {
+              await comment(limitMessage())
+              return
+            }
+
+            plan(`assign ${login} to #${issueNumber}`)
+            if (dryRun) return
+
+            await github.rest.issues.addAssignees({
+              owner,
+              repo,
+              issue_number: issueNumber,
+              assignees: [login],
+            })
+
+            // Assigning a user GitHub does not accept returns success and silently adds nobody, so confirm it landed.
+            const { data: updated } = await github.rest.issues.get({ owner, repo, issue_number: issueNumber })
+            if (!(updated.assignees ?? []).some((assignee) => assignee.login === login)) {
+              await comment(`@${login} GitHub did not accept this assignment. A maintainer will follow up.`)
+              core.setFailed(`GitHub did not assign ${login} to #${issueNumber}`)
+              return
+            }
+
+            if (commentId) {
+              await github.rest.reactions.createForIssueComment({
+                owner,
+                repo,
+                comment_id: commentId,
+                content: '+1',
+              })
+            }

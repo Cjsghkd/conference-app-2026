@@ -37,8 +37,9 @@ Pull Requests without an Issue are also welcome. In that case, please include de
 
 ### 4. Start Contributing
 
-If you've found a task you'd like to work on, please comment on the Issue with ":raising_hand:" or similar to avoid duplicate work. We will then assign the Issue to you.
-We'll try to respond to your comment as soon as possible, but feel free to start working on the task after commenting on the Issue!
+If you've found a task you'd like to work on, please comment on the Issue with ":raising_hand:" or `/assign` on a line of its own to avoid duplicate work. The Issue is then assigned to you automatically, and your comment gets a :+1: reaction once that is done.
+
+If the Issue is already assigned to someone else, or if you already have another open Issue assigned to you, no assignment is made and a comment explains why.
 
 From this year, we assign one Issue to each contributor at a time, so that as many people as possible have a chance to take part in open source. Once your Issue is closed, you are very welcome to pick up the next one.
 
