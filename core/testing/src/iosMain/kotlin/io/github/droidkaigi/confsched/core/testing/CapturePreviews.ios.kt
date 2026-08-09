@@ -2,7 +2,7 @@ package io.github.droidkaigi.confsched.core.testing
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import io.github.droidkaigi.confsched.core.common.RegisteredPreview
 import io.github.takahirom.roborazzi.captureRoboImage
