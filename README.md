@@ -70,14 +70,13 @@ them locally.
 
 ## This Year's Challenges
 
-The work this year sits on top of that stack: refining the architecture above it, and shaping the
-way the code is written around AI being a primary author.
+This year strengthens last year's foundation rather than replacing it, and rethinks what sits on
+top of it around one premise: **AI is a primary author** of this code.
 
 ### An architecture the compiler keeps in shape
 
-This year's codebase is written on the premise that **AI is a primary author**. Rather than
-relying on review to catch a bug or a drifting convention, the architecture is shaped so that
-**anything outside the intended shape fails to compile**.
+Rather than relying on review to catch a bug or a drifting convention, the architecture is shaped
+so that **anything outside the intended shape fails to compile**.
 
 Enforcement is applied in a fixed order of preference:
 
