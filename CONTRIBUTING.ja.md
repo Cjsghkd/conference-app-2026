@@ -29,6 +29,15 @@ Android Studioを開いて、"Open"からダウンロードしたリポジトリ
 
 ![Android Studioの実行ボタン](assets/contributing/how-to-run-app.png)
 
+デスクトップとブラウザでも実行できます。
+
+```bash
+./gradlew :app-desktop:run                       # Desktop (JVM)
+./gradlew :app-web:wasmJsBrowserDevelopmentRun   # Web (wasmJs)
+```
+
+iOSは `app-ios/` のXcodeプロジェクトを開いてください。
+
 ### 3. タスクを見つける
 
 タスク管理にGitHub Issueを使っています。こちらでコントリビュートしたいIssueをお探しください。[`contributions welcome` または `easy`のラベルがついているIssue](https://github.com/DroidKaigi/conference-app-2026/issues?q=is%3Aissue+is%3Aopen+label%3A%22difficulty%3Aeasy+%F0%9F%8C%B1%22+label%3A%22contributions+welcome%22+)は、初めてのコントリビュートにおすすめです。

@@ -36,7 +36,7 @@ model must depend on neither data nor feature — it is the most downstream modu
 
 - **Key-value settings** use **androidx DataStore Preferences on every platform**; only the backing differs per platform.
 - **Binary blobs** go through the **`FileStorage`** seam (`suspend`, since the Web backing is genuinely asynchronous).
-- **Soil query persistence** goes through `buildPersistedQueryKey`, whose serializer parameter enforces `@Serializable` at compile time — see [Soil persistence](./soil-persistence.md).
+- **Soil query persistence** goes through `buildPersistedQueryKey`, whose `@MustBeSerializable` reified response type makes a non-serializable payload a compile error — see [Soil persistence](./soil-persistence.md).
 
 ## What goes in a feature module
 

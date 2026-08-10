@@ -20,7 +20,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Results emitted only inside an effect | Type — `emit` is `suspend` |
 | Features cannot touch the ScreenChannel receiving side | Visibility — `internal` + module boundary |
 | Cross-feature isolation (no importing another feature's `NavKey`) | Module boundary — no Gradle edge between features (`:feature:debug`, dev-only tooling, is exempt) |
-| `NavKey` is `@Serializable` | Hand-written serializer registration — a miss is a compile error |
+| `NavKey` is `@Serializable` | KSP-generated serializer registration — a miss is a compile error |
 | Preview assets do not enter production | Module boundary — release excludes `:core:preview:impl` |
 | `@MustBeSerializable` type arguments are serializable | FIR `MustBeSerializable` |
 | `rememberSerializable` type arguments are serializable | FIR `RememberSerializable` |
