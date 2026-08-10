@@ -10,8 +10,11 @@ The bar is chrome only. It is bottom-aligned over the full-screen `ComposeUIView
 
 ```swift
 ZStack(alignment: .bottom) {
-    KaigiAppView(appGraph: appGraph)          // full-screen ComposeUIViewController
-    RootTabBarView(navigator: navigator)      // only the bar's own area
+    KaigiAppView(host: host)                            // full-screen ComposeUIViewController
+    RootTabBarView(                                     // only the bar's own area
+        currentTab: host.currentTab.asAsyncSequence().map { $0?.tab },
+        select: host.selectTab(tab:)
+    )
 }
 .ignoresSafeArea()
 ```
@@ -26,7 +29,7 @@ Scroll-driven bar behaviors are unavailable: Compose scrolling is invisible to S
 
 `RootTab` and `RootTabNavigator` (`:app-shared`, free of UI types) form the model both sides share:
 
-- **Kotlin → Swift**: `currentTab: StateFlow<RootTab?>` drives the bar's selection; `null` (a non-tab entry on top, that is, a detail screen) hides the bar.
+- **Kotlin → Swift**: `RootTabNavigator.currentTab: StateFlow<RootTab?>` drives the bar's selection; `null` (a non-tab entry on top, that is, a detail screen) hides the bar. Swift reaches it as `KaigiAppHost.currentTab: Flow<RootTabSelection?>`, the enum wrapped in a class because [Swift Export cannot carry an enum through a `Flow`](./ios-interop.md).
 - **Swift → Kotlin**: tab taps call `select(tab)`; `IosTabBarSyncEffect` (inside `KaigiApp`) turns each selection into `AppNavigator.moveToTop(tab.key)` — the same command the Compose bar issues on the other platforms.
 
 `RootTab.label` names each destination on both sides: the Compose bar gives it to its icon as a content description, and the SwiftUI bar as an accessibility label. The icon has no shared form — Compose names a destination with a Material `ImageVector` and Swift with an SF Symbol — so the symbol names live in the Swift bar.

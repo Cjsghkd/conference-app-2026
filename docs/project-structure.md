@@ -35,8 +35,8 @@ A three-way split that keeps preview image binaries off production classpaths �
 | --- | --- |
 | `:app-shared` | the only aggregator — the app-wide [DI graph contract](./di-app-graph.md), the app shell, entry aggregation, and [cross-feature navigator implementations](./navigation-navigator.md) |
 | `:app-android` / `:app-desktop` / `:app-web` | per-platform entry point realizing the DI graph |
-| `:app-ios-kotlin` | the Swift-exported surface Xcode links against; holds no UI, only the Compose-free API the Swift side calls |
-| `app-ios` (Xcode project) | hosts the exported module and realizes the DI graph from it |
+| `:app-ios-kotlin` | the Swift Export module Xcode links against — realizes the DI graph and wraps the Compose UI in a view controller, behind an exported surface free of Compose types |
+| `app-ios` (Xcode project) | the SwiftUI entry point and the native root tab bar, driving the exported surface |
 
 ## Build-time tooling
 

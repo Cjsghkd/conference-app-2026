@@ -64,7 +64,7 @@ The provider returns a list because one platform has two sources — which is wh
 
 ### iOS
 
-`app-ios` is an Xcode shell with no Gradle dependency graph of its own, so the Kotlin dependencies are exported from `app-ios-kotlin`, the Gradle module the iOS artifact is built from. The plugin collects only from configurations named `*CompileClasspath` / `*RuntimeClasspath`, which Kotlin/Native does not produce, so `app-ios-kotlin` mirrors `iosArm64CompileKlibraries` under a recognised name.
+`app-ios` is an Xcode shell with no Gradle dependency graph of its own, so the Kotlin dependencies are exported from `app-ios-kotlin`, the Gradle module the iOS artifact is built from. The plugin collects only from configurations named `*CompileClasspath` / `*RuntimeClasspath`, which Kotlin/Native does not produce, so the `droidkaigi.primitive.licenses-export` plugin mirrors `iosArm64CompileKlibraries` under a recognised name.
 
 One iOS target stands for both. A Compose resource directory is registered per source set and the two targets share `iosMain`, so the export cannot vary between them; because they compile that one source set they resolve the same libraries, and the device target is the one that ships. Simulator builds package the same export and show the same list, differing only in the artifact suffix of the coordinates that carry one.
 

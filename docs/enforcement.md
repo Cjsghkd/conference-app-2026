@@ -50,7 +50,7 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | A remembered value is bound to a local before it is used | FIR `RememberResultMustBeBound` |
 | A state read only through `.value` is declared with `by` | FIR `StateMustBeDelegated` |
 
-> All implemented FIR checkers live in `:tools:compiler-plugin` and reach every module through the `droidkaigi.primitive.enforcement` [convention plugin](./build-convention-plugins.md), which puts the plugin on each compilation's compiler-plugin classpath. The one exception is Swift Export's bridge compilation, whose sources the generator writes rather than this project. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
+> All implemented FIR checkers live in `:tools:compiler-plugin`. The `droidkaigi.primitive.enforcement` [convention plugin](./build-convention-plugins.md) puts them on each compilation's compiler-plugin classpath, and `droidkaigi.primitive.kmp` / `kmp.compose` apply it, so every module holding app code is covered. Two compilations are outside it: the build-time `:tools:*` modules, which apply neither primitive, and Swift Export's bridge compilation, whose sources the generator writes rather than this project. **Roles are identified by the context-parameter type together with `*Presenter`/`*ScreenRoot` naming, not by annotations.**
 
 Each checker below is covered by a diagnostic test; for how to run and extend them, see [Enforcement checker tests](./testing-enforcement.md).
 

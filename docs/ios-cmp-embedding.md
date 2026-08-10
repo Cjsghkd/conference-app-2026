@@ -1,6 +1,6 @@
 # CMP on iOS (embedding)
 
-The entire `KaigiApp` runs on iOS via `ComposeUIViewController`; every screen is `commonMain`, so the only iOS-specific UI is the root tab bar. The full stack — Metro, Soil, both Navigation3 groups, runtime-retain, context parameters, the custom `:tools:compiler-plugin` — links as native klibs, for iosArm64 + iosSimulatorArm64.
+The entire `KaigiApp` runs on iOS via `ComposeUIViewController`; every screen is `commonMain`, so the only iOS-specific UI is the root tab bar. The full stack — Metro, Soil, both Navigation3 groups, runtime-retain — links as native klibs, for iosArm64 + iosSimulatorArm64, and the custom `:tools:compiler-plugin` runs over the same sources ([enforcement](./enforcement.md)).
 
 Xcode consumes that stack through [Swift Export](./ios-interop.md), which produces Swift sources and a static library rather than a framework. Swift Export refuses Compose types, so the exported surface lives in its own module:
 
@@ -11,7 +11,7 @@ Xcode consumes that stack through [Swift Export](./ios-interop.md), which produc
 
 ## Embedding
 
-`:app-ios-kotlin` is the iOS counterpart of `MainActivity` and desktop's `main`: it realizes the graph, opens it around `KaigiApp` and hands the result to Swift as a `UIViewController`. All of that is `internal`, because Swift Export bridges every public declaration of the module and the graph reaches Compose types. The graph itself needs `@HiddenFromObjC` on top of `internal` — see [Swift ↔ Kotlin interop](./ios-interop.md) for why. `KaigiAppHost` is the one public class, and it is the whole Swift-facing API:
+`:app-ios-kotlin` is the iOS counterpart of `MainActivity` and desktop's `main`: it realizes the graph, opens it around `KaigiApp` and hands the result to Swift as a `UIViewController`. All of that is `internal`, because Swift Export bridges every public declaration of the module and the graph reaches Compose types. The graph itself needs `@HiddenFromObjC` on top of `internal` — see [Swift ↔ Kotlin interop](./ios-interop.md) for why. `KaigiAppHost` is the entry point of the Swift-facing API, alongside the `RootTabSelection` wrapper it emits:
 
 ```kotlin
 // app-ios-kotlin/src/iosMain/…/KaigiAppHost.kt
@@ -79,7 +79,7 @@ script: cd "$SRCROOT/.." && env -u SWIFT_INCLUDE_PATHS ./gradlew :app-ios-kotlin
 
 Gradle runs an `xcodebuild` of its own for the generated Swift package, and that build reads the inherited value. Left set, the module maps already copied into `BUILT_PRODUCTS_DIR` by the previous build collide with the ones the nested build is compiling, and the second build onward fails with `redefinition of module 'KotlinRuntime'`.
 
-Compose resources reach the app bundle from the same task: the Compose Gradle plugin registers `syncSwiftExportBinaryComposeResourcesForIos` against the Swift Export binary and makes `embedSwiftExportForXcode` depend on it. The binary is declared by `:app-ios-kotlin`, so that module applies the Compose Gradle plugin even though it holds no Compose code — without it the bundle ships no `compose-resources` directory and every resource lookup fails at runtime.
+Compose resources reach the app bundle from the same task: the Compose Gradle plugin registers `syncSwiftExportBinaryComposeResourcesForIos` against the Swift Export binary and makes `embedSwiftExportForXcode` depend on it. The binary is declared by `:app-ios-kotlin`, so that module applies the Compose Gradle plugin — without it the bundle ships no `compose-resources` directory and every resource lookup fails at runtime.
 
 ## Linked Swift package
 

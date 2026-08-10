@@ -1,6 +1,6 @@
 # Swift ↔ Kotlin interop
 
-Because iOS is almost full CMP with only a native tab bar, the Swift ↔ Kotlin boundary is small. Swift Export / Swift Package Import are experimental as of 2026, so the boundary keeps a fallback (Obj-C interop / SKIE) and stays small. Within it:
+Because iOS is almost full CMP with only a native tab bar, the Swift ↔ Kotlin boundary is small. Swift Export / Swift Package Import are experimental as of 2026, which is a further reason to keep that boundary small. Within it:
 
 - **Kotlin → Swift (Swift calls Kotlin): Swift Export.** The native tab bar calls Kotlin APIs (the tab selection, the view-controller factory) through the exported `AppShared` module, which Kotlin generates as idiomatic Swift with no Obj-C header in between. `:app-ios-kotlin` names the module and flattens its own package, so its declarations import directly; everything it reaches in `:app-shared` keeps its Kotlin package under the generated `ExportedKotlinPackages` namespace, and Swift shortens that with a `typealias`.
 - **Swift → Kotlin (using Apple frameworks): Swift Package Import.** Where iOS-specific Apple frameworks / SPM are needed, call them from Kotlin via Swift Package Import, keeping the implementation on the Kotlin side. Every sync resolves and builds the imported package graph; for sharing that work between `git worktree` checkouts, see [SwiftPM import cache across worktrees](./build-worktree-swiftpm-cache.md).
@@ -15,7 +15,7 @@ Swift Export shapes the API, so the Kotlin it is pointed at has to be written fo
 
 ## Caveats (experimental risk)
 
-- Both Swift Export and Swift Package Import are experimental (2026). Keep a fallback (classic Obj-C interop / SKIE) and adopt them gradually.
+- Both Swift Export and Swift Package Import are experimental (2026). The app has no Obj-C header path to fall back to, so a breaking change upstream is absorbed here rather than routed around.
 - coroutines/flow Swift interop is still stabilizing, so keep the state-passing boundary small.
 
 Related: [iOS overview](./ios.md) · [CMP on iOS (embedding)](./ios-cmp-embedding.md) · [Swift export](https://kotlinlang.org/docs/native-swift-export.html)
