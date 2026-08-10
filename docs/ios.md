@@ -1,9 +1,9 @@
 # iOS overview
 
-iOS runs the shared Compose Multiplatform UI for every screen, with one native exception: the root tab bar, a SwiftUI `TabView` rendering the Liquid Glass design.
+iOS runs the shared Compose Multiplatform UI for every screen, with one native exception: the root tab bar, a SwiftUI view rendering the Liquid Glass design.
 
 - The Swift implementation is minimal and the app runs on a Compose Multiplatform base. `KaigiApp` runs on a `ComposeUIViewController`, and every screen uses the shared CMP UI. Per-screen SwiftUI with KMP Presenter integration is not carried forward.
-- The one native exception is the root tab bar, rendered by a SwiftUI `TabView`; every screen — including screen-transition chrome — is drawn by CMP. Navigation3 owns the back stack across all platforms, and iOS mirrors the tab-related part of that state into the native bar.
+- The one native exception is the root tab bar, a SwiftUI view layered over that view controller; every screen — including screen-transition chrome — is drawn by CMP. Navigation3 owns the back stack across all platforms, and iOS mirrors the tab-related part of that state into the native bar.
 
 ## Relationship to navigation
 
@@ -11,7 +11,7 @@ Navigation3 owns the back stack on all four platforms. iOS reflects that state i
 
 ## Swift ↔ Kotlin interop
 
-The Swift ↔ Kotlin boundary stays small, around the tab bar: Swift calls Kotlin (`RootTabNavigator`, the view-controller factories) through Swift Export, and Kotlin reaches Apple frameworks through Swift Package Import. Both are experimental as of 2026, so the boundary keeps a fallback and stays minimal.
+The Swift ↔ Kotlin boundary stays small, around the tab bar: Swift calls Kotlin (`RootTabNavigator`, the view-controller factories) through `AppShared.framework`, and Kotlin reaches Apple frameworks through Swift Package Import, which is experimental as of 2026.
 
 For details, see [Swift ↔ Kotlin interop](./ios-interop.md).
 

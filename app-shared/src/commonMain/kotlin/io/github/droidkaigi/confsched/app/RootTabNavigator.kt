@@ -9,9 +9,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 
-// Bridges the root tab bar to shells outside the Compose tree (the iOS app). Swift consumes
-// `currentTab` as an AsyncSequence via Swift export (null = the tab bar is hidden) and calls
-// `select` on tab taps; IosTabBarSyncEffect connects both ends to the Compose navigation state.
+// Bridges the root tab bar to shells outside the Compose tree (the iOS app). Swift collects
+// `currentTab` through the framework's generated flow-collector protocol (null = the tab bar is
+// hidden) and calls `select` on tab taps; IosTabBarSyncEffect connects both ends to the Compose
+// navigation state.
 @Inject
 @SingleIn(AppScope::class)
 class RootTabNavigator {
