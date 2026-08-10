@@ -11,20 +11,20 @@ import kotlinx.collections.immutable.persistentSetOf
 
 fun Timetable.Companion.fake(): Timetable = Timetable(
     items = persistentListOf(
-        fakeItem("d1a", "Welcome Talk", Room.NARWHAL, "", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:20"),
+        fakeItem("d1a", "Sample Session A", Room.NARWHAL, "", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:20"),
         TimetableItem.fake(),
-        fakeItem("d1c", "CIパイプラインの最適化戦略", Room.PANDA, "Speaker C", Language.ENGLISH, DroidKaigi2026Day.Day1, "11:00", "11:40"),
-        fakeItem("d1d", "Kotlin Multiplatform: State of the Union", Room.QUAIL, "Speaker D", Language.ENGLISH, DroidKaigi2026Day.Day1, "13:00", "13:45"),
-        fakeItem("d1e", "Jetpack Composeのパフォーマンスチューニング", Room.MEERKAT, "Speaker E", Language.ENGLISH, DroidKaigi2026Day.Day1, "13:00", "13:45"),
-        fakeItem("d2a", "Metro DI: graphs without Dagger", Room.OTTER, "Speaker F", Language.MIXED, DroidKaigi2026Day.Day2, "10:00", "10:40"),
-        fakeItem("d2b", "Compose Multiplatform in Practice", Room.NARWHAL, "Speaker A", Language.MIXED, DroidKaigi2026Day.Day2, "11:00", "11:40"),
+        fakeItem("d1c", "サンプルセッションC", Room.PANDA, "Speaker C", Language.ENGLISH, DroidKaigi2026Day.Day1, "11:00", "11:40"),
+        fakeItem("d1d", "Sample Session D, with a placeholder title long enough to wrap onto several lines", Room.QUAIL, "Speaker D", Language.ENGLISH, DroidKaigi2026Day.Day1, "13:00", "13:45"),
+        fakeItem("d1e", "サンプルセッションE、折り返しを確かめるための長いプレースホルダーのタイトル", Room.MEERKAT, "Speaker E", Language.ENGLISH, DroidKaigi2026Day.Day1, "13:00", "13:45"),
+        fakeItem("d2a", "Sample Session F", Room.OTTER, "Speaker F", Language.MIXED, DroidKaigi2026Day.Day2, "10:00", "10:40"),
+        fakeItem("d2b", "Sample Session G, with a moderately long placeholder title", Room.NARWHAL, "Speaker A", Language.MIXED, DroidKaigi2026Day.Day2, "11:00", "11:40"),
     ),
     bookmarks = persistentSetOf(TimetableItemId("d1a"), TimetableItemId("d1b"), TimetableItemId("d2a")),
 )
 
 fun TimetableItem.Companion.fake(): TimetableItem = fakeItem(
     id = "d1b",
-    title = "DroidKaigiアプリで見るアーキテクチャの変遷",
+    title = "サンプルセッションB",
     room = Room.OTTER,
     speaker = "Speaker B",
     language = Language.ENGLISH,
