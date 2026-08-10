@@ -155,6 +155,6 @@ persistence runs. See [Soil persistence](./docs/soil-persistence.md).
 
 Every screen on iOS is drawn by Compose Multiplatform. The one native piece is the root tab bar: a
 SwiftUI view laid over the Compose view, its surface the system Liquid Glass material on iOS 26.
-The Swift side stays small — it calls Kotlin through the `AppShared` framework, and Kotlin reaches
-Apple frameworks through Swift Package Import, still experimental as of 2026. See
+The Swift side stays small — Kotlin generates the Swift it calls, through Swift Export, and reaches
+Apple frameworks the other way through Swift Package Import. Both are experimental as of 2026. See
 [iOS overview](./docs/ios.md).
