@@ -21,7 +21,9 @@ spotless {
 subprojects {
     if (path != ":tools:compiler-plugin" && path != ":tools:ksp-processor") {
         configurations
-            .matching { it.name.startsWith("kotlinCompilerPluginClasspath") }
+            // Swift Export's bridge sources are generated, not written here, and the enforcement
+            // checkers reject house-style violations the generator is free to emit.
+            .matching { it.name.startsWith("kotlinCompilerPluginClasspath") && !it.name.contains("SwiftExport") }
             .configureEach {
                 // shadowRuntimeElements carries the relocated jar; the plain one references
                 // com.intellij, which the embeddable compiler loading this plugin does not have.

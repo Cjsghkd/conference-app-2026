@@ -1,10 +1,15 @@
 import AppShared
+import ConferenceApp2026AppShared
 import SwiftUI
+
+/// Swift Export flattens only the package the exported module names, so the types it reaches in
+/// :app-shared keep their fully qualified Kotlin package.
+typealias RootTab = ExportedKotlinPackages.io.github.droidkaigi.confsched.app.RootTab
 
 /// The native root tab bar, laid out over the Compose view controller. The view occupies the bar's
 /// own area and nothing more, so every point outside it belongs to the Compose layer below.
 struct RootTabBarView: View {
-    let navigator: RootTabNavigator
+    let host: KaigiAppHost
 
     @Namespace private var indicator
     @State private var currentTab: RootTab?
@@ -13,12 +18,12 @@ struct RootTabBarView: View {
         Group {
             if let currentTab {
                 HStack(spacing: 0) {
-                    ForEach(RootTab.entries, id: \.self) { tab in
+                    ForEach(RootTab.allCases, id: \.self) { tab in
                         RootTabButton(
                             tab: tab,
                             isSelected: tab == currentTab,
                             indicator: indicator,
-                            select: { navigator.select(tab: tab) }
+                            select: { host.selectTab(tab: tab) }
                         )
                     }
                 }
@@ -36,8 +41,13 @@ struct RootTabBarView: View {
             }
         }
         .task {
-            let collector = RootTabCollector { currentTab = $0 }
-            try? await navigator.currentTab.collect(collector: collector)
+            try? await collectCurrentTab()
+        }
+    }
+
+    private func collectCurrentTab() async throws {
+        for try await selection in host.currentTab.asAsyncSequence() {
+            currentTab = selection?.tab
         }
     }
 }
@@ -98,29 +108,16 @@ private extension View {
     }
 }
 
-private final class RootTabCollector: NSObject, Kotlinx_coroutines_coreFlowCollector {
-    private let onEmit: (RootTab?) -> Void
-
-    init(onEmit: @escaping (RootTab?) -> Void) {
-        self.onEmit = onEmit
-    }
-
-    func emit(value: Any?) async throws {
-        let tab = value as? RootTab
-        await MainActor.run { onEmit(tab) }
-    }
-}
-
 private extension RootTab {
     /// The Compose bar names each destination with a Material `ImageVector`, which does not cross
     /// the framework boundary; the SF Symbol standing for the same destination lives here.
     var symbolName: String {
         switch self {
-        case .timetable: return "calendar"
-        case .eventmap: return "map"
-        case .favorites: return "heart.fill"
-        case .about: return "info.circle"
-        case .profilecard: return "person.crop.circle"
+        case .Timetable: return "calendar"
+        case .EventMap: return "map"
+        case .Favorites: return "heart.fill"
+        case .About: return "info.circle"
+        case .ProfileCard: return "person.crop.circle"
         default: return "questionmark"
         }
     }

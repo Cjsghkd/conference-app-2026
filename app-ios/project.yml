@@ -34,8 +34,11 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
     preBuildScripts:
-      - name: Embed Kotlin Framework
-        script: cd "$SRCROOT/.." && ./gradlew :app-shared:embedAndSignAppleFrameworkForXcode
+      - name: Embed Kotlin Swift Export Library
+        # Gradle runs a nested xcodebuild for the generated Swift package, and that build reads the
+        # inherited SWIFT_INCLUDE_PATHS; leaving it set makes the already-copied module maps in
+        # BUILT_PRODUCTS_DIR collide with the ones the nested build is compiling.
+        script: cd "$SRCROOT/.." && env -u SWIFT_INCLUDE_PATHS ./gradlew :app-ios-kotlin:embedSwiftExportForXcode
         basedOnDependencyAnalysis: false
       # Gradle never resolves Swift packages, so the licenses screen learns about them from the
       # iOS build; the app reads the result and hands it to createIosAppGraph.
@@ -46,12 +49,17 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.github.droidkaigi.confsched.kaigiapp
         GENERATE_INFOPLIST_FILE: NO
-        FRAMEWORK_SEARCH_PATHS:
+        # embedSwiftExportForXcode drops the .swiftmodule directories, the bridge module maps and
+        # the static library into BUILT_PRODUCTS_DIR; the module maps sit one directory deep, hence
+        # the recursive import path.
+        SWIFT_INCLUDE_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../app-shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+          - $(BUILT_PRODUCTS_DIR)/**
+        LIBRARY_SEARCH_PATHS:
+          - $(inherited)
+          - $(BUILT_PRODUCTS_DIR)
         OTHER_LDFLAGS:
           - $(inherited)
-          - -framework
-          - AppShared
-        # The embedAndSign Gradle task writes into the build products; sandboxing breaks it.
+          - -lAppShared
+        # The Gradle embed task writes into the build products; sandboxing breaks it.
         ENABLE_USER_SCRIPT_SANDBOXING: NO

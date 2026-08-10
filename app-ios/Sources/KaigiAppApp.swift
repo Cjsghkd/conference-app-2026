@@ -3,19 +3,19 @@ import SwiftUI
 
 @main
 struct KaigiAppApp: App {
-    private let appGraph = IosAppGraphKt.createIosAppGraph(
+    private let host = KaigiAppHost(
         swiftPackageLicensesJson: swiftPackageLicensesJson()
     )
 
     init() {
-        appGraph.appInitializer.initialize()
+        host.initialize()
     }
 
     var body: some Scene {
         WindowGroup {
             ZStack(alignment: .bottom) {
-                KaigiAppView(appGraph: appGraph)
-                RootTabBarView(navigator: appGraph.rootTabNavigator)
+                KaigiAppView(host: host)
+                RootTabBarView(host: host)
             }
             .ignoresSafeArea()
         }
@@ -35,10 +35,10 @@ private func swiftPackageLicensesJson() -> String {
 }
 
 private struct KaigiAppView: UIViewControllerRepresentable {
-    let appGraph: IosAppGraph
+    let host: KaigiAppHost
 
     func makeUIViewController(context: Context) -> UIViewController {
-        KaigiAppViewController_iosKt.kaigiAppViewController(appGraph: appGraph)
+        host.viewController()
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}

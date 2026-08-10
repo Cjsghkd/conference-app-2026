@@ -47,16 +47,6 @@ configure<KotlinMultiplatformExtension> {
         )
     }
 
-    swiftExport {
-        moduleName.set("AppShared")
-        flattenPackage.set("io.github.droidkaigi.confsched.app")
-        // Exported so the module's types surface to Swift as first-class types rather than
-        // opaque Kotlin references.
-        export(project(":core:common")) {
-            flattenPackage.set("io.github.droidkaigi.confsched.core.common")
-        }
-    }
-
     // configureEach, not named: the default hierarchy materialises iosMain after this plugin applies.
     sourceSets.configureEach {
         if (name != "iosMain") return@configureEach
