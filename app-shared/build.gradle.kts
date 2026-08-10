@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.droidkaigiPrimitiveBuildkonfig)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.metro)
-    alias(libs.plugins.droidkaigiPrimitiveIosFramework)
+    alias(libs.plugins.droidkaigiPrimitiveIos)
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 

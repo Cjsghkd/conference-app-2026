@@ -64,11 +64,11 @@ The provider returns a list because one platform has two sources — which is wh
 
 ### iOS
 
-`app-ios` is an Xcode shell with no Gradle dependency graph of its own, so the Kotlin dependencies are exported from `app-shared`. The plugin collects only from configurations named `*CompileClasspath` / `*RuntimeClasspath`, which Kotlin/Native does not produce, so `app-shared` mirrors `iosArm64CompileKlibraries` under a recognised name.
+`app-ios` is an Xcode shell with no Gradle dependency graph of its own, and `app-ios-kotlin` only adds the Swift-exported surface on top of `app-shared`, so the Kotlin dependencies are exported from `app-shared`. The plugin collects only from configurations named `*CompileClasspath` / `*RuntimeClasspath`, which Kotlin/Native does not produce, so `app-shared` mirrors `iosArm64CompileKlibraries` under a recognised name.
 
 One iOS target stands for both. A Compose resource directory is registered per source set and the two targets share `iosMain`, so the export cannot vary between them; because they compile that one source set they resolve the same libraries, and the device target is the one that ships. Simulator builds package the same export and show the same list, differing only in the artifact suffix of the coordinates that carry one.
 
-That export reaches the app bundle through the existing `embedAndSignAppleFrameworkForXcode` build phase: the Compose Gradle plugin makes that task depend on `syncComposeResourcesForIos`.
+That export reaches the app bundle as a Compose resource, through the Swift Export build phase: the Compose Gradle plugin makes `embedSwiftExportForXcode` depend on the resource sync. It registers that sync against the Swift Export binary, which `:app-ios-kotlin` declares, so `:app-ios-kotlin` applies the Compose Gradle plugin for it — see [CMP on iOS (embedding)](./ios-cmp-embedding.md).
 
 Swift packages are resolved by Xcode and appear in no Gradle configuration at all, so the iOS build describes them itself. `app-ios/scripts/generate-swift-package-licenses.py` runs as a build phase and writes a second export into the bundle, taking the package set and versions from `Package.resolved` and the license text from the checked-out sources. An SPDX identifier cannot be derived from a license file, so the script maps one per package and fails the build on a package it does not know.
 

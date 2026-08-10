@@ -2,7 +2,10 @@ import org.jetbrains.kotlin.gradle.swiftexport.ExperimentalSwiftExportDsl
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.droidkaigiPrimitiveEnforcement)
+    // No Compose code lives here, but the Compose Gradle plugin syncs the compose resources of the
+    // whole dependency graph into the app bundle, and it hangs that off the Xcode entry point of
+    // the module declaring the Swift Export binary — this one.
+    alias(libs.plugins.droidkaigiPrimitiveKmpCompose)
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 

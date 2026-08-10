@@ -35,6 +35,6 @@ Agents work in their own `git worktree`, so several checkouts exist side by side
 - Presenter logic: `runPresenterTest` harness (`:core:testing`) — see [Presenter unit tests](./testing-presenter.md).
 - Screen behaviour: the Robot BDD layer — see [Robot pattern tests](./testing-robot.md).
 - Rendering: Roborazzi preview screenshots — see [Preview screenshot tests](./testing-preview-screenshot.md).
-- Full multi-target check: `./gradlew :app-desktop:compileKotlinJvm :app-web:compileKotlinWasmJs :app-android:compileDevDebugKotlin :app-shared:linkDebugFrameworkIosSimulatorArm64 :feature:sessions:jvmTest`.
+- Full multi-target check: `./gradlew :app-desktop:compileKotlinJvm :app-web:compileKotlinWasmJs :app-android:compileDevDebugKotlin :app-ios-kotlin:compileKotlinIosSimulatorArm64 :feature:sessions:jvmTest`. The iOS half of that only compiles Kotlin; Swift Export runs from Xcode, which the iOS build workflow exercises.
 
 Related: [Enforcement](./enforcement.md) · [Building a screen](./building-a-screen.md)

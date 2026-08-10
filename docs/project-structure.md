@@ -35,7 +35,8 @@ A three-way split that keeps preview image binaries off production classpaths â€
 | --- | --- |
 | `:app-shared` | the only aggregator â€” the app-wide [DI graph contract](./di-app-graph.md), the app shell, entry aggregation, and [cross-feature navigator implementations](./navigation-navigator.md) |
 | `:app-android` / `:app-desktop` / `:app-web` | per-platform entry point realizing the DI graph |
-| `app-ios` (Xcode project) | consumes the `app-shared` framework and realizes the DI graph from it |
+| `:app-ios-kotlin` | the Swift-exported surface Xcode links against; holds no UI, only the Compose-free API the Swift side calls |
+| `app-ios` (Xcode project) | hosts the exported module and realizes the DI graph from it |
 
 ## Build-time tooling
 
@@ -68,6 +69,7 @@ graph TD
     app_android["app-android"]
     app_desktop["app-desktop"]
     app_ios["app-ios (Xcode)"]
+    app_ios_kotlin["app-ios-kotlin"]
     app_shared["app-shared"]
     app_web["app-web"]
   end
@@ -121,7 +123,8 @@ graph TD
   feature_sessions -. "compileOnly / androidRuntimeClasspath" .-> core_preview_impl
   feature_sessions -. "test / preview only" .-> core_testing
   feature_sessions --> core_ui
-  app_ios --> app_shared
+  app_ios_kotlin --> app_shared
+  app_ios --> app_ios_kotlin
 ```
 
 <!-- deps:end -->

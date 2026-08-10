@@ -103,7 +103,7 @@ export default withMermaid(defineConfig({
           { text: 'iOS overview', link: '/ios' },
           { text: 'Liquid Glass tab bar', link: '/ios-liquid-glass' },
           { text: 'Swift ↔ Kotlin interop', link: '/ios-interop' },
-          { text: 'CMP on iOS (framework)', link: '/ios-cmp-framework' },
+          { text: 'CMP on iOS (embedding)', link: '/ios-cmp-embedding' },
         ],
       },
       {
