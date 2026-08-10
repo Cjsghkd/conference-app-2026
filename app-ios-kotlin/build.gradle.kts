@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.swiftexport.ExperimentalSwiftExportDsl
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.droidkaigiPrimitiveEnforcement)
     alias(libs.plugins.droidkaigiPrimitiveSpotless)
 }
 

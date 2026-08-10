@@ -5,6 +5,7 @@ import org.gradle.accessors.dm.LibrariesForLibs
 plugins {
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.compose")
+    id("droidkaigi.primitive.enforcement")
 }
 
 val libs = the<LibrariesForLibs>()

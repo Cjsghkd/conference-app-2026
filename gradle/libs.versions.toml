@@ -175,4 +175,5 @@ droidkaigiPrimitiveBuildkonfig = { id = "droidkaigi.primitive.buildkonfig", vers
 droidkaigiPrimitiveSpotless = { id = "droidkaigi.primitive.spotless", version = "unspecified" }
 droidkaigiPrimitiveLicensesExport = { id = "droidkaigi.primitive.licenses-export", version = "unspecified" }
 droidkaigiPrimitiveIosFramework = { id = "droidkaigi.primitive.ios-framework", version = "unspecified" }
+droidkaigiPrimitiveEnforcement = { id = "droidkaigi.primitive.enforcement", version = "unspecified" }
 droidkaigiConventionKmpFeature = { id = "droidkaigi.convention.kmp-feature", version = "unspecified" }
