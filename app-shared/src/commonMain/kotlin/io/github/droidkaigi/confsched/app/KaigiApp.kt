@@ -46,6 +46,8 @@ fun KaigiApp() {
                 IosTabBarSyncEffect(
                     backStack = backStack,
                     rootTabNavigator = appGraph.rootTabNavigator,
+                    rootTabBarAppearance = appGraph.rootTabBarAppearance,
+                    colorScheme = colorScheme,
                     onSelectTab = { tab -> uiGraph.appNavigator.moveToTop(tab.key) },
                 )
 

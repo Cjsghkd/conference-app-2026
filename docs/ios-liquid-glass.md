@@ -13,6 +13,7 @@ ZStack(alignment: .bottom) {
     KaigiAppView(host: host)                            // full-screen ComposeUIViewController
     RootTabBarView(                                     // only the bar's own area
         currentTab: host.currentTab.asAsyncSequence().map { $0?.tab },
+        palette: host.tabBarPalette.asAsyncSequence(),
         select: host.selectTab(tab:)
     )
 }
@@ -35,6 +36,12 @@ Scroll-driven bar behaviors are unavailable: Compose scrolling is invisible to U
 - **Swift → Kotlin**: tab taps call `select(tab)`; `IosTabBarSyncEffect` (inside `KaigiApp`) turns each selection into `AppNavigator.moveToTop(tab.key)` — the same command the Compose bar issues on the other platforms.
 
 `RootTab.label` names each destination on both sides: the Compose bar gives it to its icon as a content description, and the native bar shows it under the icon as the tab's title. The icon has no shared form — Compose names a destination with a Material `ImageVector` and UIKit with an SF Symbol — so the symbol names live in the Swift bar.
+
+## Theme bridge
+
+The bar draws its own material, so the theme reaches it as the little it still decides. `RootTabBarAppearance` publishes a `RootTabBarPalette` — the theme's accent as sRGB ARGB, and whether the scheme in force is a dark one — which the bar takes as its `tintColor` and its `overrideUserInterfaceStyle`. The style override is what keeps the bar with the app rather than the device: the app picks its scheme itself, and two of the five are dark.
+
+The palette carries nothing further because nothing further has an effect: on the iOS 26 platter, `unselectedItemTintColor` and `UITabBarAppearance.selectionIndicatorTintColor` are overridden by the material.
 
 `RootTabSceneDecorator` (the Compose bottom bar) is not applied on iOS; the native bar replaces it. `rememberRootTabSceneDecorator` returns `null` when `currentPlatform` is `TargetPlatform.Ios`. For the tab-switching semantics, see [Root tab bar](./navigation-root-tab-bar.md).
 

@@ -8,4 +8,5 @@ interface AppGraph : SoilDataContext {
 
     val appInitializer: AppInitializer
     val rootTabNavigator: RootTabNavigator
+    val rootTabBarAppearance: RootTabBarAppearance
 }
