@@ -6,4 +6,5 @@ sealed interface DebugScreenAction {
     data class ApplyClockPreset(val preset: DebugClockPreset) : DebugScreenAction
     data class ShiftClockTo(val isoInstant: String) : DebugScreenAction
     data object ResetClock : DebugScreenAction
+    data class SetClockOverlayEnabled(val enabled: Boolean) : DebugScreenAction
 }

@@ -9,12 +9,7 @@ import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
 import io.github.droidkaigi.confsched.core.common.ActionEffect
 import io.github.droidkaigi.confsched.core.common.ScreenChannel
-import io.github.droidkaigi.confsched.core.model.ConferenceTimeZone
 import kotlinx.coroutines.delay
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeFormat
-import kotlinx.datetime.toLocalDateTime
 import soil.query.compose.rememberMutation
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -31,6 +26,9 @@ fun debugScreenPresenter(
         .soilErrorOverlayEnabled.collectAsState(initial = true)
     val soilErrors by presenterContext.soilErrorMonitor.errors.collectAsState()
     val clockOffset by presenterContext.clockOffsetStore.offset.collectAsState()
+    val clockOverlayMutation = rememberMutation(presenterContext.clockOverlayEnabledMutationKey)
+    val clockOverlayEnabled by presenterContext.debugPreferencesStore
+        .clockOverlayEnabled.collectAsState(initial = true)
     var invalidClockInput by retain { mutableStateOf(false) }
     var now by retain { mutableStateOf(presenterContext.clock.now()) }
 
@@ -67,6 +65,9 @@ fun debugScreenPresenter(
                 }
             }
 
+            is DebugScreenAction.SetClockOverlayEnabled ->
+                clockOverlayMutation.mutateAsync(action.enabled)
+
             DebugScreenAction.ResetClock -> {
                 presenterContext.clockOffsetStore.reset()
                 invalidClockInput = false
@@ -84,29 +85,7 @@ fun debugScreenPresenter(
             offsetLabel = clockOffset.toOffsetLabel(),
             shifted = clockOffset != Duration.ZERO,
             invalidInput = invalidClockInput,
+            overlayEnabled = clockOverlayEnabled,
         ),
     )
-}
-
-private val conferenceTimeFormat: DateTimeFormat<LocalDateTime> = LocalDateTime.Format {
-    year()
-    chars("-")
-    monthNumber()
-    chars("-")
-    day()
-    chars(" ")
-    hour()
-    chars(":")
-    minute()
-    chars(":")
-    second()
-}
-
-private fun Instant.formatInConferenceTime(): String =
-    "${toLocalDateTime(ConferenceTimeZone).format(conferenceTimeFormat)} JST"
-
-private fun Duration.toOffsetLabel(): String = when {
-    this == Duration.ZERO -> "System time"
-    isPositive() -> "+$this"
-    else -> toString()
 }

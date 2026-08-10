@@ -35,6 +35,7 @@ fun DebugScreen(
     applyClockPreset: (DebugClockPreset) -> Unit,
     shiftClockTo: (String) -> Unit,
     resetClock: () -> Unit,
+    toggleClockOverlay: (Boolean) -> Unit,
     onOpenSoilErrors: () -> Unit,
     onClearData: () -> Unit,
     onBack: () -> Unit,
@@ -70,6 +71,7 @@ fun DebugScreen(
                 applyClockPreset = applyClockPreset,
                 shiftClockTo = shiftClockTo,
                 resetClock = resetClock,
+                toggleClockOverlay = toggleClockOverlay,
             )
             HorizontalDivider()
 
@@ -122,12 +124,13 @@ fun DebugScreenPreview(
                 dataCleared = false,
                 soilErrorOverlayEnabled = true,
                 soilErrors = listOf(previewSoilError()),
-                clock = previewDebugClockUiState(),
+                clock = DebugClockUiState.fake(),
             ),
             toggleSoilErrorOverlay = {},
             applyClockPreset = {},
             shiftClockTo = {},
             resetClock = {},
+            toggleClockOverlay = {},
             onOpenSoilErrors = {},
             onClearData = {},
             onBack = {},

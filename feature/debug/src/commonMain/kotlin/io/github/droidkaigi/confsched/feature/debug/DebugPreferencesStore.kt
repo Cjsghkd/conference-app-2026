@@ -25,6 +25,13 @@ class DebugPreferencesStore(
         dataStore.edit { it[SOIL_ERROR_OVERLAY_ENABLED_KEY] = enabled }
     }
 
+    val clockOverlayEnabled: Flow<Boolean> =
+        dataStore.data.map { it[CLOCK_OVERLAY_ENABLED_KEY] ?: true }
+
+    suspend fun setClockOverlayEnabled(enabled: Boolean) {
+        dataStore.edit { it[CLOCK_OVERLAY_ENABLED_KEY] = enabled }
+    }
+
     val serverEnvironment: Flow<ServerEnvironment?> = dataStore.data.map { preferences ->
         preferences[SERVER_ENVIRONMENT_KEY]?.let { name ->
             ServerEnvironment.entries.firstOrNull { it.name == name }
@@ -43,6 +50,7 @@ class DebugPreferencesStore(
 
     companion object {
         private val SOIL_ERROR_OVERLAY_ENABLED_KEY = booleanPreferencesKey("debug.soilErrorOverlayEnabled")
+        private val CLOCK_OVERLAY_ENABLED_KEY = booleanPreferencesKey("debug.clockOverlayEnabled")
         private val SERVER_ENVIRONMENT_KEY = stringPreferencesKey("debug.serverEnvironment")
         private val SKIP_SERVER_SELECTION_KEY = booleanPreferencesKey("debug.skipServerSelection")
     }

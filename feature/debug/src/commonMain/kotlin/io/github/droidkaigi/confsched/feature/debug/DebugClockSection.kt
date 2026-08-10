@@ -9,6 +9,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ internal fun DebugClockSection(
     applyClockPreset: (DebugClockPreset) -> Unit,
     shiftClockTo: (String) -> Unit,
     resetClock: () -> Unit,
+    toggleClockOverlay: (Boolean) -> Unit,
 ) {
     var isoInstant by retain { mutableStateOf("") }
 
@@ -37,6 +39,16 @@ internal fun DebugClockSection(
         headlineContent = { Text("Now") },
         supportingContent = { Text(uiState.now) },
         trailingContent = { Text(uiState.offsetLabel) },
+    )
+    ListItem(
+        headlineContent = { Text("Show the shifted time on every screen") },
+        supportingContent = { Text("A badge in the top-right corner, while the clock is shifted") },
+        trailingContent = {
+            Switch(
+                checked = uiState.overlayEnabled,
+                onCheckedChange = toggleClockOverlay,
+            )
+        },
     )
     Row(
         modifier = Modifier
@@ -83,10 +95,11 @@ fun DebugClockSectionPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         DebugClockSection(
-            uiState = previewDebugClockUiState(),
+            uiState = DebugClockUiState.fake(),
             applyClockPreset = {},
             shiftClockTo = {},
             resetClock = {},
+            toggleClockOverlay = {},
         )
     }
 }

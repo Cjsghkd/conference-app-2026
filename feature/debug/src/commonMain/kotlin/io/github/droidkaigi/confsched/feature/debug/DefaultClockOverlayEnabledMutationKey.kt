@@ -7,12 +7,12 @@ import io.github.droidkaigi.confsched.core.model.MutationTag
 import soil.query.buildMutationKey
 
 @Inject
-@SoilErrorOverlayEnabled
+@ClockOverlayEnabled
 @ContributesBinding(DebugScreenScope::class)
-class DefaultSoilErrorOverlayEnabledMutationKey(
+class DefaultClockOverlayEnabledMutationKey(
     extraTag: MutationTag,
     private val debugPreferencesStore: DebugPreferencesStore,
-) : SoilErrorOverlayEnabledMutationKey by buildMutationKey(
-    id = SoilIds.soilErrorOverlayEnabledMutation(extraTag),
-    mutate = { enabled -> debugPreferencesStore.setSoilErrorOverlayEnabled(enabled) },
+) : ClockOverlayEnabledMutationKey by buildMutationKey(
+    id = SoilIds.clockOverlayEnabledMutation(extraTag),
+    mutate = { enabled -> debugPreferencesStore.setClockOverlayEnabled(enabled) },
 )

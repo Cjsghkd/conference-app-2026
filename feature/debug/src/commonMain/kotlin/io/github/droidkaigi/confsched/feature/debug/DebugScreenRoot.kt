@@ -28,6 +28,9 @@ fun DebugScreenRoot(
             screenChannel.send(DebugScreenAction.ShiftClockTo(isoInstant))
         },
         resetClock = { screenChannel.send(DebugScreenAction.ResetClock) },
+        toggleClockOverlay = { enabled ->
+            screenChannel.send(DebugScreenAction.SetClockOverlayEnabled(enabled))
+        },
         onOpenSoilErrors = onNavigateToSoilErrors,
         onClearData = { screenChannel.send(DebugScreenAction.ClearData) },
         onBack = onNavigateBack,
