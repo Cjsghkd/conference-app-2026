@@ -6,7 +6,7 @@ Production logging uses [Kermit](https://github.com/touchlab/Kermit), a KMP-nati
 
 [Kermit](https://github.com/touchlab/Kermit) (Touchlab) is a KMP-native logging library. It ships **platform-native writers built in** and picks the right sink per platform automatically: Logcat on Android, `os_log` on iOS, SLF4J on Desktop (JVM), and `console` on Web (wasmJs).
 
-That built-in per-platform behaviour is the reason for choosing Kermit: a single `co.touchlab.kermit.Logger` binding in common code covers every target with **no `expect`/`actual` and no per-platform provider**. Contrast this with the [ByteStore / DataStore seam](./debugging.md), which *does* need per-platform providers — the Android backing needs a `Context`, so those bindings live on each platform graph. The Logger has no such platform coupling.
+That built-in per-platform behaviour is the reason for choosing Kermit: a single `co.touchlab.kermit.Logger` binding in common code covers every target with **no `expect`/`actual` and no per-platform provider**. Contrast this with the [`FileStorage` / DataStore seam](./platforms-and-modules.md), which *does* need per-platform providers — the Android backing needs a `Context`, so `:core:data` carries an `actual` and a contributed binding per platform source set. The Logger has no such platform coupling.
 
 ## The KaigiLogger facade
 

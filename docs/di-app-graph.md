@@ -22,9 +22,6 @@ interface AndroidAppGraph : AppGraph {
     fun interface Factory {
         fun create(@Provides context: Context): AndroidAppGraph
     }
-
-    @Provides @SingleIn(AppScope::class)
-    fun provideByteStore(context: Context): ByteStore = createByteStore(context)
 }
 ```
 
@@ -38,15 +35,15 @@ interface AndroidAppGraph : AppGraph {
 A Ktorfit API interface in `:core:data` marked `@ProvidedApi` drives KSP to generate a per-API provider trio: a `<Api>Provider` interface, a `Default<Api>Provider` bound with `@ContributesBinding(AppScope)` that builds the API over the production `Ktorfit`, and a `provide<Api>` bridge that exposes the API itself to the graph.
 
 ```kotlin
-// generated for @ProvidedApi SessionsApi
+// generated for @ProvidedApi TimetableApi
 @Inject @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class DefaultSessionsApiProvider(ktorfit: Ktorfit) : SessionsApiProvider {
-    override val api: SessionsApi = ktorfit.createSessionsApi()
+class DefaultTimetableApiProvider(ktorfit: Ktorfit) : TimetableApiProvider {
+    override val api: TimetableApi = ktorfit.createTimetableApi()
 }
 ```
 
-`:feature:debug` swaps the default in dev builds: `EnvironmentAwareSessionsApiProvider` is contributed with `@ContributesBinding(AppScope::class, replaces = [DefaultSessionsApiProvider::class])`, routing calls to the fake or the environment the debug screen selects. Because the replacement rides the same binding, the graph resolves it automatically wherever `:feature:debug` is on the classpath.
+`:feature:debug` swaps the default in dev builds: `EnvironmentAwareTimetableApiProvider` is contributed with `@ContributesBinding(AppScope::class, replaces = [DefaultTimetableApiProvider::class])`, routing calls to the fake or the environment the debug screen selects. Because the replacement rides the same binding, the graph resolves it automatically wherever `:feature:debug` is on the classpath.
 
 ## Cross-cutting bindings
 

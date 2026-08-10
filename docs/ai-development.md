@@ -4,10 +4,10 @@ This project assumes **AI is a primary author of the code** (see [Enforcement](.
 
 ## Scaffolding a new screen
 
-`conference-app-2026/scripts/new-screen.sh` generates every file a screen needs, across modules, in one run:
+`scripts/new-screen.sh` generates every file a screen needs, across modules, in one run:
 
 ```sh
-conference-app-2026/scripts/new-screen.sh --feature sponsors --screen Sponsors
+scripts/new-screen.sh --feature sponsors --screen Sponsors
 ```
 
 | Where | Generated |

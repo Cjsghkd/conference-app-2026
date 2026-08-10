@@ -22,8 +22,8 @@ typealias FavoriteTimetableItemIdMutationKey = MutationKey<Unit, TimetableItemId
 @ContributesBinding(AppScope::class)
 @Inject
 class DefaultTimetableQueryKey(
-    private val api: SessionsApi,
-    private val fileStorage: FileStorage,
+    private val api: TimetableApi,
+    private val fileStorage: ServerEnvironmentScopedFileStorage,
 ) : TimetableQueryKey by buildPersistedQueryKey(
         id = SoilIds.timetableQuery, // generated; no hand-written namespace string
         persistKey = "timetable",    // stable, explicit persisted-cache identity

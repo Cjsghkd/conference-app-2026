@@ -1,6 +1,6 @@
 # Enforcement
 
-On the premise that **AI is the primary author of the code**, the architecture enforces the correct way of writing and makes incorrect ways fail to compile.
+On the premise that **AI is the primary author of the code**, this project's conventions — correctness rules and house style alike — are carried by the compiler wherever a compiler can carry them: made unrepresentable by the types, or rejected by a FIR checker. What neither can decide falls to review and tests.
 
 ## Principles (priority order of enforcement mechanisms)
 

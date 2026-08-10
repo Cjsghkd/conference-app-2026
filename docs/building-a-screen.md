@@ -54,12 +54,12 @@ Do here:
 @Inject
 @ContributesBinding(AppScope::class)
 class DefaultTimetableQueryKey(
-    private val api: SessionsApi,
-    private val byteStore: ByteStore,
+    private val api: TimetableApi,
+    private val fileStorage: ServerEnvironmentScopedFileStorage,
 ) : TimetableQueryKey by buildPersistedQueryKey(
     id = SoilIds.timetableQuery,          // generated from the typealias fully-qualified name
     persistKey = "timetable",             // stable, explicit persisted-cache identity
-    byteStore = byteStore,
+    fileStorage = fileStorage,
     fetchResponse = { api.getTimetable() },
     transformToDomainModel = { response -> Timetable(items = response.toTimetableItems().toPersistentList()) },
 )
@@ -276,7 +276,7 @@ Root receives navigation as a lambda (a fake in tests and previews); the entry s
 | Screen rendering root | `<Feature>Screen` | `TimetableScreen` |
 | Every other Compose view | `<Name><Kind>` (kind suffix mandatory) | `TimetableView` / `SessionItem` / `FavoriteButton` |
 
-Every Compose view other than `<Feature>Screen` must carry a kind suffix; a bare name like `Timetable` is forbidden (it collides with `:core:model`'s `Timetable`). Pick the most specific widget kind (`Button` / `Card` / `Item` / `Field` / `Dialog` / `Bar` / `Chip` / `Section` …); for a composite that fits none, use `View`. Screen-specific views live in `feature`; broadly reusable ones in `:core:designsystem`.
+Every Compose view other than `<Feature>Screen` must carry a kind suffix; a bare name like `Timetable` is forbidden (it collides with `:core:model`'s `Timetable`). Pick the most specific widget kind (`Button` / `Card` / `Item` / `Field` / `Dialog` / `Bar` / `Chip` / `Section` …); for a composite that fits none, use `View`. Screen-specific views live in `feature`; broadly reusable ones in `:core:ui`.
 
 ## Tests
 
@@ -322,8 +322,8 @@ feature/sessions/.../timetable/TimetableScreenRoot.kt
 feature/sessions/.../timetable/TimetableScreenNavigator.kt
 feature/sessions/.../timetable/TimetableNavKey.kt
 feature/sessions/.../timetable/TimetableNavEntryProvider.kt
-feature/sessions/src/jvmTest/.../timetable/TimetableScreenPresenterTest.kt
-feature/sessions/src/jvmTest/.../timetable/TimetableScreenRobot.kt + TimetableScreenRobotTest.kt
+feature/sessions/src/commonTest/.../timetable/TimetableScreenPresenterTest.kt
+feature/sessions/src/commonTest/.../timetable/TimetableScreenRobot.kt + TimetableScreenRobotTest.kt
 app-shared/.../DefaultTimetableScreenNavigator.kt         // Navigator impl, bound into the screen scope
 ```
 

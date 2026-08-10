@@ -51,7 +51,7 @@ Offloading to background with `produceState` on the Presenter side (1) makes the
 
 ```kotlin
 // Data layer: structural shaping in transform (background, cached, only when data changes)
-val sessionsByDayKey = buildPersistedQueryKey<SessionsResponse, Map<Day, List<Session>>>(
+val sessionsByDayKey = buildPersistedQueryKey<Map<Day, List<Session>>, SessionsResponse>(
     id = QueryId("sessionsByDay"),
     fetch = { httpClient.get(".../sessions").body() },
     transform = { res -> res.toSessions().groupBy { it.day } },  // heavy shaping goes here

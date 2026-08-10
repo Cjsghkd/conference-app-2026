@@ -22,7 +22,7 @@ inline fun <T : Any, @MustBeSerializable reified RESPONSE : Any> buildPersistedQ
 
 ## Compile-time gate
 
-The serializer for `RESPONSE` is resolved **internally** from the reified type parameter rather than passed as an explicit `KSerializer` argument: the explicit argument forced callers to write `SessionsResponse.serializer()`, which the IDE renders red (it does not fully resolve the plugin-generated companion member). The reified `serializer<RESPONSE>()` lookup is not compile-checked for `@Serializable` on its own, so the gate is restored by the `MustBeSerializable` FIR checker (see [Enforcement](./enforcement.md)): a call whose `RESPONSE` lacks `@Serializable` is a compile error. The domain model needs no `@Serializable` — it is never persisted.
+The serializer for `RESPONSE` is resolved **internally** from the reified type parameter rather than passed as an explicit `KSerializer` argument: the explicit argument forced callers to write `TimetableResponse.serializer()`, which the IDE renders red (it does not fully resolve the plugin-generated companion member). The reified `serializer<RESPONSE>()` lookup is not compile-checked for `@Serializable` on its own, so the gate is restored by the `MustBeSerializable` FIR checker (see [Enforcement](./enforcement.md)): a call whose `RESPONSE` lacks `@Serializable` is a compile error. The domain model needs no `@Serializable` — it is never persisted.
 
 ## Explicit persistence identity
 
@@ -30,13 +30,13 @@ The serializer for `RESPONSE` is resolved **internally** from the reified type p
 
 ```kotlin
 class DefaultTimetableQueryKey(
-    private val api: SessionsApi,
-    private val fileStorage: FileStorage,
+    private val api: TimetableApi,
+    private val fileStorage: ServerEnvironmentScopedFileStorage,
 ) : TimetableQueryKey by buildPersistedQueryKey(
     id = SoilIds.timetableQuery,
     persistKey = "timetable", // stable, explicit persisted-cache identity
     fileStorage = fileStorage,
-    fetchResponse = { api.getTimetable() }, // RESPONSE = SessionsResponse; persisted as-is
+    fetchResponse = { api.getTimetable() }, // RESPONSE = TimetableResponse; persisted as-is
     transformToDomainModel = { response -> Timetable(items = response.toTimetableItems().toPersistentList()) },
 )
 ```

@@ -7,7 +7,7 @@ Build configuration is easily duplicated across modules — the same plugins, ta
 The plugins come in two kinds:
 
 - **Primitives** (`droidkaigi/primitive/*.gradle.kts`) — one concern each: `kmp`, `kmp.compose`, [`enforcement`](./enforcement.md), [`buildkonfig`](./build-config-buildkonfig.md), [`screenshot-test`](./testing-preview-screenshot.md), …
-- **Conventions** (`droidkaigi/convention/*.gradle.kts`) — a per-group recipe that **composes primitives**: e.g. `kmp-feature` pulls in `kmp` + `kmp.compose` and adds serialization, Metro, and KSP.
+- **Conventions** (`droidkaigi/convention/*.gradle.kts`) — a per-group recipe that **composes primitives**: e.g. `kmp-feature` pulls in `kmp`, `kmp.compose`, `screenshot-test` and `spotless`, and adds serialization, Metro, KSP and the [preview](./preview.md) dependencies every feature shares.
 
 The allowed dependency directions:
 
@@ -33,7 +33,9 @@ package droidkaigi.primitive
 plugins {
     id("org.jetbrains.kotlin.plugin.compose")
     id("org.jetbrains.compose")
+    id("droidkaigi.primitive.enforcement")   // primitive → primitive
 }
+// + the Android preview-renderer classpath and the shared jvmToolchain / optIn block
 ```
 
 `kotlin-dsl` compiles that script into a `Plugin<Project>` wrapper that runs the script body — this is what makes it a plugin:
@@ -64,6 +66,8 @@ package droidkaigi.convention
 plugins {
     id("droidkaigi.primitive.kmp")
     id("droidkaigi.primitive.kmp.compose")
+    id("droidkaigi.primitive.screenshot-test")
+    id("droidkaigi.primitive.spotless")
     id("org.jetbrains.kotlin.plugin.serialization")
     id("dev.zacsweers.metro")
     id("com.google.devtools.ksp")

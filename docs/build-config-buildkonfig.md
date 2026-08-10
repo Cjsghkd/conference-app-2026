@@ -19,7 +19,7 @@ buildkonfig {
 ```
 
 ```toml
-# gradle/libs.versions.toml — both the Android versionName and BuildKonfig read this
+# gradle/libs.versions.toml — the version BuildKonfig publishes to common code
 droidkaigiApp = "0.1.0"
 ```
 
@@ -37,8 +37,8 @@ class DefaultBuildConfigProvider : BuildConfigProvider {
 
 ## Single source of truth
 
-- The version lives in one place in `libs.versions.toml` (`droidkaigiApp`).
-- Android's `versionName` and `BuildKonfig` read the same catalog entry, so the version the OS reports and the version the app displays can never drift apart.
+- The version the app displays lives in one place in `libs.versions.toml` (`droidkaigiApp`), so every platform shows the same string.
+- Android's own `versionName` — the one the OS reports — is set in `app-android/build.gradle.kts` and is a separate value.
 - Other values (the API base URL, …) can flow into `commonMain` the same way.
 
 Related: [Convention plugins](./build-convention-plugins.md) · [Version catalog](./build-version-catalog.md)

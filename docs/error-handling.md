@@ -7,7 +7,9 @@ Errors and one-off events (a completed navigation, a transient message, a succes
 Errors split by severity, and each layer has one sink:
 
 - **Fatal / load failure — full screen.** A query or subscription that cannot produce content surfaces through the `ErrorBoundary` of [`SoilDataBoundary`](./soil-data-boundary.md), which replaces the whole screen with a fallback. The fallback is replaceable through `SoilFallback` (`SoilFallbackDefaults.default()` or `custom()`).
-- **Transient / partial, plus success notifications — snackbar.** A write that fails, or a partial failure that leaves content on screen, and success notifications go to a `SnackbarHostState`. The host is per screen: `rememberSnackbarNavEntryDecorator` (`:core:common`) creates one `SnackbarHostState` per navigation entry, wraps the entry in a `Scaffold`, and exposes it through `LocalSnackbarHostState`. A Root reads that local rather than nesting its own `Scaffold`. There is no app-global host. Automatic errors routed through `LocalComposeEffectErrorHandler` reach the same host.
+- **Transient / partial, plus success notifications — snackbar.** A write that fails, or a partial failure that leaves content on screen, and success notifications go to a `SnackbarHostState`. The host is per screen: `rememberSnackbarNavEntryDecorator` (`:core:common`) creates one `SnackbarHostState` per navigation entry, wraps the entry in a `Scaffold`, and exposes it through `LocalSnackbarHostState`. A Root reads that local rather than nesting its own `Scaffold`. There is no app-global host.
+
+Separately from both layers, `SoilErrorMonitor` (`:core:common`) renders an app-global overlay listing the errors Soil reports. Its production binding is a no-op; `:feature:debug` replaces it, so the overlay is a development aid rather than a user-facing sink — see [Debugging](./debugging.md).
 
 The `UserMessage` type and the exception-to-message mapping carry the text into the snackbar.
 
