@@ -34,7 +34,10 @@ struct KaigiAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            KaigiAppView(appGraph: appGraph).ignoresSafeArea()
+            ZStack {
+                KaigiAppView(appGraph: appGraph).ignoresSafeArea()
+                RootTabBar(navigator: appGraph.rootTabNavigator).ignoresSafeArea()
+            }
         }
     }
 }

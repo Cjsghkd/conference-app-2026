@@ -19,6 +19,8 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
+import io.github.droidkaigi.confsched.core.common.TargetPlatform
+import io.github.droidkaigi.confsched.core.common.currentPlatform
 import io.github.droidkaigi.confsched.core.ui.KaigiNavigationBar
 import io.github.droidkaigi.confsched.core.ui.KaigiNavigationBarItem
 import io.github.droidkaigi.confsched.feature.about.AboutNavKey
@@ -28,22 +30,14 @@ import io.github.droidkaigi.confsched.feature.profilecard.ProfileCardNavKey
 import io.github.droidkaigi.confsched.feature.sessions.timetable.TimetableNavKey
 
 // Public and free of UI types so the iOS shell can drive tab selection through RootTabNavigator.
-enum class RootTab(internal val key: NavKey) {
-    Timetable(TimetableNavKey),
-    EventMap(EventMapNavKey),
-    Favorites(FavoritesNavKey),
-    About(AboutNavKey),
-    ProfileCard(ProfileCardNavKey),
+// The label names the destination to a screen reader on every platform; neither bar draws it.
+enum class RootTab(internal val key: NavKey, val label: String) {
+    Timetable(TimetableNavKey, "Timetable"),
+    EventMap(EventMapNavKey, "Event map"),
+    Favorites(FavoritesNavKey, "Favorites"),
+    About(AboutNavKey, "About"),
+    ProfileCard(ProfileCardNavKey, "Profile"),
 }
-
-private val RootTab.label: String
-    get() = when (this) {
-        RootTab.Timetable -> "Timetable"
-        RootTab.EventMap -> "Event map"
-        RootTab.Favorites -> "Favorites"
-        RootTab.About -> "About"
-        RootTab.ProfileCard -> "Profile"
-    }
 
 private val RootTab.icon: ImageVector
     get() = when (this) {
@@ -119,10 +113,15 @@ private object RootTabBarSeeds {
     const val FIRST_INDICATOR = OUTLINE + 1
 }
 
+// Null on iOS, where a SwiftUI bar draws natively above the Compose view controller.
 @Composable
 internal fun rememberRootTabSceneDecorator(
     currentKey: () -> NavKey?,
     onSelectTab: (RootTab) -> Unit,
-): SceneDecoratorStrategy<NavKey> = remember(currentKey, onSelectTab) {
-    RootTabSceneDecorator(currentKey, onSelectTab)
+): SceneDecoratorStrategy<NavKey>? = if (currentPlatform == TargetPlatform.Ios) {
+    null
+} else {
+    remember(currentKey, onSelectTab) {
+        RootTabSceneDecorator(currentKey, onSelectTab)
+    }
 }

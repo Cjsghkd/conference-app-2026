@@ -13,7 +13,11 @@ struct KaigiAppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            KaigiAppView(appGraph: appGraph).ignoresSafeArea()
+            ZStack(alignment: .bottom) {
+                KaigiAppView(appGraph: appGraph)
+                RootTabBarView(navigator: appGraph.rootTabNavigator)
+            }
+            .ignoresSafeArea()
         }
     }
 }

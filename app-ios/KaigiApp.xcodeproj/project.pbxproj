@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		29B7AC689D7ECABE862F8993 /* KotlinMultiplatformLinkedPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 86FC7F99DFAC930297E290C9 /* KotlinMultiplatformLinkedPackage */; };
+		83641F60A8AD9D1EF32AD59D /* RootTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE6C3B10B0A858E2CE5167D /* RootTabBar.swift */; };
 		D704DE42B3A2D6012FBD2465 /* KaigiAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8485AEBFE26147661BEDAD60 /* KaigiAppApp.swift */; };
 /* End PBXBuildFile section */
 
@@ -15,6 +16,7 @@
 		176C221CF46F0DEA006730BF /* KotlinMultiplatformLinkedPackage */ = {isa = PBXFileReference; lastKnownFileType = folder; name = KotlinMultiplatformLinkedPackage; path = KotlinMultiplatformLinkedPackage; sourceTree = SOURCE_ROOT; };
 		7E532852B454CE5AA4197950 /* KaigiApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KaigiApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8485AEBFE26147661BEDAD60 /* KaigiAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaigiAppApp.swift; sourceTree = "<group>"; };
+		EFE6C3B10B0A858E2CE5167D /* RootTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +35,7 @@
 			isa = PBXGroup;
 			children = (
 				8485AEBFE26147661BEDAD60 /* KaigiAppApp.swift */,
+				EFE6C3B10B0A858E2CE5167D /* RootTabBar.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -166,6 +169,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D704DE42B3A2D6012FBD2465 /* KaigiAppApp.swift in Sources */,
+				83641F60A8AD9D1EF32AD59D /* RootTabBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
