@@ -15,7 +15,9 @@ const problems = []
 function findFiles(dir, matches) {
   const out = []
   for (const name of readdirSync(dir)) {
-    if (name === 'build' || name === '.gradle' || name === '.git' || name === '.idea' || name === 'docs') continue
+    // Dot directories hold tooling state, and .claude/worktrees holds whole checkouts of this
+    // repository, whose build files would otherwise be read as modules of it.
+    if (name.startsWith('.') || name === 'build' || name === 'docs') continue
     const p = join(dir, name)
     if (statSync(p).isDirectory()) out.push(...findFiles(p, matches))
     else if (matches(name)) out.push(p)
