@@ -45,5 +45,5 @@ Sample data ships with the repository and is held to the same standard as the re
 
 ## Verification
 
-- After code changes, verify all targets: `./gradlew :app-desktop:compileKotlinJvm :app-web:compileKotlinWasmJs :app-android:compileDevDebugKotlin :app-shared:linkDebugFrameworkIosSimulatorArm64 :feature:sessions:jvmTest` (run from the repository root).
+- After code changes, verify all targets: `./gradlew :app-desktop:compileKotlinJvm :app-web:compileKotlinWasmJs :app-android:compileDevDebugKotlin :app-ios-kotlin:compileKotlinIosSimulatorArm64 :feature:sessions:jvmTest` (run from the repository root). Swift Export itself only runs under Xcode, which the iOS CI workflow covers.
 - After docs changes, keep relative links valid; the VitePress site tooling lives in docs-site/ (run `npm install` there once, then `npm run docs:dev` from docs-site to serve the docs locally).
