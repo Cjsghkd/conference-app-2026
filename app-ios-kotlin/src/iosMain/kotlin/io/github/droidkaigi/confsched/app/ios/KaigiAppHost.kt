@@ -5,6 +5,7 @@ import dev.zacsweers.metro.createGraphFactory
 import io.github.droidkaigi.confsched.app.IosAppGraph
 import io.github.droidkaigi.confsched.app.KaigiApp
 import io.github.droidkaigi.confsched.app.RootTab
+import io.github.droidkaigi.confsched.app.RootTabBarPalette
 import io.github.droidkaigi.confsched.core.common.context
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -20,6 +21,8 @@ class KaigiAppHost(swiftPackageLicensesJson: String) {
     val currentTab: Flow<RootTabSelection?> = graph.rootTabNavigator.currentTab.map { tab ->
         tab?.let(::RootTabSelection)
     }
+
+    val tabBarPalette: Flow<RootTabBarPalette?> = graph.rootTabBarAppearance.palette
 
     fun initialize() {
         graph.appInitializer.initialize()

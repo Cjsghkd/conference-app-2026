@@ -185,20 +185,22 @@ private fun KaigiColorScheme.toMaterialColorScheme() = when (this) {
  */
 internal val LocalSchemeIsDark = staticCompositionLocalOf { false }
 
-private fun KaigiColorScheme.isDark() = when (this) {
-    KaigiColorScheme.MorningMist -> false
-    KaigiColorScheme.DeepTeal -> true
-    KaigiColorScheme.SakuraPlum -> false
-    KaigiColorScheme.Terracotta -> false
-    KaigiColorScheme.CampfireNight -> true
-}
+/** Whether the scheme is a dark one, for callers outside a composition. */
+val KaigiColorScheme.isDark: Boolean
+    get() = when (this) {
+        KaigiColorScheme.MorningMist -> false
+        KaigiColorScheme.DeepTeal -> true
+        KaigiColorScheme.SakuraPlum -> false
+        KaigiColorScheme.Terracotta -> false
+        KaigiColorScheme.CampfireNight -> true
+    }
 
 @Composable
 fun KaigiTheme(
     colorScheme: KaigiColorScheme,
     content: @Composable () -> Unit,
 ) {
-    CompositionLocalProvider(LocalSchemeIsDark provides colorScheme.isDark()) {
+    CompositionLocalProvider(LocalSchemeIsDark provides colorScheme.isDark) {
         MaterialTheme(
             colorScheme = colorScheme.toMaterialColorScheme(),
             content = content,

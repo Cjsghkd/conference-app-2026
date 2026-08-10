@@ -17,6 +17,7 @@ struct KaigiAppApp: App {
                 KaigiAppView(host: host)
                 RootTabBarView(
                     currentTab: host.currentTab.asAsyncSequence().map { $0?.tab },
+                    palette: host.tabBarPalette.asAsyncSequence(),
                     select: host.selectTab(tab:)
                 )
             }

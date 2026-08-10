@@ -11,7 +11,7 @@ Navigation3 owns the back stack on all four platforms. iOS reflects that state i
 
 ## Swift ↔ Kotlin interop
 
-The Swift ↔ Kotlin boundary stays small, around the tab bar: Swift calls Kotlin (the tab selection, the view-controller factory) through the Swift-exported `AppShared` module, and Kotlin reaches Apple frameworks through Swift Package Import. Both are experimental as of 2026.
+The Swift ↔ Kotlin boundary stays small, around the tab bar: Swift calls Kotlin (the tab selection, the theme the bar draws itself with, the view-controller factory) through the Swift-exported `AppShared` module, and Kotlin reaches Apple frameworks through Swift Package Import. Both are experimental as of 2026.
 
 For details, see [Swift ↔ Kotlin interop](./ios-interop.md).
 
