@@ -187,8 +187,8 @@ typealias TimetableQueryKey = QueryKey<Timetable>
 class DefaultTimetableQueryKey(…) : TimetableQueryKey by buildPersistedQueryKey(
     id = SoilIds.timetableQuery,
     persistKey = "timetable",
-    fetchResponse = { sessionsApi.getTimetable() },        // raw server response is persisted
-    transformToDomainModel = SessionsAllResponse::toTimetable,
+    fetchResponse = { api.getTimetable() },                // raw server response is persisted
+    transformToDomainModel = { response -> Timetable(items = response.toTimetableItems().toPersistentList()) },
 )
 ```
 

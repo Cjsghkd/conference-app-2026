@@ -44,7 +44,7 @@ Both perform the same action (pop the detail's `NavKey`); only the icon differs,
 The library exposes exactly the signal we need to content rendered inside its scaffold: `LocalListDetailSceneScope`, a `CompositionLocal<ListDetailSceneScope?>`. It is non-null **only** while an entry is composed inside the list-detail scaffold; because the strategy yields to single-pane rendering whenever `paneCount <= 1`, a non-null scope reliably means "I am the detail pane beside a list". The detail screen reads it directly:
 
 ```kotlin
-IconButton(onClick = onBack) { // the same pop, whichever icon shows
+IconButton(onClick = safeClick(onBack)) { // the same pop, whichever icon shows
     if (LocalListDetailSceneScope.current != null) {
         Icon(Icons.Filled.Close, contentDescription = "Close")
     } else {

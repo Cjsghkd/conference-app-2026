@@ -30,7 +30,7 @@ The primitive owns everything the module would otherwise copy:
 generateComposePreviewRobolectricTests {
     enable.set(true)
     packages.set(listOf(screenshotPackage))
-    robolectricConfig.set(mapOf("sdk" to "[34]", "qualifiers" to "\"w360dp-h800dp-xhdpi\""))
+    robolectricConfig.set(mapOf("sdk" to "[36]", "qualifiers" to "\"w360dp-h800dp-xhdpi\""))
 }
 ```
 
@@ -67,7 +67,7 @@ The same previews are captured on desktop and iOS. Classpath scanning does not e
 | `recordRoborazziJvm` | `screenshots/desktop/` in the module |
 | `recordRoborazziIosSimulatorArm64` | `build/outputs/roborazzi/screenshots/ios/` |
 
-The shared robot/presenter tests in `commonTest` also run on desktop (`jvmTest`) and iOS (`iosSimulatorArm64Test`). The Android host-test task is filtered to the Roborazzi-generated preview tests only — the shared tests expect a plain JVM or native environment and fail under Robolectric.
+The shared robot/presenter tests in `commonTest` also run on desktop (`jvmTest`) and iOS (`iosSimulatorArm64Test`). The Android host-test task allow-lists the Roborazzi-generated preview tests and `*RobotTest` only — the presenter tests expect a plain JVM or native environment and fail under Robolectric.
 
 ## Scope / limitations
 

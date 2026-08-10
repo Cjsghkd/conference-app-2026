@@ -35,7 +35,7 @@ model must depend on neither data nor feature — it is the most downstream modu
 ## Persistence goes in `:core:data`
 
 - **Key-value settings** use **androidx DataStore Preferences on every platform**; only the backing differs per platform.
-- **Binary blobs** go through the **`ByteStore`** seam (`suspend`, since the Web backing is genuinely asynchronous).
+- **Binary blobs** go through the **`FileStorage`** seam (`suspend`, since the Web backing is genuinely asynchronous).
 - **Soil query persistence** goes through `buildPersistedQueryKey`, whose serializer parameter enforces `@Serializable` at compile time — see [Soil persistence](./soil-persistence.md).
 
 ## What goes in a feature module
@@ -44,7 +44,7 @@ One screen group = one feature module: the screen composables, UiState / Action 
 
 ## What goes in the app layer
 
-`app-shared` holds everything that must see every feature (navigation aggregation, cross-feature navigator implementations); the per-platform entry modules hold only what differs per platform — realizing [`AppGraph`](./di-app-graph.md) and providing platform backings (DataStore / ByteStore). If code is identical across platforms, it belongs in `app-shared`, not in an entry module.
+`app-shared` holds everything that must see every feature (navigation aggregation, cross-feature navigator implementations); the per-platform entry modules hold only what differs per platform — realizing [`AppGraph`](./di-app-graph.md) and providing the bindings that reach a platform SDK (the crash reporter, the licenses export). Storage backings are not among them: `:core:data` carries its own `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` actuals for DataStore and `FileStorage`. If code is identical across platforms, it belongs in `app-shared`, not in an entry module.
 
 ## Open source licenses
 

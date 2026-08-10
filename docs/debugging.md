@@ -2,7 +2,7 @@
 
 Debug-only tooling lives in a dedicated **`:feature:debug`** module so it is wired into development builds only and never ships in production. The module carries two things: the in-app debug screen, and the JetWhale agent that connects the running app to a desktop debugger. Keeping it in its own feature module means the rest of the app has no dependency on debug code, and the tooling can use the same DI / navigation seams as a normal feature. The module is not depended on unconditionally: every platform excludes it by default and adds it back only for a build it recognises as a development build — the Android dev product flavor, `:app-desktop:run`, `:app-web:wasmJsBrowserDevelopmentRun`, and an Xcode Debug build of the iOS app. Because both the screen and the agent reach the graph purely through Metro aggregation, dropping the dependency drops them with no other code changes. For the per-platform wiring and how to verify the exclusion, see [Keeping dev-only code out of release](./build-dev-only-exclusion.md).
 
-The `DebugScreen` is wired like any other screen (`DebugNavKey` + `DebugScreenContext` + `DebugScreenGraph` + `DebugNavEntryProvider`). It shows the real app version via `BuildConfigProvider` and offers a **Clear persisted data** action; the remaining rows (feature flags, network log) are placeholders. Production logging is [Kermit-based](./logging.md); HTTP traffic is inspected through JetWhale rather than an in-app log.
+The `DebugScreen` is wired like any other screen (`DebugNavKey` + `DebugScreenContext` + `DebugScreenGraph` + `DebugNavEntryProvider`). It shows the real app version via `BuildConfigProvider`, offers a **Clear persisted data** action, and controls the Soil error overlay — a toggle plus a live error count opening `SoilErrorsScreen`. Production logging is [Kermit-based](./logging.md); HTTP traffic is inspected through JetWhale rather than an in-app log.
 
 ## Clear persisted data
 
@@ -10,9 +10,9 @@ The menu's **Clear persisted data** button wipes the app's persisted (and in-mem
 
 - **Preferences DataStore** (theme) — `ThemeStore.clear()` (`dataStore.edit { it.clear() }`, clearing the whole preferences file).
 - **Favorites** — `FavoritesStore.clear()` (currently an in-memory stand-in).
-- **Blobs** (e.g. the profile image) — a new `ByteStore.clear()`, implemented per platform: delete the blob directory on JVM/Android/iOS, and `IDBObjectStore.clear()` on the Web (wasmJs) IndexedDB actual.
+- **Blobs** (e.g. the profile image) — `FileStorage.clear()`, implemented per platform: delete the blob directory on JVM/Android/iOS, and `IDBObjectStore.clear()` on the Web (wasmJs) IndexedDB actual.
 
-`DebugScreenContext` holds the `PersistedDataResetter`, and the data-light `DebugScreenRoot` runs `clearAll()` on a local coroutine scope (a debug-only side effect, so it does not go through the mutation/presenter path), showing a "cleared ✓" confirmation.
+`DebugPresenterContext` holds the `PersistedDataResetter`. The button sends a `ClearData` action, and the presenter runs `clearAll()` inside `ActionEffect`, flipping the state that shows a "cleared ✓" confirmation.
 
 ## JetWhale agent
 

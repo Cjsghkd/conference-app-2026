@@ -4,7 +4,7 @@
 
 ## Goals
 
-- Back from a non-Timetable tab → returns to the **Timetable tab**.
+- Back from a non-Timetable tab → returns to the **root stashed directly beneath it**.
 - Back from Timetable → **exits the app** (predictive back on Android).
 - Root tabs **retain their state** across navigation (which is what creates the predictive-back problem below).
 
@@ -65,12 +65,12 @@ class RootSceneStrategy<T : Any> : SceneStrategy<T> {
 private data object RootSceneMetadataKey : NavMetadataKey<Boolean>
 ```
 
-The `RootScene` that `RootSceneStrategy` returns reports `previousEntries = emptyList()`, so predictive back from the home root has nothing to fall back to and **exits the app** — no matter what is stashed underneath. Every other entry returns `null`, so it falls through to the next strategy in `sceneStrategies` — currently `SinglePaneSceneStrategy` (whose `previousEntries` is the real `entries.dropLast(1)`) — and back from a non-home root returns down to Timetable.
+The `RootScene` that `RootSceneStrategy` returns reports `previousEntries = emptyList()`, so predictive back from the home root has nothing to fall back to and **exits the app** — no matter what is stashed underneath. Every other entry returns `null` and falls through to the remaining strategies in `sceneStrategies` — [the list-detail strategy](./navigation-list-detail.md), then `SinglePaneSceneStrategy`, whose `previousEntries` is the real `entries.dropLast(1)` — so back from a non-home root returns to the entry stashed beneath it.
 
 The Root marker is attached to exactly the home-root entry, where that entry is registered:
 
 ```kotlin
-entry<TimetableNavKey>(metadata = RootSceneStrategy.root()) { … }
+entry<TimetableNavKey>(metadata = RootSceneStrategy.root() + …) { … }
 ```
 
 Related: [Root tab bar (RootTabSceneDecorator)](./navigation-root-tab-bar.md) · [Architecture overview](./architecture-overview.md) · [Navigator](./navigation-navigator.md) · [Entry retention (RetainNavEntryDecorator)](./navigation-retain-entry-decorator.md)

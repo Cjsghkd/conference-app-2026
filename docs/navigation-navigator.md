@@ -20,35 +20,43 @@ flowchart TD
 
 ## AppNavigator + NavigatorEffect (core)
 
-`AppNavigator` and `NavigatorEffect` are the primitive navigation mechanism, handling `NavCommand`s (`Push` / `Pop`): `AppNavigator` emits them, and `NavigatorEffect` applies them to the back stack.
+`AppNavigator` and `NavigatorEffect` are the primitive navigation mechanism, handling `NavCommand`s (`Push` / `Pop` / `MoveToTop`): `AppNavigator` emits them, and `NavigatorEffect` applies them to the back stack. `MoveToTop` is the [root tab bar](./navigation-root-tab-bar.md)'s command — it reorders the stack rather than popping it.
 
 ```kotlin
 sealed interface NavCommand {
     data class Push(val key: NavKey) : NavCommand
     data object Pop : NavCommand
+    data class MoveToTop(val key: NavKey) : NavCommand
 }
 
 @Inject
 @SingleIn(UiScope::class)
-class AppNavigator {
+class AppNavigator(private val logger: KaigiLogger) : Navigator {
     private val commandChannel = Channel<NavCommand>(Channel.BUFFERED)
     val commands: Flow<NavCommand> = commandChannel.receiveAsFlow()
     fun goTo(key: NavKey) { commandChannel.trySend(NavCommand.Push(key)) }
     fun back() { commandChannel.trySend(NavCommand.Pop) }
+    fun moveToTop(key: NavKey) { commandChannel.trySend(NavCommand.MoveToTop(key)) }
 }
 
 @Composable
-fun NavigatorEffect(navigator: AppNavigator, backStack: NavBackStack<NavKey>) {
+fun NavigatorEffect(navigator: AppNavigator, backStack: NavBackStack<NavKey>, logger: KaigiLogger) {
     LaunchedEffect(navigator, backStack) {
         navigator.commands.collect { command ->
             when (command) {
                 is NavCommand.Push -> backStack.add(command.key)
                 NavCommand.Pop -> if (backStack.size > 1) backStack.removeLastOrNull()
+                is NavCommand.MoveToTop -> if (backStack.lastOrNull() != command.key) {
+                    backStack.remove(command.key)
+                    backStack.add(command.key)
+                }
             }
         }
     }
 }
 ```
+
+Both classes log each command; `NavigatorEffect` additionally warns when a `Push` repeats the key already on top, which is a caller bug.
 ## Implementing a screen-level Navigator
 
 `<Feature>ScreenNavigator` is a feature-owned interface that exposes the screen's outgoing navigations as type-safe methods (`openSessionDetail(id)`) — no `NavKey`, no back stack. Its `Default…` implementation is injected from **app-shared** (the one module that sees every feature); for in-app navigation, it maps each call to a concrete `NavKey` and pushes it via `AppNavigator`:
@@ -78,7 +86,7 @@ TimetableScreenRoot(
 )
 ```
 
-Because the binding is `@SingleIn` the screen's scope, resolving the navigator from the app or UI graph is a Metro compile error — the DI graph confines it to the NavEntry layer, stronger than a checker or convention. (Only `AppNavigator.back()` stays UI-scoped.)
+Because the binding is `@SingleIn` the screen's scope, resolving the navigator from the app or UI graph is a Metro compile error — the DI graph confines it to the NavEntry layer, stronger than a checker or convention. (Only the shell's own calls — `AppNavigator.back()` and the tab bar's `moveToTop()` — stay UI-scoped.)
 
 `graph` is the per-screen graph the NavEntry retains — see [NavEntry aggregation](./navigation-entry-aggregation.md) for how entries are registered and aggregated.
 
