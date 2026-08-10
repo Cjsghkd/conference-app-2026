@@ -48,13 +48,26 @@ private val RootTab.icon: ImageVector
         RootTab.ProfileCard -> Icons.Filled.AccountCircle
     }
 
+private val rootTabsByKey: Map<NavKey, RootTab> = RootTab.entries.associateBy(RootTab::key)
+
+/**
+ * The root tab a scene drawing [paneCount] entries still shows, or null when it shows none.
+ *
+ * Every scene this app forms draws the topmost [paneCount] entries of the back stack, so a
+ * multi-pane scene keeps the entries below its top one on screen beside it: the list pane of a
+ * list-detail scene is a root destination the reader is still looking at, and the tab it belongs to
+ * stays the reader's place.
+ */
+private fun List<NavKey>.rootTabInTopPanes(paneCount: Int): RootTab? =
+    takeLast(paneCount).asReversed().firstNotNullOfOrNull(rootTabsByKey::get)
+
 private class RootTabSceneDecorator(
-    private val currentKey: () -> NavKey?,
+    private val backStack: List<NavKey>,
     private val onSelectTab: (RootTab) -> Unit,
 ) : SceneDecoratorStrategy<NavKey> {
 
     override fun SceneDecoratorStrategyScope<NavKey>.decorateScene(scene: Scene<NavKey>): Scene<NavKey> {
-        val currentTab = RootTab.entries.firstOrNull { it.key == currentKey() }
+        val currentTab = backStack.rootTabInTopPanes(scene.entries.size)
             ?: return scene
         return RootTabScene(scene, currentTab, onSelectTab)
     }
@@ -116,12 +129,12 @@ private object RootTabBarSeeds {
 // Null on iOS, where a SwiftUI bar draws natively above the Compose view controller.
 @Composable
 internal fun rememberRootTabSceneDecorator(
-    currentKey: () -> NavKey?,
+    backStack: NavBackStack<NavKey>,
     onSelectTab: (RootTab) -> Unit,
 ): SceneDecoratorStrategy<NavKey>? = if (currentPlatform == TargetPlatform.Ios) {
     null
 } else {
-    remember(currentKey, onSelectTab) {
-        RootTabSceneDecorator(currentKey, onSelectTab)
+    remember(backStack, onSelectTab) {
+        RootTabSceneDecorator(backStack, onSelectTab)
     }
 }
