@@ -15,7 +15,7 @@ Dev-only assets and screens are excluded from production **by the shape of the d
 | Android | `"devImplementation"(project(":feature:debug"))` in `app-android` (dev/prod product flavors; dev installs alongside prod via the `.dev` id suffix) | the dev flavor is built |
 | Desktop | conditional dependency on `jvmMain` in `app-desktop` | `run`, or one of Compose Hot Reload's run tasks, is among the requested Gradle tasks |
 | Web | conditional dependency on `wasmJsMain` in `app-web` | `wasmJsBrowserDevelopmentRun` is among the requested Gradle tasks |
-| iOS | conditional dependency on `iosMain` in `app-shared` | Xcode exports `CONFIGURATION=Debug` to `embedSwiftExportForXcode` |
+| iOS | conditional dependency on `iosMain` in `app-ios-kotlin` | Xcode exports `CONFIGURATION=Debug` to `embedSwiftExportForXcode` |
 
 `-PincludeDebugFeature=true|false` overrides the platform default in either direction. It is the only way to put the debug screen into a desktop distributable, a web bundle, or a Gradle-driven iOS compilation — for example `./gradlew :app-ios-kotlin:compileKotlinIosSimulatorArm64 -PincludeDebugFeature=true` to compile the iOS graph with the debug feature present.
 

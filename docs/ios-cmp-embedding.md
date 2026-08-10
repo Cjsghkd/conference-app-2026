@@ -6,17 +6,18 @@ Xcode consumes that stack through [Swift Export](./ios-interop.md), which produc
 
 | Module | Role |
 | --- | --- |
-| `:app-shared` | the Compose UI, the DI graph, and everything shared with the other platforms |
-| `:app-ios-kotlin` | the Compose-free API Swift calls, plus the `swiftExport { }` configuration that names the exported module `AppShared` |
+| `:app-shared` | the Compose UI, the `AppGraph` contract, and everything shared with the other platforms |
+| `:app-ios-kotlin` | the iOS entry module — the `AppGraph` realization, the iOS-only bindings, the Swift Package Manager import, and the `swiftExport { }` configuration that names the exported module `AppShared` |
 
 ## Embedding
 
-`:app-shared` exposes a graph factory and a `UIViewController` factory that receives the graph (`createGraph<…>()` is inline + reified, so Swift cannot call it directly). `:app-ios-kotlin` wraps both in one class, which keeps the graph private and gives Swift a single entry point:
+`:app-ios-kotlin` is the iOS counterpart of `MainActivity` and desktop's `main`: it realizes the graph, opens it around `KaigiApp` and hands the result to Swift as a `UIViewController`. All of that is `internal`, because Swift Export bridges every public declaration of the module and the graph reaches Compose types. The graph itself needs `@HiddenFromObjC` on top of `internal` — see [Swift ↔ Kotlin interop](./ios-interop.md) for why. `KaigiAppHost` is the one public class, and it is the whole Swift-facing API:
 
 ```kotlin
 // app-ios-kotlin/src/iosMain/…/KaigiAppHost.kt
 class KaigiAppHost(swiftPackageLicensesJson: String) {
-    private val graph: IosAppGraph = createIosAppGraph(swiftPackageLicensesJson)
+    private val graph: IosAppGraph =
+        createGraphFactory<IosAppGraph.Factory>().create(swiftPackageLicensesJson)
 
     val currentTab: Flow<RootTabSelection?> = graph.rootTabNavigator.currentTab.map { tab ->
         tab?.let(::RootTabSelection)
@@ -24,7 +25,9 @@ class KaigiAppHost(swiftPackageLicensesJson: String) {
 
     fun initialize() = graph.appInitializer.initialize()
     fun selectTab(tab: RootTab) = graph.rootTabNavigator.select(tab)
-    fun viewController(): UIViewController = kaigiAppViewController(graph)
+    fun viewController(): UIViewController = ComposeUIViewController {
+        context(graph) { KaigiApp() }
+    }
 }
 ```
 

@@ -1,9 +1,11 @@
 package io.github.droidkaigi.confsched.app.ios
 
+import androidx.compose.ui.window.ComposeUIViewController
+import dev.zacsweers.metro.createGraphFactory
 import io.github.droidkaigi.confsched.app.IosAppGraph
+import io.github.droidkaigi.confsched.app.KaigiApp
 import io.github.droidkaigi.confsched.app.RootTab
-import io.github.droidkaigi.confsched.app.createIosAppGraph
-import io.github.droidkaigi.confsched.app.kaigiAppViewController
+import io.github.droidkaigi.confsched.core.common.context
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import platform.UIKit.UIViewController
@@ -12,7 +14,8 @@ import platform.UIKit.UIViewController
 // reaches must stay free of Compose types; the graph is held privately for that reason.
 class KaigiAppHost(swiftPackageLicensesJson: String) {
 
-    private val graph: IosAppGraph = createIosAppGraph(swiftPackageLicensesJson)
+    private val graph: IosAppGraph =
+        createGraphFactory<IosAppGraph.Factory>().create(swiftPackageLicensesJson)
 
     val currentTab: Flow<RootTabSelection?> = graph.rootTabNavigator.currentTab.map { tab ->
         tab?.let(::RootTabSelection)
@@ -26,7 +29,11 @@ class KaigiAppHost(swiftPackageLicensesJson: String) {
         graph.rootTabNavigator.select(tab)
     }
 
-    fun viewController(): UIViewController = kaigiAppViewController(graph)
+    fun viewController(): UIViewController = ComposeUIViewController {
+        context(graph) {
+            KaigiApp()
+        }
+    }
 }
 
 // Swift Export's flow iterator casts every element through its class bridge, which a Kotlin enum

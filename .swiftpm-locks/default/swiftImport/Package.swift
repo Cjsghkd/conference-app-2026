@@ -13,17 +13,13 @@ let package = Package(
     )
   ],
   dependencies: [
-    .package(path: "subpackages/_app-ios-kotlin"),
-    .package(path: "subpackages/_app-shared"),
-    .package(path: "subpackages/_app_shared")
+    .package(path: "subpackages/_app-ios-kotlin")
   ],
   targets: [
     .target(
       name: "KotlinMultiplatformLinkedPackage",
       dependencies: [
-        .product(name: "_app-ios-kotlin", package: "_app-ios-kotlin"),
-        .product(name: "_app-shared", package: "_app-shared"),
-        .product(name: "_app_shared", package: "_app_shared")
+        .product(name: "_app-ios-kotlin", package: "_app-ios-kotlin")
       ]
     )
   ]

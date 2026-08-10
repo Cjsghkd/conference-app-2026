@@ -13,11 +13,19 @@ let package = Package(
     )
   ],
   dependencies: [
+    .package(
+      url: "https://github.com/firebase/firebase-ios-sdk",
+      from: "12.0.0"
+    )
   ],
   targets: [
     .target(
       name: "_app-ios-kotlin",
       dependencies: [
+        .product(
+          name: "FirebaseCrashlytics",
+          package: "firebase-ios-sdk"
+        )
       ]
     )
   ]

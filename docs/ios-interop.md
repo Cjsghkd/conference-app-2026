@@ -7,10 +7,11 @@ Because iOS is almost full CMP with only a native tab bar, the Swift ↔ Kotlin 
 
 ## What the exported surface may contain
 
-Swift Export shapes the API, so the Kotlin it is pointed at has to be written for it. `:app-ios-kotlin` exists to hold exactly that layer, and two rules govern what may cross:
+Swift Export shapes the API, so the Kotlin it is pointed at has to be written for it. `:app-ios-kotlin` exists to hold exactly that layer, and three rules govern what may cross:
 
-- **No Compose types.** Swift Export drops `@Composable` from the function types it bridges, so a declaration carrying one exports an API Swift cannot call correctly. The graph and the composables stay private behind plain classes.
+- **No Compose types.** Swift Export drops `@Composable` from the function types it bridges, so a declaration carrying one exports an API Swift cannot call correctly. The composables stay behind `KaigiAppHost`, which holds them in private members.
 - **No enum inside a `Flow`.** The generated flow iterator casts every element through its class bridge, which a Kotlin enum — bridged as a Swift enum, a value type — fails at runtime. Wrapping the enum in a class (`RootTabSelection`) crosses intact.
+- **A Metro graph needs `@HiddenFromObjC`.** `internal` keeps an ordinary declaration out of the exported surface, but not a `@DependencyGraph`: it is exported under its source name regardless, bringing every `@ContributesTo` interface it carries as a supertype — and with them the Ktor, Soil, DataStore and Compose namespaces. `IosAppGraph` carries the annotation for that reason, and is the only declaration in the module that needs it.
 
 ## Caveats (experimental risk)
 
