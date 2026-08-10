@@ -156,8 +156,8 @@ persistence runs. See [Soil persistence](./docs/soil-persistence.md).
 Every screen on iOS is drawn by Compose Multiplatform. The one native piece is the root tab bar: a
 SwiftUI view laid over the Compose view, its surface the system Liquid Glass material on iOS 26.
 
-Swift reaches Kotlin through **Swift Export**, which generates idiomatic Swift rather than an
-Objective-C header, and is experimental as of 2026. It bridges every public declaration of the
-module it is pointed at and cannot represent `@Composable`, so what Swift may see decides how the
-module is drawn: `:app-ios-kotlin` exists to hold a Compose-free surface, and its whole public API
-is four members. See [iOS overview](./docs/ios.md).
+Two experimental mechanisms keep the implementation on the Kotlin side. **Swift Export** generates
+idiomatic Swift for the Kotlin that Swift calls — a `Flow` arrives as an `AsyncSequence`, a Kotlin
+enum as a Swift enum — rather than an Objective-C header. **Swift Package Import** goes the other
+way, so Kotlin reaches Apple frameworks without a line of Swift. What is left in Swift is the tab
+bar and an entry point. See [iOS overview](./docs/ios.md).
