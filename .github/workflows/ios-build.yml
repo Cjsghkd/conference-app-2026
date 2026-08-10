@@ -49,14 +49,23 @@ jobs:
           xcodebuild -version
       # A generic/platform=iOS Simulator destination resolves to x86_64, which no Kotlin target is
       # configured for; naming one of the runner's own simulators pins the build to arm64.
+      # python3 comes with the Xcode toolchain this job already selects, so parsing the device list
+      # needs no install step of its own.
       - name: Resolve an iOS Simulator
         id: simulator
         run: |
-          udid=$(xcrun simctl list devices available --json |
-            jq -r '[.devices | to_entries[]
-                    | select(.key | contains("SimRuntime.iOS"))
-                    | .value[] | select(.name | startswith("iPhone"))] | last | .udid')
-          if [ -z "$udid" ] || [ "$udid" = null ]; then
+          udid=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+
+          devices = json.load(sys.stdin)["devices"]
+          iphones = [
+              device
+              for runtime, group in devices.items() if "SimRuntime.iOS" in runtime
+              for device in group if device["name"].startswith("iPhone")
+          ]
+          print(iphones[-1]["udid"] if iphones else "")
+          ')
+          if [ -z "$udid" ]; then
             echo "No iPhone simulator is available on this runner" >&2
             xcrun simctl list devices available >&2
             exit 1
