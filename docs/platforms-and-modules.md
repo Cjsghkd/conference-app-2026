@@ -44,7 +44,7 @@ One screen group = one feature module: the screen composables, UiState / Action 
 
 ## What goes in the app layer
 
-`app-shared` holds everything that must see every feature (navigation aggregation, cross-feature navigator implementations); the per-platform entry modules hold only what differs per platform — realizing [`AppGraph`](./di-app-graph.md) and providing platform backings (DataStore / ByteStore). If code is identical across platforms, it belongs in `app-shared`, not in an entry module.
+`app-shared` holds everything that must see every feature (navigation aggregation, cross-feature navigator implementations); the per-platform entry modules hold only what differs per platform — realizing [`AppGraph`](./di-app-graph.md) and providing the bindings that reach a platform SDK (the crash reporter, the licenses export). Storage backings are not among them: `:core:data` carries its own `androidMain` / `iosMain` / `jvmMain` / `wasmJsMain` actuals for DataStore and `FileStorage`. If code is identical across platforms, it belongs in `app-shared`, not in an entry module.
 
 ## Open source licenses
 
