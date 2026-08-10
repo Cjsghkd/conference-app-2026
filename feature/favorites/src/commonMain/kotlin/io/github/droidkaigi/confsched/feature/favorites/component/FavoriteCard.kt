@@ -60,7 +60,7 @@ fun FavoriteCardPreview(
     KaigiPreviewTheme(colorScheme) {
         FavoriteCard(
             day = DroidKaigi2026Day.Day1,
-            title = "Compose Multiplatform in Practice",
+            title = "Sample Session A",
             room = "NARWHAL",
             speaker = "Sp1",
             onBookmarkClick = {},

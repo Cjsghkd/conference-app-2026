@@ -82,7 +82,7 @@ fun TimetableItemDetailHeadlinePreview(
     KaigiPreviewTheme(colorScheme) {
         TimetableItemDetailHeadline(
             room = "NARWHAL",
-            title = "Compose Multiplatform in Practice",
+            title = "Sample Session A",
             speaker = "Speaker A",
         )
     }

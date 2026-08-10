@@ -162,7 +162,7 @@ private fun TimetableItemCardSamples() {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         TimetableItemCard(
-            title = "Welcome Talk",
+            title = "Sample Session A",
             room = Room.NARWHAL,
             speaker = "",
             language = Language.MIXED,
@@ -172,7 +172,7 @@ private fun TimetableItemCardSamples() {
             onClick = {},
         )
         TimetableItemCard(
-            title = "DroidKaigiアプリで見るアーキテクチャの変遷",
+            title = "サンプルセッションE、折り返しを確かめるための長いプレースホルダーのタイトル",
             room = Room.OTTER,
             speaker = "Speaker B",
             language = Language.ENGLISH,
