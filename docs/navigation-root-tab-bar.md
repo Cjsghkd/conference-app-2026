@@ -31,6 +31,6 @@ The selected item reflects whichever root is on top. Back falls out of the singl
 
 ## iOS
 
-On iOS the bar is native: `RootTabBarView`, a SwiftUI capsule of tab buttons, is overlaid on the Compose view controller and `RootTabSceneDecorator` is not applied. Tab taps arrive through `RootTabNavigator` and land in the same `AppNavigator.moveToTop` path, so the back-stack semantics above hold unchanged. For details, see [Liquid Glass tab bar](./ios-liquid-glass.md).
+On iOS the bar is native: `RootTabBarView`, a `UITabBar` overlaid on the Compose view controller, and `RootTabSceneDecorator` is not applied. Tab taps arrive through `RootTabNavigator` and land in the same `AppNavigator.moveToTop` path, so the back-stack semantics above hold unchanged. For details, see [Liquid Glass tab bar](./ios-liquid-glass.md).
 
 Related: [Root NavEntry emulation (RootSceneStrategy)](./navigation-predictive-back-tabs.md) · [Architecture overview](./architecture-overview.md) · [Entry retention (RetainNavEntryDecorator)](./navigation-retain-entry-decorator.md)

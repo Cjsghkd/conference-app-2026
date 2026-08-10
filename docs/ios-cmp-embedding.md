@@ -67,7 +67,7 @@ private struct KaigiAppView: UIViewControllerRepresentable {
 }
 ```
 
-The host layers the native Liquid Glass tab bar above this view controller with transparent tab content; for the overlay shape and its requirements, see [Liquid Glass tab bar](./ios-liquid-glass.md).
+The host layers the native Liquid Glass tab bar above this view controller, sized to the bar alone; for the overlay shape and its requirements, see [Liquid Glass tab bar](./ios-liquid-glass.md).
 
 ## The Xcode build
 
