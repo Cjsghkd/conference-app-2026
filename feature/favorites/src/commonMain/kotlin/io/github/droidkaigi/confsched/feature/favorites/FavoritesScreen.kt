@@ -34,11 +34,7 @@ fun FavoritesScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Favorites", fontWeight = FontWeight.Bold) },
-                // The root tab shell already insets its content; a second system-bar inset here would double it.
-                windowInsets = WindowInsets(),
-            )
+            TopAppBar(title = { Text("Favorites", fontWeight = FontWeight.Bold) })
         },
         contentWindowInsets = WindowInsets(),
     ) { innerPadding ->

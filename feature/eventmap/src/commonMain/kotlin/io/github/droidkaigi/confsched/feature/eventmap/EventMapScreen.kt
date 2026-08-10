@@ -35,11 +35,7 @@ fun EventMapScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Event Map", fontWeight = FontWeight.Bold) },
-                // The root tab shell already insets its content; a second system-bar inset here would double it.
-                windowInsets = WindowInsets(),
-            )
+            TopAppBar(title = { Text("Event Map", fontWeight = FontWeight.Bold) })
         },
         contentWindowInsets = WindowInsets(),
     ) { innerPadding ->
