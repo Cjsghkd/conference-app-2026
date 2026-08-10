@@ -49,7 +49,10 @@ struct KaigiAppApp: App {
         WindowGroup {
             ZStack(alignment: .bottom) {
                 KaigiAppView(host: host)
-                RootTabBarView(host: host)
+                RootTabBarView(
+                    currentTab: host.currentTab.asAsyncSequence().map { $0?.tab },
+                    select: host.selectTab(tab:)
+                )
             }
             .ignoresSafeArea()
         }
