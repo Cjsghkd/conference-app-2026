@@ -8,22 +8,23 @@ typealias RootTab = ExportedKotlinPackages.io.github.droidkaigi.confsched.app.Ro
 
 /// The native root tab bar, laid out over the Compose view controller. The view occupies the bar's
 /// own area and nothing more, so every point outside it belongs to the Compose layer below.
-struct RootTabBarView: View {
-    let host: KaigiAppHost
+struct RootTabBarView<Selections: AsyncSequence>: View where Selections.Element == RootTab? {
+    let currentTab: Selections
+    let select: (RootTab) -> Void
 
     @Namespace private var indicator
-    @State private var currentTab: RootTab?
+    @State private var selection: RootTab?
 
     var body: some View {
         Group {
-            if let currentTab {
+            if let selection {
                 HStack(spacing: 0) {
                     ForEach(RootTab.allCases, id: \.self) { tab in
                         RootTabButton(
                             tab: tab,
-                            isSelected: tab == currentTab,
+                            isSelected: tab == selection,
                             indicator: indicator,
-                            select: { host.selectTab(tab: tab) }
+                            select: { select(tab) }
                         )
                     }
                 }
@@ -33,7 +34,7 @@ struct RootTabBarView: View {
                 .rootTabBarSurface()
                 .padding(.horizontal, RootTabBarMetrics.outerPadding)
                 .padding(.bottom, RootTabBarMetrics.bottomMargin)
-                .animation(.snappy(duration: 0.25), value: currentTab)
+                .animation(.snappy(duration: 0.25), value: selection)
             } else {
                 // SwiftUI installs no task on a body that resolves to nothing, and the bar would
                 // then never collect a tab to show. This keeps a node in the graph, taking no room.
@@ -46,8 +47,8 @@ struct RootTabBarView: View {
     }
 
     private func collectCurrentTab() async throws {
-        for try await selection in host.currentTab.asAsyncSequence() {
-            currentTab = selection?.tab
+        for try await tab in currentTab {
+            selection = tab
         }
     }
 }
