@@ -127,7 +127,7 @@ diffs instead of one large one.
 all four targets and satisfies the checkers.
 [AI-assisted development](./docs/ai-development.md) covers the tooling an AI author leans on.
 
-### A fourth platform
+### Four targets, one shared app
 
 Web (wasmJs) is the fourth target this year. Each platform owns only a small terminal module: it
 builds the Metro dependency graph, launches the shared `KaigiApp`, and holds nothing else.
@@ -151,10 +151,13 @@ so a screen renders from cache before the network responds. The compiler rejects
 that is not `@Serializable`, so the failure appears at build time rather than the first time
 persistence runs. See [Soil persistence](./docs/soil-persistence.md).
 
-### iOS: Compose Multiplatform, with one native exception
+### iOS: Compose Multiplatform with a Liquid Glass tab bar
 
 Every screen on iOS is drawn by Compose Multiplatform. The one native piece is the root tab bar: a
 SwiftUI view laid over the Compose view, its surface the system Liquid Glass material on iOS 26.
-The Swift side stays small — Kotlin generates the Swift it calls, through Swift Export, and reaches
-Apple frameworks the other way through Swift Package Import. Both are experimental as of 2026. See
-[iOS overview](./docs/ios.md).
+
+Swift reaches Kotlin through **Swift Export**, which generates idiomatic Swift rather than an
+Objective-C header, and is experimental as of 2026. It bridges every public declaration of the
+module it is pointed at and cannot represent `@Composable`, so what Swift may see decides how the
+module is drawn: `:app-ios-kotlin` exists to hold a Compose-free surface, and its whole public API
+is four members. See [iOS overview](./docs/ios.md).
