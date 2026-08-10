@@ -175,6 +175,14 @@ if [ -z "$(ls -A "$store/app-ios-kotlin-checkout" 2>/dev/null)" ]; then
 fi
 
 echo "Shared store: $store"
-for path in "${adopted[@]:-}"; do [ -n "$path" ] && echo "  moved into the store: $path"; done
-for path in "${created[@]:-}"; do [ -n "$path" ] && echo "  linked: $path"; done
-for path in "${kept[@]:-}"; do [ -n "$path" ] && echo "  already linked: $path"; done
+# `[ … ] && echo` as the loop body makes the loop's exit status that of the last test, so an empty
+# array leaves the script exiting non-zero under `set -e`.
+for path in "${adopted[@]:-}"; do
+  if [ -n "$path" ]; then echo "  moved into the store: $path"; fi
+done
+for path in "${created[@]:-}"; do
+  if [ -n "$path" ]; then echo "  linked: $path"; fi
+done
+for path in "${kept[@]:-}"; do
+  if [ -n "$path" ]; then echo "  already linked: $path"; fi
+done
