@@ -1,6 +1,6 @@
 # Copilot review instructions
 
-This repository is a Kotlin Multiplatform / Compose Multiplatform application that builds against **Kotlin 2.4** (`gradle/libs.versions.toml`). It uses recent language features and enforces its architecture with a custom compiler plugin, so a review that assumes a conventional Kotlin/Android setup reports problems that do not exist. Review design, correctness, and clarity.
+This repository is a Kotlin Multiplatform / Compose Multiplatform application that builds against **Kotlin 2.4** ([`gradle/libs.versions.toml`](../gradle/libs.versions.toml)). It uses recent language features and enforces its architecture with a custom compiler plugin, so a review that assumes a conventional Kotlin/Android setup reports problems that do not exist. Review design, correctness, and clarity.
 
 ## Do not report compilation failure
 
@@ -8,7 +8,7 @@ Do not claim that code "will not compile", that a symbol is unresolved, or that 
 
 Two shapes that are correct here and have been reported as errors:
 
-- `flow.collect { value -> … }` requires no `kotlinx.coroutines.flow.collect` import. `FlowCollector` is a `fun interface`, so the lambda converts and the call resolves to the member `Flow.collect(collector: FlowCollector<T>)`. See `core/common/src/commonMain/kotlin/io/github/droidkaigi/confsched/core/common/NavigatorEffect.kt`.
+- `flow.collect { value -> … }` requires no `kotlinx.coroutines.flow.collect` import. `FlowCollector` is a `fun interface`, so the lambda converts and the call resolves to the member `Flow.collect(collector: FlowCollector<T>)`. See [`NavigatorEffect.kt`](../core/common/src/commonMain/kotlin/io/github/droidkaigi/confsched/core/common/NavigatorEffect.kt).
 - A symbol with no declaration in the source tree is generated: dependency-injection graphs come from Metro (`dev.zacsweers.metro`), navigation-key serializer registration and Soil identifiers from `:tools:ksp-processor`, and `BuildKonfig` from the build configuration.
 
 ## Kotlin 2.4 language features
@@ -46,4 +46,4 @@ Link to the relevant section of that page rather than restating the rule.
 
 ## Wording of review comments
 
-`CLAUDE.md` at the repository root states the conventions this project applies to comments, documentation, and commit messages: English throughout, neutral and declarative present tense, and no comment that restates what the code already shows. Judge the diff against those conventions, and write review comments in the same register.
+[`CLAUDE.md`](../CLAUDE.md) at the repository root states the conventions this project applies to comments, documentation, and commit messages: English throughout, neutral and declarative present tense, and no comment that restates what the code already shows. Judge the diff against those conventions, and write review comments in the same register.
