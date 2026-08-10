@@ -36,7 +36,7 @@ Android Studioを開いて、"Open"からダウンロードしたリポジトリ
 ./gradlew :app-web:wasmJsBrowserDevelopmentRun   # Web (wasmJs)
 ```
 
-iOSは `app-ios/` のXcodeプロジェクトを開いてください。`app-shared` フレームワークを組み込んでいます。
+iOSは `app-ios/` のXcodeプロジェクトを開いてください。
 
 ### 3. タスクを見つける
 

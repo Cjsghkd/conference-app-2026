@@ -36,7 +36,7 @@ The app also runs on desktop and in a browser:
 ./gradlew :app-web:wasmJsBrowserDevelopmentRun   # Web (wasmJs)
 ```
 
-For iOS, open the Xcode project in `app-ios/`, which embeds the `app-shared` framework.
+For iOS, open the Xcode project in `app-ios/`.
 
 ### 3. Find a Task
 
