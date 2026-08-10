@@ -72,7 +72,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D1D8B753AAA17DCA2FD54E14 /* Build configuration list for PBXNativeTarget "KaigiApp" */;
 			buildPhases = (
-				2FADAEE5871150E3E9212E1F /* Embed Kotlin Framework */,
+				1DB46F5BFC29D84D2A7D5114 /* Embed Kotlin Swift Export Library */,
 				7E31774264CF47925A1A2DE0 /* Generate Swift Package Licenses */,
 				A76C21A78BACE5B40893A930 /* Sources */,
 				1D6DB8C56FA9ADC3C7F33FAC /* Frameworks */,
@@ -123,7 +123,7 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2FADAEE5871150E3E9212E1F /* Embed Kotlin Framework */ = {
+		1DB46F5BFC29D84D2A7D5114 /* Embed Kotlin Swift Export Library */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -133,14 +133,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Embed Kotlin Framework";
+			name = "Embed Kotlin Swift Export Library";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\" && ./gradlew :app-shared:embedAndSignAppleFrameworkForXcode";
+			shellScript = "cd \"$SRCROOT/..\" && env -u SWIFT_INCLUDE_PATHS ./gradlew :app-ios-kotlin:embedSwiftExportForXcode";
 		};
 		7E31774264CF47925A1A2DE0 /* Generate Swift Package Licenses */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -228,7 +228,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -292,7 +292,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -303,10 +303,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../app-shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
-				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "KaigiApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -314,13 +310,20 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-framework",
-					AppShared,
+					"-lAppShared",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.droidkaigi.confsched.kaigiapp;
 				SDKROOT = iphoneos;
+				SWIFT_INCLUDE_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)/**",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -331,10 +334,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/../app-shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
-				);
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "KaigiApp-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -342,13 +341,20 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)",
+				);
 				OTHER_LDFLAGS = (
 					"$(inherited)",
-					"-framework",
-					AppShared,
+					"-lAppShared",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.droidkaigi.confsched.kaigiapp;
 				SDKROOT = iphoneos;
+				SWIFT_INCLUDE_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)/**",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;

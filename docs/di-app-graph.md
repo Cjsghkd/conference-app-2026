@@ -28,8 +28,8 @@ interface AndroidAppGraph : AppGraph {
 }
 ```
 
-- Two reasons the graph is realized per platform, in the terminal app module (or `app-shared/iosMain` for iOS, which has no Gradle app module):
-  - **It must see every contribution.** A graph aggregates only the `@Contributes*` bindings on its own compile classpath, so it has to sit where every feature and core module is visible — at or below `app-shared`.
+- Two reasons the graph is realized per platform, in the terminal app module:
+  - **It must see every contribution.** A graph aggregates only the `@Contributes*` bindings on its own compile classpath, so it has to sit where every feature and core module is visible. `app-shared` carries them as `api` dependencies and every terminal module depends on it, so each graph sees the whole set.
   - **Each platform may hand in its own dependencies.** The graph's factory lets the platform host inject platform-specific values at creation — on Android the `Context` (`create(context)`), and on iOS potentially a Kotlin interface whose implementation lives in Swift. Platforms that need nothing extra build with a no-arg `createGraph()`.
 - Everything else is contributed across modules with `@Contributes*`, so the graphs carry almost no hand-wiring.
 

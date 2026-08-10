@@ -1,15 +1,15 @@
 // swift-tools-version: 5.9
 import PackageDescription
 let package = Package(
-  name: "_app-shared",
+  name: "_app-ios-kotlin",
   platforms: [
     .iOS("16.0")
   ],
   products: [
     .library(
-      name: "_app-shared",
+      name: "_app-ios-kotlin",
       type: .none,
-      targets: ["_app-shared"]
+      targets: ["_app-ios-kotlin"]
     )
   ],
   dependencies: [
@@ -20,7 +20,7 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "_app-shared",
+      name: "_app-ios-kotlin",
       dependencies: [
         .product(
           name: "FirebaseCrashlytics",

@@ -5,7 +5,9 @@ on:
     paths:
       - '**/*.kt'
       - '**/*.kts'
+      - '**/*.swift'
       - '**/*.toml'
+      - 'app-ios/**'
       - 'gradle/wrapper/**'
       - '.github/workflows/ios-build.yml'
   push:
@@ -13,7 +15,9 @@ on:
     paths:
       - '**/*.kt'
       - '**/*.kts'
+      - '**/*.swift'
       - '**/*.toml'
+      - 'app-ios/**'
       - 'gradle/wrapper/**'
       - '.github/workflows/ios-build.yml'
 
@@ -22,10 +26,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Links app-shared's iOS framework, which aggregates every KMP module's iosSimulatorArm64 target.
-  # Kotlin/Native needs an Apple host to link Apple targets, hence macos-latest instead of ubuntu.
-  link-framework:
+  # Drives the whole iOS build the way a developer does: Xcode's pre-build script runs Gradle's
+  # Swift Export, and Xcode then compiles the generated Swift, links it and packages the app. A
+  # Gradle-only check would cover neither the generated Swift sources nor the real build settings.
+  # Kotlin/Native needs an Apple host to compile Apple targets, hence macos-latest instead of ubuntu.
+  xcodebuild:
     runs-on: macos-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
@@ -33,5 +40,44 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: gradle
-      - name: Link iOS framework
-        run: ./gradlew :app-shared:linkDebugFrameworkIosSimulatorArm64
+      # The root tab bar's Liquid Glass path compiles against the iOS 26 SDK, which the runner
+      # image's default Xcode may predate.
+      - name: Select the newest installed Xcode
+        run: |
+          newest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$newest" ]; then sudo xcode-select --switch "$newest/Contents/Developer"; fi
+          xcodebuild -version
+      # A generic/platform=iOS Simulator destination resolves to x86_64, which no Kotlin target is
+      # configured for; naming one of the runner's own simulators pins the build to arm64.
+      # python3 comes with the Xcode toolchain this job already selects, so parsing the device list
+      # needs no install step of its own.
+      - name: Resolve an iOS Simulator
+        id: simulator
+        run: |
+          udid=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+
+          devices = json.load(sys.stdin)["devices"]
+          iphones = [
+              device
+              for runtime, group in devices.items() if "SimRuntime.iOS" in runtime
+              for device in group if device["name"].startswith("iPhone")
+          ]
+          print(iphones[-1]["udid"] if iphones else "")
+          ')
+          if [ -z "$udid" ]; then
+            echo "No iPhone simulator is available on this runner" >&2
+            xcrun simctl list devices available >&2
+            exit 1
+          fi
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+      # SWIFT_INCLUDE_PATHS is deliberately left unset here: Xcode exports it to the pre-build
+      # script, which unsets it again for the nested Gradle build, and a value inherited from the
+      # environment would reach that build through a path the script does not cover.
+      - name: Build the iOS app
+        run: |
+          xcodebuild build \
+            -project app-ios/KaigiApp.xcodeproj \
+            -scheme KaigiApp \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}"

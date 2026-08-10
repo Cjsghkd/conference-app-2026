@@ -15,7 +15,7 @@ flowchart LR
   class Entry focus
 ```
 
-Each platform owns a terminal module that realizes the `AppGraph` contract and launches `KaigiApp`. `AppGraph` is a plain interface declared in `app-shared`; each platform realizes it as a Metro `@DependencyGraph` scoped to `AppScope` — `AndroidAppGraph`, `DesktopAppGraph`, `WebAppGraph`, and `IosAppGraph`. The graph must sit at or below `app-shared` because a Metro graph aggregates only the `@Contributes*` bindings on its own compile classpath, and only there is every feature and core module visible.
+Each platform owns a terminal module that realizes the `AppGraph` contract and launches `KaigiApp`. `AppGraph` is a plain interface declared in `app-shared`; each platform realizes it as a Metro `@DependencyGraph` scoped to `AppScope` — `AndroidAppGraph`, `DesktopAppGraph`, `WebAppGraph`, and `IosAppGraph`. Each realization sits in its own terminal module because a Metro graph aggregates only the `@Contributes*` bindings on its own compile classpath, and a terminal module inherits the `api` dependencies of `app-shared`, so every feature and core module is visible there.
 
 On Android, the `Application` builds the graph once (handing in the `Context` through a graph factory) and the `Activity` opens it around `KaigiApp`:
 

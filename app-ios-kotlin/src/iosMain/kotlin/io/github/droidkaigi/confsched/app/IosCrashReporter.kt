@@ -11,11 +11,11 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSError
 import platform.Foundation.NSLocalizedDescriptionKey
-import swiftPMImport.conference.app.`2026`.app.shared.FIRApp
-import swiftPMImport.conference.app.`2026`.app.shared.FIRCrashlytics
+import swiftPMImport.conference.app.`2026`.app.ios.kotlin.FIRApp
+import swiftPMImport.conference.app.`2026`.app.ios.kotlin.FIRCrashlytics
 
 @ContributesTo(AppScope::class, replaces = [CrashReporterDefaults::class])
-interface IosCrashReporterBindings {
+internal interface IosCrashReporterBindings {
     @Provides
     fun provideCrashReporter(): CrashReporter {
         // Crashlytics needs the Firebase project configuration; without the plist stay no-op.

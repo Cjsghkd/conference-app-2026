@@ -80,7 +80,7 @@ if [ "$gc" = true ]; then
     tree="${line#worktree }"
     for relative in \
       ".swiftpm-locks/default/swiftPMCheckout" \
-      "app-shared/build/kotlin/swiftPMCheckout"
+      "app-ios-kotlin/build/kotlin/swiftPMCheckout"
     do
       [ -L "$tree/$relative" ] || continue
       destination="$(readlink "$tree/$relative")"
@@ -159,22 +159,30 @@ link() {
 }
 
 # The `default` segment is the packageResolvedSynchronization identifier that
-# app-shared/build.gradle.kts leaves at its default value.
+# app-ios-kotlin/build.gradle.kts leaves at its default value.
 link ".swiftpm-locks/default/swiftPMCheckout" "umbrella-checkout"
-link "app-shared/build/kotlin/swiftPMCheckout" "app-shared-checkout"
+link "app-ios-kotlin/build/kotlin/swiftPMCheckout" "app-ios-kotlin-checkout"
 
 # The def and ld files name paths inside the checkouts, and the task producing them tracks only the
 # manifests, so Gradle keeps them even once an emptied bucket has taken those paths away. Left
 # behind, they fail the build at the linker with a missing file far from the cause. The derived data
 # goes with them: it is built from the same checkouts and is cheap to rebuild.
-if [ -z "$(ls -A "$store/app-shared-checkout" 2>/dev/null)" ]; then
-  rm -rf "$root/app-shared/build/kotlin/swiftImportDefs" \
-    "$root/app-shared/build/kotlin/swiftImportLdDump" \
-    "$root/app-shared/build/kotlin/swiftImportClangDump" \
-    "$root/app-shared/build/kotlin/swiftImportDd"
+if [ -z "$(ls -A "$store/app-ios-kotlin-checkout" 2>/dev/null)" ]; then
+  rm -rf "$root/app-ios-kotlin/build/kotlin/swiftImportDefs" \
+    "$root/app-ios-kotlin/build/kotlin/swiftImportLdDump" \
+    "$root/app-ios-kotlin/build/kotlin/swiftImportClangDump" \
+    "$root/app-ios-kotlin/build/kotlin/swiftImportDd"
 fi
 
 echo "Shared store: $store"
-for path in "${adopted[@]:-}"; do [ -n "$path" ] && echo "  moved into the store: $path"; done
-for path in "${created[@]:-}"; do [ -n "$path" ] && echo "  linked: $path"; done
-for path in "${kept[@]:-}"; do [ -n "$path" ] && echo "  already linked: $path"; done
+# `[ … ] && echo` as the loop body makes the loop's exit status that of the last test, so an empty
+# array leaves the script exiting non-zero under `set -e`.
+for path in "${adopted[@]:-}"; do
+  if [ -n "$path" ]; then echo "  moved into the store: $path"; fi
+done
+for path in "${created[@]:-}"; do
+  if [ -n "$path" ]; then echo "  linked: $path"; fi
+done
+for path in "${kept[@]:-}"; do
+  if [ -n "$path" ]; then echo "  already linked: $path"; fi
+done

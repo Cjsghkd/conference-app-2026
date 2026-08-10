@@ -11,14 +11,14 @@ Navigation3 owns the back stack on all four platforms. iOS reflects that state i
 
 ## Swift ↔ Kotlin interop
 
-The Swift ↔ Kotlin boundary stays small, around the tab bar: Swift calls Kotlin (`RootTabNavigator`, the view-controller factories) through `AppShared.framework`, and Kotlin reaches Apple frameworks through Swift Package Import, which is experimental as of 2026.
+The Swift ↔ Kotlin boundary stays small, around the tab bar: Swift calls Kotlin (the tab selection, the view-controller factory) through the Swift-exported `AppShared` module, and Kotlin reaches Apple frameworks through Swift Package Import. Both are experimental as of 2026.
 
 For details, see [Swift ↔ Kotlin interop](./ios-interop.md).
 
 ## Targets
 
-iOS targets iosArm64 + iosSimulatorArm64. `app-shared`'s `AppShared.framework` links Metro, Soil, both Navigation3 groups, runtime-retain, context parameters, and the in-house `:tools:compiler-plugin` as native klibs, with screens staying entirely in `commonMain`. iosX64 (Intel simulator) is out of scope because CMP `compose.ui`, `runtime-retain`, and the Navigation3 groups are not published for the deprecated target.
+iOS targets iosArm64 + iosSimulatorArm64. The exported `AppShared` module links Metro, Soil, both Navigation3 groups and runtime-retain as native klibs, with screens staying entirely in `commonMain`. iosX64 (Intel simulator) is out of scope because CMP `compose.ui`, `runtime-retain`, and the Navigation3 groups are not published for the deprecated target — which is also why an `xcodebuild` must name a concrete arm64 simulator rather than a `generic/platform=iOS Simulator` destination.
 
-The native Liquid Glass tab bar composites over the CMP backdrop on iOS 26. For the framework and embedding shape, see [CMP on iOS (framework)](./ios-cmp-framework.md); for the tab bar, see [Liquid Glass tab bar](./ios-liquid-glass.md).
+The native Liquid Glass tab bar composites over the CMP backdrop on iOS 26. For the embedding shape, see [CMP on iOS (embedding)](./ios-cmp-embedding.md); for the tab bar, see [Liquid Glass tab bar](./ios-liquid-glass.md).
 
-Related: [CMP on iOS (framework)](./ios-cmp-framework.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [Swift ↔ Kotlin interop](./ios-interop.md)
+Related: [CMP on iOS (embedding)](./ios-cmp-embedding.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [Swift ↔ Kotlin interop](./ios-interop.md)

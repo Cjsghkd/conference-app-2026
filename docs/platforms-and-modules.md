@@ -55,8 +55,8 @@ Each platform ships a different dependency set, so the licenses screen must read
 | `app-android` | `exportLibraryDefinitions<Variant>` | generated Android resource, `R.raw.aboutlibraries` |
 | `app-desktop` | `exportLibraryDefinitionsJvm` | Compose resource, `files/aboutlibraries.json` |
 | `app-web` | `exportLibraryDefinitionsWasmJs` | Compose resource, `files/aboutlibraries.json` |
-| `app-shared` (iOS) | `exportLibraryDefinitionsIosArm64` | Compose resource, `files/aboutlibraries.json` |
-| `app-ios` | `scripts/generate-swift-package-licenses.py` | bundle resource, passed to `createIosAppGraph` |
+| `app-ios-kotlin` | `exportLibraryDefinitionsIosArm64` | Compose resource, `files/aboutlibraries.json` |
+| `app-ios` | `scripts/generate-swift-package-licenses.py` | bundle resource, passed to `KaigiAppHost` |
 
 Each entry module provides its exports through `LicensesJsonProvider`. `:core:data` parses each one into AboutLibraries' `Libs`, merges them behind `LicensesQueryKey`, and never learns which platform it is running on. The screen renders that `Libs` with AboutLibraries' own `LibrariesContainer`, which owns its rows, detail expansion and license dialog, and opens the links it offers through `LocalUriHandler`.
 
@@ -64,19 +64,19 @@ The provider returns a list because one platform has two sources — which is wh
 
 ### iOS
 
-`app-ios` is an Xcode shell with no Gradle dependency graph of its own, so the Kotlin dependencies are exported from `app-shared`. The plugin collects only from configurations named `*CompileClasspath` / `*RuntimeClasspath`, which Kotlin/Native does not produce, so `app-shared` mirrors `iosArm64CompileKlibraries` under a recognised name.
+`app-ios` is an Xcode shell with no Gradle dependency graph of its own, so the Kotlin dependencies are exported from `app-ios-kotlin`, the Gradle module the iOS artifact is built from. The plugin collects only from configurations named `*CompileClasspath` / `*RuntimeClasspath`, which Kotlin/Native does not produce, so the `droidkaigi.primitive.licenses-export` plugin mirrors `iosArm64CompileKlibraries` under a recognised name.
 
 One iOS target stands for both. A Compose resource directory is registered per source set and the two targets share `iosMain`, so the export cannot vary between them; because they compile that one source set they resolve the same libraries, and the device target is the one that ships. Simulator builds package the same export and show the same list, differing only in the artifact suffix of the coordinates that carry one.
 
-That export reaches the app bundle through the existing `embedAndSignAppleFrameworkForXcode` build phase: the Compose Gradle plugin makes that task depend on `syncComposeResourcesForIos`.
+That export reaches the app bundle as a Compose resource, through the Swift Export build phase: the Compose Gradle plugin makes `embedSwiftExportForXcode` depend on the resource sync, registering it against the Swift Export binary `:app-ios-kotlin` declares — see [CMP on iOS (embedding)](./ios-cmp-embedding.md).
 
 Swift packages are resolved by Xcode and appear in no Gradle configuration at all, so the iOS build describes them itself. `app-ios/scripts/generate-swift-package-licenses.py` runs as a build phase and writes a second export into the bundle, taking the package set and versions from `Package.resolved` and the license text from the checked-out sources. An SPDX identifier cannot be derived from a license file, so the script maps one per package and fails the build on a package it does not know.
 
-The app reads that export and passes it to `createIosAppGraph`, which is why the iOS graph takes a parameter the other platforms do not:
+The app reads that export and passes it to `KaigiAppHost`, which hands it to the graph factory — which is why the iOS graph takes a parameter the other platforms do not:
 
 ```kotlin
 @DependencyGraph(scope = AppScope::class)
-interface IosAppGraph : AppGraph {
+internal interface IosAppGraph : AppGraph {
     @DependencyGraph.Factory
     fun interface Factory {
         fun create(@Provides @SwiftPackageLicenses swiftPackageLicensesJson: String): IosAppGraph

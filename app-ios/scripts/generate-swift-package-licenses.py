@@ -4,8 +4,8 @@
 Swift packages are resolved by Xcode and appear in no Gradle configuration, so the shared licenses
 screen cannot discover them the way it discovers the Kotlin dependencies. They are described here
 from what the iOS build itself resolved: `Package.resolved` for the set and the versions, and the
-checked-out sources for the license text. The app hands the result to `createIosAppGraph`, which
-merges it with the export `app-shared` generates.
+checked-out sources for the license text. The app hands the result to `KaigiAppHost`, which merges
+it with the export `app-ios-kotlin` generates.
 
 Run from an Xcode build phase; it reads SRCROOT, BUILD_DIR, BUILT_PRODUCTS_DIR and
 UNLOCALIZED_RESOURCES_FOLDER_PATH from the environment.

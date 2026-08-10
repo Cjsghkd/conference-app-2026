@@ -17,22 +17,3 @@ spotless {
         ktlint(libs.versions.ktlint.get())
     }
 }
-
-subprojects {
-    if (path != ":tools:compiler-plugin" && path != ":tools:ksp-processor") {
-        configurations
-            .matching { it.name.startsWith("kotlinCompilerPluginClasspath") }
-            .configureEach {
-                // shadowRuntimeElements carries the relocated jar; the plain one references
-                // com.intellij, which the embeddable compiler loading this plugin does not have.
-                dependencies.add(
-                    project.dependencies.project(
-                        mapOf(
-                            "path" to ":tools:compiler-plugin",
-                            "configuration" to "shadowRuntimeElements",
-                        ),
-                    ),
-                )
-            }
-    }
-}
