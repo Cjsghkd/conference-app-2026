@@ -40,11 +40,13 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: gradle
-      # The root tab bar's Liquid Glass path compiles against the iOS 26 SDK, which the runner
-      # image's default Xcode may predate.
-      - name: Select the newest installed Xcode
+      # The system appearance an app gets is decided by the SDK it links against, so the iOS 26 SDK
+      # is what makes the tab bar render as Liquid Glass; the image's default Xcode may predate it.
+      # Betas are excluded: linking iOS or syncing Gradle under a beta Xcode fails with exit 65, and
+      # the images carry a beta alongside the release for months.
+      - name: Select the newest installed release Xcode
         run: |
-          newest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          newest=$(ls -d /Applications/Xcode_*.app 2>/dev/null | grep -iv beta | sort -V | tail -1)
           if [ -n "$newest" ]; then sudo xcode-select --switch "$newest/Contents/Developer"; fi
           xcodebuild -version
       # A generic/platform=iOS Simulator destination resolves to x86_64, which no Kotlin target is
