@@ -1,49 +1,25 @@
 import AppShared
 import ConferenceApp2026AppShared
 import SwiftUI
+import UIKit
 
 /// Swift Export flattens only the package the exported module names, so the types it reaches in
 /// :app-shared keep their fully qualified Kotlin package.
 typealias RootTab = ExportedKotlinPackages.io.github.droidkaigi.confsched.app.RootTab
 
-/// The native root tab bar, laid out over the Compose view controller. The view occupies the bar's
-/// own area and nothing more, so every point outside it belongs to the Compose layer below.
+/// The root tab bar, laid out over the Compose view controller. UIKit sizes the bar to itself, so
+/// the view occupies the bar's own area and every point outside it belongs to the Compose layer.
 struct RootTabBarView<Selections: AsyncSequence>: View where Selections.Element == RootTab? {
     let currentTab: Selections
     let select: (RootTab) -> Void
 
-    @Namespace private var indicator
     @State private var selection: RootTab?
 
     var body: some View {
-        Group {
-            if let selection {
-                HStack(spacing: 0) {
-                    ForEach(RootTab.allCases, id: \.self) { tab in
-                        RootTabButton(
-                            tab: tab,
-                            isSelected: tab == selection,
-                            indicator: indicator,
-                            select: { select(tab) }
-                        )
-                    }
-                }
-                .padding(.horizontal, RootTabBarMetrics.innerPadding)
-                .frame(maxWidth: RootTabBarMetrics.maxWidth)
-                .frame(height: RootTabBarMetrics.height)
-                .rootTabBarSurface()
-                .padding(.horizontal, RootTabBarMetrics.outerPadding)
-                .padding(.bottom, RootTabBarMetrics.bottomMargin)
-                .animation(.snappy(duration: 0.25), value: selection)
-            } else {
-                // SwiftUI installs no task on a body that resolves to nothing, and the bar would
-                // then never collect a tab to show. This keeps a node in the graph, taking no room.
-                Color.clear.frame(width: 0, height: 0)
+        SystemTabBar(currentTab: selection, onSelect: select)
+            .task {
+                try? await collectCurrentTab()
             }
-        }
-        .task {
-            try? await collectCurrentTab()
-        }
     }
 
     private func collectCurrentTab() async throws {
@@ -53,58 +29,39 @@ struct RootTabBarView<Selections: AsyncSequence>: View where Selections.Element 
     }
 }
 
-private struct RootTabButton: View {
-    let tab: RootTab
-    let isSelected: Bool
-    let indicator: Namespace.ID
-    let select: () -> Void
+private struct SystemTabBar: UIViewRepresentable {
+    let currentTab: RootTab?
+    let onSelect: (RootTab) -> Void
 
-    var body: some View {
-        Button(action: select) {
-            Image(systemName: tab.symbolName)
-                .font(.system(size: RootTabBarMetrics.iconSize))
-                .foregroundStyle(isSelected ? Color.white : Color.primary)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background {
-                    if isSelected {
-                        Circle()
-                            .fill(Color.accentColor)
-                            .frame(
-                                width: RootTabBarMetrics.indicatorSize,
-                                height: RootTabBarMetrics.indicatorSize
-                            )
-                            .matchedGeometryEffect(id: "indicator", in: indicator)
-                    }
-                }
-                .contentShape(.rect)
+    func makeUIView(context: Context) -> UITabBar {
+        let bar = UITabBar()
+        bar.delegate = context.coordinator
+        bar.items = RootTab.allCases.enumerated().map { index, tab in
+            UITabBarItem(title: tab.label, image: UIImage(systemName: tab.symbolName), tag: index)
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(tab.label)
-        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
+        return bar
     }
-}
 
-/// Mirrors `KaigiNavigationBarDefaults`, which the Compose bar lays itself out from. Compose `Dp`
-/// and points coincide on iOS, so a scrollable's reserved `occupiedHeight` clears this bar exactly.
-private enum RootTabBarMetrics {
-    static let maxWidth: CGFloat = 300
-    static let height: CGFloat = 56
-    static let bottomMargin: CGFloat = 49
-    static let outerPadding: CGFloat = 32
-    static let innerPadding: CGFloat = 8
-    static let indicatorSize: CGFloat = 40
-    static let iconSize: CGFloat = 22
-}
+    func updateUIView(_ bar: UITabBar, context: Context) {
+        context.coordinator.onSelect = onSelect
+        bar.isHidden = currentTab == nil
+        // A hidden bar keeps the selection it had, so returning from a detail screen does not
+        // replay the selection animation.
+        if let index = currentTab.flatMap({ RootTab.allCases.firstIndex(of: $0) }) {
+            bar.selectedItem = bar.items?[index]
+        }
+    }
 
-private extension View {
-    /// Liquid Glass arrived in iOS 26 and the app deploys to iOS 16, so older systems take the
-    /// closest material the SDK offers them.
-    @ViewBuilder
-    func rootTabBarSurface() -> some View {
-        if #available(iOS 26.0, *) {
-            glassEffect(.regular, in: .capsule)
-        } else {
-            background(.ultraThinMaterial, in: Capsule())
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
+    final class Coordinator: NSObject, UITabBarDelegate {
+        var onSelect: ((RootTab) -> Void)?
+
+        func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+            guard RootTab.allCases.indices.contains(item.tag) else { return }
+            onSelect?(RootTab.allCases[item.tag])
         }
     }
 }
