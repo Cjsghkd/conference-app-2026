@@ -54,7 +54,8 @@ Gradle comes from the wrapper, so there is nothing else to install.
 
 ## Design
 
-TBD
+The screens are designed in Figma, at
+**[DroidKaigi 2026 App UI](https://www.figma.com/design/tpllAs1pnsj03a9rimcFnp/DroidKaigi-2026-App-UI)**.
 
 **Designers**: [@kitakkun](https://github.com/kitakkun), [@chihokotaro](https://x.com/chihokotaro)
 
