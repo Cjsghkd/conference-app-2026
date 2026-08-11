@@ -32,7 +32,7 @@ jobs:
       - uses: actions/github-script@v7
         with:
           script: |
-            const TRIGGER = /🙋|:raising_hand(_woman|_man)?:|^\/assign\b/m
+            const TRIGGER = /🙋|✋|🤚|🖐|:raising_hand(_woman|_man)?:|:(raised_)?hand:|:raised_back_of_hand:|:raised_hand_with_fingers_splayed:|^\/assign\b/m
             const NOT_READY_LABEL = 'status:blocked ⛔'
 
             const { owner, repo } = context.repo
