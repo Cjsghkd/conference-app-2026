@@ -4,7 +4,7 @@ on:
   issue_comment:
     types: [created]
   issues:
-    types: [assigned]
+    types: [assigned, unlabeled]
   workflow_dispatch:
     inputs:
       issue_number:
@@ -33,9 +33,12 @@ jobs:
         with:
           script: |
             const TRIGGER = /🙋|:raising_hand(_woman|_man)?:|^\/assign\b/m
+            const NOT_READY_LABEL = 'status:blocked ⛔'
 
             const { owner, repo } = context.repo
             const takenMarker = (login) => `<!-- assign-taken:${login} -->`
+            const waitingMarker = (login) => `<!-- assign-waiting:${login} -->`
+            const WAITING_PATTERN = /<!-- assign-waiting:([^\s>]+) -->/
 
             function resolveRequest() {
               if (context.eventName === 'issue_comment') {
@@ -52,6 +55,14 @@ jobs:
                 }
               }
               if (context.eventName === 'issues') {
+                if (context.payload.action === 'unlabeled') {
+                  if (context.payload.label?.name !== NOT_READY_LABEL) return null
+                  return {
+                    mode: 'ready',
+                    issueNumber: context.payload.issue.number,
+                    dryRun: false,
+                  }
+                }
                 return {
                   mode: 'enforce',
                   issueNumber: context.payload.issue.number,
@@ -72,7 +83,7 @@ jobs:
             if (!request) return
 
             const { mode, issueNumber, login, commentId, dryRun } = request
-            core.info(`mode=${mode} issue=#${issueNumber} login=${login} dry_run=${dryRun}`)
+            core.info(`mode=${mode} issue=#${issueNumber} login=${login ?? '-'} dry_run=${dryRun}`)
 
             const plan = (message) => core.info(dryRun ? `would ${message}` : message)
 
@@ -82,6 +93,57 @@ jobs:
               await github.rest.issues.createComment({ owner, repo, issue_number: issueNumber, body })
             }
 
+            function listComments() {
+              return github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: issueNumber,
+                per_page: 100,
+              })
+            }
+
+            async function otherOpenIssuesOf(candidate) {
+              const assigned = await github.paginate(github.rest.issues.listForRepo, {
+                owner,
+                repo,
+                state: 'open',
+                assignee: candidate,
+                per_page: 100,
+              })
+              return assigned.filter((other) => !other.pull_request && other.number !== issueNumber)
+            }
+
+            function issueList(issues) {
+              const links = issues.map((other) => `#${other.number}`)
+              if (links.length === 1) return links[0]
+              const conjunction = links.length === 2 ? ' and ' : ', and '
+              return `${links.slice(0, -1).join(', ')}${conjunction}${links[links.length - 1]}`
+            }
+
+            const limitMessage = (candidate, blocking) =>
+              `@${candidate} Thank you for offering to help — it's great to have you here. You already have ${issueList(blocking)} assigned to you. We assign one open issue per person at a time, so that as many people as possible have a chance to take part. ${blocking.length === 1 ? 'Once that issue is closed' : 'Once those issues are closed'}, you're very welcome to come back to this one.`
+
+            async function assign(candidate) {
+              plan(`assign ${candidate} to #${issueNumber}`)
+              if (dryRun) return false
+
+              await github.rest.issues.addAssignees({
+                owner,
+                repo,
+                issue_number: issueNumber,
+                assignees: [candidate],
+              })
+
+              // Assigning a user GitHub does not accept returns success and silently adds nobody, so confirm it landed.
+              const { data: updated } = await github.rest.issues.get({ owner, repo, issue_number: issueNumber })
+              if (!(updated.assignees ?? []).some((assignee) => assignee.login === candidate)) {
+                await comment(`@${candidate} Thank you for offering to take this on. GitHub didn't accept the assignment. This is a problem on our side, not anything you did, so a maintainer will assign the issue manually. We're sorry for the inconvenience, and thank you for your patience.`)
+                core.setFailed(`GitHub did not assign ${candidate} to #${issueNumber}`)
+                return false
+              }
+              return true
+            }
+
             // The webhook payload is a snapshot taken before any concurrent run of this workflow assigned anyone.
             const { data: issue } = await github.rest.issues.get({ owner, repo, issue_number: issueNumber })
             if (issue.state !== 'open') {
@@ -89,21 +151,51 @@ jobs:
               return
             }
 
-            const assigned = await github.paginate(github.rest.issues.listForRepo, {
-              owner,
-              repo,
-              state: 'open',
-              assignee: login,
-              per_page: 100,
-            })
-            const blocking = assigned.filter((other) => !other.pull_request && other.number !== issueNumber)
-            const blockingLinks = blocking.map((other) => `#${other.number}`).join(', ')
-            const limitMessage = () =>
-              `@${login} you are already assigned to ${blockingLinks}. Only one open issue can be assigned to you at a time — please finish that one first before taking on this issue.`
+            const assignees = (issue.assignees ?? []).map((assignee) => assignee.login)
+            const notReady = (issue.labels ?? []).some(
+              (label) => (typeof label === 'string' ? label : label.name) === NOT_READY_LABEL
+            )
+
+            if (mode === 'ready') {
+              if (notReady) {
+                core.info(`#${issueNumber} still carries ${NOT_READY_LABEL}, skipping`)
+                return
+              }
+              if (assignees.length > 0) {
+                core.info(`#${issueNumber} is already assigned, skipping`)
+                return
+              }
+
+              // The issue comments endpoint ignores sort and direction, so order the waiting list here.
+              const ordered = (await listComments()).sort(
+                (a, b) => new Date(a.created_at) - new Date(b.created_at) || a.id - b.id
+              )
+
+              const waiting = []
+              for (const posted of ordered) {
+                const match = WAITING_PATTERN.exec(posted.body ?? '')
+                if (match && !waiting.includes(match[1])) waiting.push(match[1])
+              }
+
+              for (const candidate of waiting) {
+                const blocking = await otherOpenIssuesOf(candidate)
+                if (blocking.length > 0) {
+                  await comment(limitMessage(candidate, blocking))
+                  continue
+                }
+                if (!(await assign(candidate))) return
+                await comment(`@${candidate} Thank you for waiting. This issue is now ready to be worked on, so we've assigned it to you. Have fun with it! Feel free to leave a comment here if you get stuck.`)
+                return
+              }
+
+              core.info(`#${issueNumber}: nobody on the waiting list can take it`)
+              return
+            }
 
             if (mode === 'enforce') {
+              const blocking = await otherOpenIssuesOf(login)
               if (blocking.length === 0) return
-              plan(`unassign ${login} from #${issueNumber} (already assigned to ${blockingLinks})`)
+              plan(`unassign ${login} from #${issueNumber} (already assigned to ${issueList(blocking)})`)
               if (!dryRun) {
                 await github.rest.issues.removeAssignees({
                   owner,
@@ -112,11 +204,9 @@ jobs:
                   assignees: [login],
                 })
               }
-              await comment(limitMessage())
+              await comment(limitMessage(login, blocking))
               return
             }
-
-            const assignees = (issue.assignees ?? []).map((assignee) => assignee.login)
 
             if (assignees.includes(login)) {
               core.info(`#${issueNumber}: ${login} is already assigned, skipping`)
@@ -124,45 +214,37 @@ jobs:
             }
 
             if (assignees.length > 0) {
-              const comments = await github.paginate(github.rest.issues.listComments, {
-                owner,
-                repo,
-                issue_number: issueNumber,
-                per_page: 100,
-              })
+              const comments = await listComments()
               if (comments.some((posted) => posted.body?.includes(takenMarker(login)))) {
                 core.info(`#${issueNumber}: ${login} was already told this issue is taken, skipping`)
                 return
               }
               const holders = assignees.map((holder) => `\`${holder}\``).join(', ')
               await comment(
-                `@${login} this issue is already assigned to ${holders}. Please pick another open issue.\n${takenMarker(login)}`
+                `@${login} Thank you for offering to help. This issue is already assigned to ${holders}, but there are other open issues, and we would welcome your help on one of them. [CONTRIBUTING.md](https://github.com/${owner}/${repo}/blob/main/CONTRIBUTING.md#3-find-a-task) suggests some that are good starting points.\n${takenMarker(login)}`
               )
               return
             }
 
+            const blocking = await otherOpenIssuesOf(login)
             if (blocking.length > 0) {
-              await comment(limitMessage())
+              await comment(limitMessage(login, blocking))
               return
             }
 
-            plan(`assign ${login} to #${issueNumber}`)
-            if (dryRun) return
-
-            await github.rest.issues.addAssignees({
-              owner,
-              repo,
-              issue_number: issueNumber,
-              assignees: [login],
-            })
-
-            // Assigning a user GitHub does not accept returns success and silently adds nobody, so confirm it landed.
-            const { data: updated } = await github.rest.issues.get({ owner, repo, issue_number: issueNumber })
-            if (!(updated.assignees ?? []).some((assignee) => assignee.login === login)) {
-              await comment(`@${login} GitHub did not accept this assignment. A maintainer will follow up.`)
-              core.setFailed(`GitHub did not assign ${login} to #${issueNumber}`)
+            if (notReady) {
+              const comments = await listComments()
+              if (comments.some((posted) => posted.body?.includes(waitingMarker(login)))) {
+                core.info(`#${issueNumber}: ${login} is already on the waiting list, skipping`)
+                return
+              }
+              await comment(
+                `@${login} Thank you for offering to take this on. This issue is labeled \`${NOT_READY_LABEL}\`, which means it isn't ready to be worked on yet, so it hasn't been assigned to you. You're on the waiting list, and we'll assign it to you as soon as the label is removed.\n${waitingMarker(login)}`
+              )
               return
             }
+
+            if (!(await assign(login))) return
 
             if (commentId) {
               await github.rest.reactions.createForIssueComment({
