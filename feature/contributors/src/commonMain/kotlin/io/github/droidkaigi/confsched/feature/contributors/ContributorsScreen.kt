@@ -52,7 +52,7 @@ fun ContributorsScreen(
 
 @LocalePreviews
 @Composable
-fun ContributorsScreenPreview(
+private fun ContributorsScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

@@ -37,7 +37,7 @@ fun LicensesScreen(
 
 @LocalePreviews
 @Composable
-fun LicensesScreenPreview(
+private fun LicensesScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

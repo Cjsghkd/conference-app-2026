@@ -27,7 +27,7 @@ fun ProfileCardScreen(
 
 @Preview
 @Composable
-fun ProfileCardScreenPreview(
+private fun ProfileCardScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

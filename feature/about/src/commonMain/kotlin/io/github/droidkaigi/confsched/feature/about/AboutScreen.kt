@@ -86,7 +86,7 @@ fun AboutScreen(
 
 @LocalePreviews
 @Composable
-fun AboutScreenPreview(
+private fun AboutScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
@@ -106,7 +106,7 @@ fun AboutScreenPreview(
 
 @LocalePreviews
 @Composable
-fun AboutScreenWithoutDebugMenuPreview(
+private fun AboutScreenWithoutDebugMenuPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

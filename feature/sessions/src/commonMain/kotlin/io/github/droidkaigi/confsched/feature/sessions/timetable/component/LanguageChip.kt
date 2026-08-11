@@ -26,7 +26,7 @@ internal fun LanguageChip(language: Language, seed: Int) {
 
 @Preview
 @Composable
-fun LanguageChipPreview(
+private fun LanguageChipPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

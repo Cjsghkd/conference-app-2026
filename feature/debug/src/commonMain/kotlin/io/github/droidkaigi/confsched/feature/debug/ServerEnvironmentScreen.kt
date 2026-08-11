@@ -78,7 +78,7 @@ fun ServerEnvironmentScreen(
 
 @Preview
 @Composable
-fun ServerEnvironmentScreenPreview(
+private fun ServerEnvironmentScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

@@ -99,7 +99,7 @@ internal fun ShiftedClockBadge(now: String, offsetLabel: String) {
 
 @Preview
 @Composable
-fun ShiftedClockBadgePreview(
+private fun ShiftedClockBadgePreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

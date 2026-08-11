@@ -47,7 +47,7 @@ internal fun TimetableHeader(
 
 @LocalePreviews
 @Composable
-fun TimetableHeaderPreview(
+private fun TimetableHeaderPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

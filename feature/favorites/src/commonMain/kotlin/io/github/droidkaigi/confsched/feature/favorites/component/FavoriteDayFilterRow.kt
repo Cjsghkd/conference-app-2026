@@ -55,7 +55,7 @@ private object FavoriteDayFilterRowDefaults {
 
 @LocalePreviews
 @Composable
-fun FavoriteDayFilterRowPreview(
+private fun FavoriteDayFilterRowPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

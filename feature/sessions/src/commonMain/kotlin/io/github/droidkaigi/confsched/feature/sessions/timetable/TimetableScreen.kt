@@ -45,7 +45,7 @@ fun TimetableScreen(
 
 @LocalePreviews
 @Composable
-fun TimetableScreenPreview(
+private fun TimetableScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

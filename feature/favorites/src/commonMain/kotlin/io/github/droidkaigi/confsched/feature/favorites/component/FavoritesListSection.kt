@@ -61,7 +61,7 @@ internal fun FavoritesListSection(
 
 @LocalePreviews
 @Composable
-fun FavoritesListSectionPreview(
+private fun FavoritesListSectionPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

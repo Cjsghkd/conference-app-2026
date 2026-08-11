@@ -1,4 +1,3 @@
 io.github.droidkaigi.confsched.ksp.NavKeySerializerSymbolProcessorProvider
 io.github.droidkaigi.confsched.ksp.SoilIdsSymbolProcessorProvider
-io.github.droidkaigi.confsched.ksp.PreviewRegistrySymbolProcessorProvider
 io.github.droidkaigi.confsched.ksp.ApiProvidersSymbolProcessorProvider

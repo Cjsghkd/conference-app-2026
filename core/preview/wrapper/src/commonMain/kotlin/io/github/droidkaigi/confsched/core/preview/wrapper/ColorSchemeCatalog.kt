@@ -102,7 +102,7 @@ private fun ColorScheme.swatches(): List<Triple<String, Color, Color>> = listOf(
 
 @Preview
 @Composable
-fun ColorSchemeCatalogPreview(
+private fun ColorSchemeCatalogPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

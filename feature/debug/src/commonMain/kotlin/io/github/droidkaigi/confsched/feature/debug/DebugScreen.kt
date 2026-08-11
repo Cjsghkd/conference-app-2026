@@ -112,7 +112,7 @@ fun DebugScreen(
 
 @Preview
 @Composable
-fun DebugScreenPreview(
+private fun DebugScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

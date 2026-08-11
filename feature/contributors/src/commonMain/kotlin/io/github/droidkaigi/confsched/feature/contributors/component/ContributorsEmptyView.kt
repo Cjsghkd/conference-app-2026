@@ -32,7 +32,7 @@ internal fun ContributorsEmptyView(modifier: Modifier = Modifier) {
 
 @LocalePreviews
 @Composable
-fun ContributorsEmptyViewPreview(
+private fun ContributorsEmptyViewPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

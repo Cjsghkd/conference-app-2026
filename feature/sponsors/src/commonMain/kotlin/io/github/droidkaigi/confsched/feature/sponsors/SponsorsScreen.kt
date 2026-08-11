@@ -52,7 +52,7 @@ fun SponsorsScreen(
 
 @LocalePreviews
 @Composable
-fun SponsorsScreenPreview(
+private fun SponsorsScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

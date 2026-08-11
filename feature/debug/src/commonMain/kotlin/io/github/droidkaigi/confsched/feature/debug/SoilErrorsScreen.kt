@@ -72,7 +72,7 @@ fun SoilErrorsScreen(
 
 @Preview
 @Composable
-fun SoilErrorsScreenPreview(
+private fun SoilErrorsScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
