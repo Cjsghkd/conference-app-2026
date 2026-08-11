@@ -1,29 +1,25 @@
 package io.github.droidkaigi.confsched.core.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,13 +41,15 @@ import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
  * @param title the text naming the screen. A screen whose content opens with a headline of its
  *   own passes an empty string, leaving the bar to the navigation icon and the actions.
  * @param modifier the [Modifier] applied to the bar.
- * @param navigationIcon the control leading the title, most often a back arrow.
+ * @param navigationIcon the control leading the title, most often a [KaigiTopAppBarBackButton].
  * @param containerColor the colour filling the band.
  * @param contentColor the colour the title, [navigationIcon] and [actions] draw in.
  * @param windowInsets the insets the bar holds its content clear of. The band fills behind them,
  *   so a screen drawing edge to edge keeps its colour under the status bar.
+ * @param scrollBehavior how the bar answers the content scrolling under it.
  * @param actions the controls trailing the title.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KaigiTopAppBar(
     title: String,
@@ -59,97 +57,88 @@ fun KaigiTopAppBar(
     navigationIcon: @Composable () -> Unit = {},
     containerColor: Color = MaterialTheme.colorScheme.inverseSurface,
     contentColor: Color = MaterialTheme.colorScheme.inverseOnSurface,
-    windowInsets: WindowInsets = KaigiTopAppBarDefaults.windowInsets,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    CompositionLocalProvider(LocalContentColor provides contentColor) {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(containerColor)
-                .windowInsetsPadding(windowInsets)
-                .height(KaigiTopAppBarDefaults.height)
-                .padding(
-                    horizontal = KaigiTopAppBarDefaults.horizontalPadding,
-                    vertical = KaigiTopAppBarDefaults.topPadding,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(KaigiTopAppBarDefaults.actionSpacing),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                navigationIcon()
-                BarTitle(title = title, color = contentColor)
-            }
-            Actions(actions)
-        }
-    }
+    TopAppBar(
+        title = { BarTitle(title) },
+        modifier = modifier,
+        navigationIcon = navigationIcon,
+        actions = { Actions(actions) },
+        expandedHeight = KaigiTopAppBarDefaults.height,
+        windowInsets = windowInsets,
+        colors = KaigiTopAppBarDefaults.colors(containerColor, contentColor),
+        scrollBehavior = scrollBehavior,
+        contentPadding = KaigiTopAppBarDefaults.contentPadding,
+    )
 }
 
 /**
  * The bar at the top of a screen reached from another: the navigation icon and the actions on
  * one row, with the title on its own row below them.
  *
+ * Handed a [scrollBehavior] it collapses onto the one row as the content scrolls under it.
+ *
+ * A screen only reaches this bar from another one, so it always leads with the back arrow and
+ * takes the click rather than the control.
+ *
  * @param title the text naming the screen.
- * @param navigationIcon the control the row above the title leads with, most often a back arrow.
+ * @param onBackClick called when the back arrow is clicked.
  * @param modifier the [Modifier] applied to the bar.
  * @param containerColor the colour filling the band.
- * @param contentColor the colour the title, [navigationIcon] and [actions] draw in.
- * @param windowInsets the insets the bar holds its content clear of. The band fills behind them,
- *   so a screen drawing edge to edge keeps its colour under the status bar.
- * @param actions the controls trailing [navigationIcon].
+ * @param contentColor the colour the title, the back arrow and [actions] draw in.
+ * @param windowInsets the insets the bar holds its content clear of.
+ * @param scrollBehavior how the bar answers the content scrolling under it.
+ * @param actions the controls trailing the back arrow.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KaigiLargeTopAppBar(
     title: String,
-    navigationIcon: @Composable () -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.inverseSurface,
     contentColor: Color = MaterialTheme.colorScheme.inverseOnSurface,
-    windowInsets: WindowInsets = KaigiTopAppBarDefaults.windowInsets,
+    windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    CompositionLocalProvider(LocalContentColor provides contentColor) {
-        Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(containerColor)
-                .windowInsetsPadding(windowInsets)
-                .height(KaigiTopAppBarDefaults.largeHeight)
-                .padding(
-                    start = KaigiTopAppBarDefaults.horizontalPadding,
-                    end = KaigiTopAppBarDefaults.horizontalPadding,
-                    top = KaigiTopAppBarDefaults.topPadding,
-                    bottom = KaigiTopAppBarDefaults.largeBottomPadding,
-                ),
-            verticalArrangement = Arrangement.spacedBy(KaigiTopAppBarDefaults.largeRowSpacing),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                navigationIcon()
-                Actions(actions)
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                BarTitle(title = title, color = contentColor)
-            }
-        }
+    LargeTopAppBar(
+        title = { BarTitle(title) },
+        modifier = modifier,
+        navigationIcon = { KaigiTopAppBarBackButton(onClick = onBackClick) },
+        actions = { Actions(actions) },
+        collapsedHeight = KaigiTopAppBarDefaults.height,
+        expandedHeight = KaigiTopAppBarDefaults.largeHeight,
+        windowInsets = windowInsets,
+        colors = KaigiTopAppBarDefaults.colors(containerColor, contentColor),
+        scrollBehavior = scrollBehavior,
+    )
+}
+
+/**
+ * The back arrow every screen reached from another leads its bar with, sized and described the
+ * same way in each of them.
+ *
+ * [KaigiLargeTopAppBar] draws this itself. Reach for it directly only where the control has to
+ * change with the screen's state, as a bar that dismisses rather than returns does.
+ *
+ * @param onClick called when the arrow is clicked.
+ * @param modifier the [Modifier] applied to the button.
+ */
+@Composable
+fun KaigiTopAppBarBackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    IconButton(onClick = onClick, modifier = modifier) {
+        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
     }
 }
 
 @Composable
-private fun BarTitle(title: String, color: Color) {
+private fun BarTitle(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.headlineMedium,
-        color = color,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )
@@ -167,33 +156,27 @@ private fun Actions(actions: @Composable RowScope.() -> Unit) {
 object KaigiTopAppBarDefaults {
     val height = 64.dp
     val largeHeight = 112.dp
-    val horizontalPadding = 24.dp
-    val topPadding = 8.dp
-    val largeBottomPadding = 12.dp
-    val largeRowSpacing = 4.dp
     val actionSpacing = 8.dp
 
-    val windowInsets: WindowInsets
-        @Composable get() = WindowInsets.systemBars
-            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-}
+    /**
+     * `TopAppBar` already insets its action slot by 4.dp, so this carries the remainder of the
+     * 16.dp the bar keeps at the trailing edge. The leading edge needs none: the inset the bar
+     * applies to a navigation icon, and the one it applies to a title without one, both come to
+     * the same 16.dp on their own.
+     */
+    val contentPadding = PaddingValues(end = 12.dp)
 
-/**
- * The back arrow every screen reached from another leads its bar with, sized and described the
- * same way in each of them.
- *
- * @param onClick called when the arrow is clicked.
- * @param modifier the [Modifier] applied to the button.
- */
-@Composable
-fun KaigiTopAppBarBackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    KaigiIconButton(onClick = onClick, modifier = modifier) {
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = "Back",
-            modifier = Modifier.size(KaigiIconButtonDefaults.iconSize),
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    internal fun colors(containerColor: Color, contentColor: Color): TopAppBarColors =
+        TopAppBarDefaults.topAppBarColors(
+            containerColor = containerColor,
+            // The band is one flat colour, so scrolling content under it must not tint it.
+            scrolledContainerColor = containerColor,
+            navigationIconContentColor = contentColor,
+            titleContentColor = contentColor,
+            actionIconContentColor = contentColor,
         )
-    }
 }
 
 @Preview
@@ -221,7 +204,7 @@ private fun KaigiLargeTopAppBarPreview(
     KaigiPreviewTheme(colorScheme) {
         KaigiLargeTopAppBar(
             title = "Contributors",
-            navigationIcon = { KaigiTopAppBarBackButton(onClick = {}) },
+            onBackClick = {},
             windowInsets = WindowInsets(0),
         )
     }

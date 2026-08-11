@@ -15,7 +15,6 @@ import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiLargeTopAppBar
-import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBarBackButton
 import io.github.droidkaigi.confsched.feature.sponsors.component.SPONSOR_GRID_COLUMNS
 import io.github.droidkaigi.confsched.feature.sponsors.component.SponsorsEmptyView
 import io.github.droidkaigi.confsched.feature.sponsors.component.sponsorPlanSection
@@ -28,10 +27,7 @@ fun SponsorsScreen(
 ) {
     Scaffold(
         topBar = {
-            KaigiLargeTopAppBar(
-                title = "Sponsors",
-                navigationIcon = { KaigiTopAppBarBackButton(onClick = onBackClick) },
-            )
+            KaigiLargeTopAppBar(title = "Sponsors", onBackClick = onBackClick)
         },
     ) { innerPadding ->
         if (uiState.groups.isEmpty()) {

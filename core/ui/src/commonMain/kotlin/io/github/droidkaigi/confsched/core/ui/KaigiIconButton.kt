@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -34,7 +32,8 @@ import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
  * A round icon button on a hand-sketched disc.
  *
  * It sits on the header band, so it fills with the band's contrasting colour and tints its
- * icon back to the band.
+ * icon back to the band. A control the design leaves bare passes a transparent
+ * [containerColor]: the disc stops being drawn, but the press still lands on its outline.
  *
  * @param seed the value the disc is drawn from. The same seed always produces the same disc,
  *   so give neighbouring buttons different ones or a row of them reads as a repeat.
@@ -67,38 +66,8 @@ fun KaigiIconButton(
     }
 }
 
-/**
- * An icon button with no disc behind it, for the controls the design leaves bare — the back
- * arrow, and the actions whose icon already carries its own outline.
- *
- * @param onClick called when the button is clicked.
- * @param modifier the [Modifier] applied to the button.
- * @param size the area the icon is centred in and that takes the click.
- * @param contentColor the colour [content] draws in, provided as [LocalContentColor].
- * @param content the icon the button holds.
- */
-@Composable
-fun KaigiIconButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    size: Dp = KaigiIconButtonDefaults.size,
-    contentColor: Color = MaterialTheme.colorScheme.inverseOnSurface,
-    content: @Composable () -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .size(size)
-            .clip(CircleShape)
-            .safeClickable(role = Role.Button, onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        CompositionLocalProvider(LocalContentColor provides contentColor, content = content)
-    }
-}
-
 object KaigiIconButtonDefaults {
     val size = 38.dp
-    val iconSize = 20.dp
 }
 
 @Preview
@@ -118,13 +87,6 @@ private fun KaigiIconButtonPreview(
             }
             KaigiIconButton(seed = 778, onClick = {}) {
                 Icon(Icons.Filled.DateRange, contentDescription = null)
-            }
-            KaigiIconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    modifier = Modifier.size(KaigiIconButtonDefaults.iconSize),
-                )
             }
         }
     }

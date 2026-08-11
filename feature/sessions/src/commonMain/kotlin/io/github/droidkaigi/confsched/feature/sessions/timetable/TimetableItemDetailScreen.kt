@@ -3,7 +3,6 @@ package io.github.droidkaigi.confsched.feature.sessions.timetable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -12,6 +11,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
@@ -24,9 +24,8 @@ import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.KaigiIconButton
-import io.github.droidkaigi.confsched.core.ui.KaigiIconButtonDefaults
 import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBar
+import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBarBackButton
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableItemDetailHeadline
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableItemDetailSummaryCard
 
@@ -42,17 +41,12 @@ fun TimetableItemDetailScreen(
             KaigiTopAppBar(
                 title = "",
                 navigationIcon = {
-                    val dismissing = LocalListDetailSceneScope.current != null
-                    KaigiIconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = if (dismissing) {
-                                Icons.Filled.Close
-                            } else {
-                                Icons.AutoMirrored.Filled.ArrowBack
-                            },
-                            contentDescription = if (dismissing) "Close" else "Back",
-                            modifier = Modifier.size(KaigiIconButtonDefaults.iconSize),
-                        )
+                    if (LocalListDetailSceneScope.current != null) {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.Filled.Close, contentDescription = "Close")
+                        }
+                    } else {
+                        KaigiTopAppBarBackButton(onClick = onBack)
                     }
                 },
                 // The headline below carries the same background, so the two read as one surface.

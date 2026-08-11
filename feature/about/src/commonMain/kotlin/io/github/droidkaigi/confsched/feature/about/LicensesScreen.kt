@@ -11,7 +11,6 @@ import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiLargeTopAppBar
-import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBarBackButton
 
 @Composable
 fun LicensesScreen(
@@ -20,10 +19,7 @@ fun LicensesScreen(
 ) {
     Scaffold(
         topBar = {
-            KaigiLargeTopAppBar(
-                title = "Licenses",
-                navigationIcon = { KaigiTopAppBarBackButton(onClick = onBackClick) },
-            )
+            KaigiLargeTopAppBar(title = "Licenses", onBackClick = onBackClick)
         },
     ) { innerPadding ->
         // AboutLibraries renders the rows, the inline detail and the license dialog, and opens

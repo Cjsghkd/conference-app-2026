@@ -13,7 +13,6 @@ import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiLargeTopAppBar
-import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBarBackButton
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorItem
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsCountText
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsEmptyView
@@ -26,10 +25,7 @@ fun ContributorsScreen(
 ) {
     Scaffold(
         topBar = {
-            KaigiLargeTopAppBar(
-                title = "Contributors",
-                navigationIcon = { KaigiTopAppBarBackButton(onClick = onBackClick) },
-            )
+            KaigiLargeTopAppBar(title = "Contributors", onBackClick = onBackClick)
         },
     ) { innerPadding ->
         if (uiState.contributors.isEmpty()) {
