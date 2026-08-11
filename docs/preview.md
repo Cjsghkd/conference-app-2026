@@ -65,7 +65,7 @@ A preview reaches it one of two ways. Most previews take one fixed scheme, so `K
 @PreviewWrapper(KaigiPreviewWrapper::class)
 @Preview
 @Composable
-fun AboutScreenPreview() {
+private fun AboutScreenPreview() {
     AboutScreen(/* sample */)
 }
 ```
@@ -79,7 +79,7 @@ A preview whose content is `@ThemeSensitive` takes its colour scheme through `@P
 ```kotlin
 @Preview
 @Composable
-fun TimetableScreenPreview(
+private fun TimetableScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
@@ -99,7 +99,7 @@ A preview whose content resolves a Compose Resources string (see [Localization](
 ```kotlin
 @LocalePreviews
 @Composable
-fun EventMapScreenPreview(
+private fun EventMapScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
@@ -129,6 +129,6 @@ Android Studio renders these `commonMain` previews through the Android target: t
 
 ## Screenshot tests
 
-Roborazzi + ComposablePreviewScanner honour `@PreviewWrapper` / `@PreviewParameter` so the same previews can drive screenshot tests — see [Testing overview](./testing.md).
+A preview is `private`: nothing but the tooling and the screenshot scan ever calls one. Roborazzi + ComposablePreviewScanner honour `@PreviewWrapper` / `@PreviewParameter` so the same previews drive the screenshot tests, on Android — see [Preview screenshot tests](./testing-preview-screenshot.md).
 
 Related: [Testing overview](./testing.md) · [Convention plugins](./build-convention-plugins.md)
