@@ -157,5 +157,5 @@ internal fun SoilErrorSheetContent(errors: List<SoilError>) {
 @Preview
 @Composable
 fun SoilErrorSheetContentPreview() {
-    SoilErrorSheetContent(errors = listOf(previewSoilError()))
+    SoilErrorSheetContent(errors = listOf(SoilError.fake()))
 }

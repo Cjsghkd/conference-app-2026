@@ -78,7 +78,7 @@ fun SoilErrorsScreenPreview(
 ) {
     KaigiPreviewTheme(colorScheme) {
         SoilErrorsScreen(
-            uiState = SoilErrorsScreenUiState(errors = listOf(previewSoilError())),
+            uiState = SoilErrorsScreenUiState(errors = listOf(SoilError.fake())),
             onBackClick = {},
         )
     }

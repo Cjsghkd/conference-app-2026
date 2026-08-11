@@ -123,7 +123,7 @@ fun DebugScreenPreview(
                 appVersion = "0.1.0",
                 dataCleared = false,
                 soilErrorOverlayEnabled = true,
-                soilErrors = listOf(previewSoilError()),
+                soilErrors = listOf(SoilError.fake()),
                 clock = DebugClockUiState.fake(),
             ),
             toggleSoilErrorOverlay = {},

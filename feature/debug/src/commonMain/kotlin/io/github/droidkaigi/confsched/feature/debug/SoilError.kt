@@ -5,9 +5,11 @@ package io.github.droidkaigi.confsched.feature.debug
 data class SoilError(
     val keyId: String,
     val exception: Throwable,
-)
+) {
+    companion object
+}
 
-internal fun previewSoilError() = SoilError(
+internal fun SoilError.Companion.fake(): SoilError = SoilError(
     keyId = "TimetableQueryKey",
     exception = IllegalStateException("HTTP 503 Service Unavailable"),
 )
