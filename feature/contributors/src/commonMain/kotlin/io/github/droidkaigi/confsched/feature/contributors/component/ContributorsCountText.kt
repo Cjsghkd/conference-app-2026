@@ -6,12 +6,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
+import io.github.droidkaigi.confsched.feature.contributors.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.contributors.generated.resources.contributors_count
+import org.jetbrains.compose.resources.pluralStringResource
 
 @Composable
 internal fun ContributorsCountText(
@@ -19,14 +22,14 @@ internal fun ContributorsCountText(
     modifier: Modifier = Modifier,
 ) {
     Text(
-        text = "$count contributors",
+        text = pluralStringResource(Res.plurals.contributors_count, count, count),
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold,
         modifier = modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     )
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun ContributorsCountTextPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

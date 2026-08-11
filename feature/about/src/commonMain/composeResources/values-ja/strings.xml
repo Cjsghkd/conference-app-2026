@@ -1,0 +1,10 @@
+<resources>
+    <string name="about_title">DroidKaigi 2026 について</string>
+    <string name="version">バージョン</string>
+    <string name="sponsors">スポンサー</string>
+    <string name="contributors">コントリビューター</string>
+    <string name="licenses">ライセンス</string>
+    <string name="licenses_description">このビルドが依存しているオープンソースライブラリ</string>
+    <string name="debug_menu">デバッグメニュー</string>
+    <string name="debug_menu_description">開発者向けツール（デバッグビルドのみ）</string>
+</resources>

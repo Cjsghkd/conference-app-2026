@@ -1,0 +1,4 @@
+<resources>
+    <string name="back">戻る</string>
+    <string name="failed_to_load">読み込みに失敗しました</string>
+</resources>

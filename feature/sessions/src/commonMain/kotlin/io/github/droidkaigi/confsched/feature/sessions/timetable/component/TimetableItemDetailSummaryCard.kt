@@ -19,13 +19,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.location
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.schedule
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun TimetableItemDetailSummaryCard(
@@ -45,12 +49,12 @@ internal fun TimetableItemDetailSummaryCard(
     ) {
         SummaryRow(
             imageVector = Icons.Outlined.Schedule,
-            title = "Schedule",
+            title = stringResource(Res.string.schedule),
             description = "${day.name} $startsAt - $endsAt",
         )
         SummaryRow(
             imageVector = Icons.Outlined.LocationOn,
-            title = "Location",
+            title = stringResource(Res.string.location),
             description = room,
         )
     }
@@ -84,7 +88,7 @@ private fun SummaryRow(
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun TimetableItemDetailSummaryCardPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

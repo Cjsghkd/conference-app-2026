@@ -8,18 +8,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
+import io.github.droidkaigi.confsched.feature.contributors.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.contributors.generated.resources.contributors_empty
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ContributorsEmptyView(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
-            text = "No contributors to show yet.",
+            text = stringResource(Res.string.contributors_empty),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(32.dp),
@@ -27,7 +30,7 @@ internal fun ContributorsEmptyView(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun ContributorsEmptyViewPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

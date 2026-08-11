@@ -32,5 +32,16 @@ plugins.withId("org.jetbrains.kotlin.multiplatform") {
         compilerOptions {
             optIn.add("soil.query.annotation.ExperimentalSoilQueryApi")
         }
+        sourceSets.named("commonMain") {
+            dependencies { implementation(libs.composeComponentsResources) }
+        }
     }
+}
+
+// Every module reads its own resources through a Res class of its own, so the package is derived
+// from the module path rather than declared per module. Compose Resources generates the class only
+// where a composeResources directory exists.
+compose.resources {
+    packageOfResClass =
+        "io.github.droidkaigi.confsched${path.replace(':', '.').replace('-', '_')}.generated.resources"
 }

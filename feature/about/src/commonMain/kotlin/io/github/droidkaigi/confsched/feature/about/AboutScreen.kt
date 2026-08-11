@@ -12,14 +12,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBar
 import io.github.droidkaigi.confsched.core.ui.RemoteImage
+import io.github.droidkaigi.confsched.feature.about.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.about.generated.resources.contributors
+import io.github.droidkaigi.confsched.feature.about.generated.resources.debug_menu
+import io.github.droidkaigi.confsched.feature.about.generated.resources.debug_menu_description
+import io.github.droidkaigi.confsched.feature.about.generated.resources.licenses
+import io.github.droidkaigi.confsched.feature.about.generated.resources.licenses_description
+import io.github.droidkaigi.confsched.feature.about.generated.resources.sponsors
+import io.github.droidkaigi.confsched.feature.about.generated.resources.version
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AboutScreen(
@@ -44,38 +53,38 @@ fun AboutScreen(
                 contentDescription = null,
             )
             ListItem(
-                headlineContent = { Text("Version") },
+                headlineContent = { Text(stringResource(Res.string.version)) },
                 trailingContent = { Text(uiState.versionName) },
             )
             HorizontalDivider()
             ListItem(
                 modifier = Modifier.clickable(onClick = onOpenSponsors),
-                headlineContent = { Text("Sponsors") },
+                headlineContent = { Text(stringResource(Res.string.sponsors)) },
             )
             HorizontalDivider()
             ListItem(
                 modifier = Modifier.clickable(onClick = onOpenContributors),
-                headlineContent = { Text("Contributors") },
+                headlineContent = { Text(stringResource(Res.string.contributors)) },
             )
             HorizontalDivider()
             ListItem(
                 modifier = Modifier.clickable(onClick = onOpenLicenses),
-                headlineContent = { Text("Licenses") },
-                supportingContent = { Text("Open source libraries this build depends on") },
+                headlineContent = { Text(stringResource(Res.string.licenses)) },
+                supportingContent = { Text(stringResource(Res.string.licenses_description)) },
             )
             if (isDebugMenuAvailable) {
                 HorizontalDivider()
                 ListItem(
                     modifier = Modifier.clickable(onClick = onOpenDebug),
-                    headlineContent = { Text("Debug menu") },
-                    supportingContent = { Text("Developer tools (debug builds only)") },
+                    headlineContent = { Text(stringResource(Res.string.debug_menu)) },
+                    supportingContent = { Text(stringResource(Res.string.debug_menu_description)) },
                 )
             }
         }
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun AboutScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
@@ -95,7 +104,7 @@ fun AboutScreenPreview(
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun AboutScreenWithoutDebugMenuPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

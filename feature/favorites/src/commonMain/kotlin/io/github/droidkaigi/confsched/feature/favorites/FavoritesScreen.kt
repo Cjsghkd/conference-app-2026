@@ -7,19 +7,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBar
 import io.github.droidkaigi.confsched.feature.favorites.component.FavoriteDayFilterRow
 import io.github.droidkaigi.confsched.feature.favorites.component.FavoritesEmptyView
 import io.github.droidkaigi.confsched.feature.favorites.component.FavoritesListSection
 import io.github.droidkaigi.confsched.feature.favorites.component.FavoritesListSectionUiState
+import io.github.droidkaigi.confsched.feature.favorites.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.favorites.generated.resources.favorites
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FavoritesScreen(
@@ -30,7 +33,7 @@ fun FavoritesScreen(
 ) {
     Scaffold(
         topBar = {
-            KaigiTopAppBar(title = "Favorites")
+            KaigiTopAppBar(title = stringResource(Res.string.favorites))
         },
         contentWindowInsets = WindowInsets(),
     ) { innerPadding ->
@@ -51,7 +54,7 @@ fun FavoritesScreen(
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun FavoritesScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
@@ -66,7 +69,7 @@ fun FavoritesScreenPreview(
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun FavoritesScreenEmptyPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

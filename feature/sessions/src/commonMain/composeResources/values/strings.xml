@@ -1,0 +1,10 @@
+<resources>
+    <string name="timetable">Timetable</string>
+    <string name="search">Search</string>
+    <string name="switch_to_grid_view">Switch to grid view</string>
+    <string name="close">Close</string>
+    <string name="add_favorite">Add favorite</string>
+    <string name="remove_favorite">Remove favorite</string>
+    <string name="schedule">Schedule</string>
+    <string name="location">Location</string>
+</resources>

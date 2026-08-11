@@ -12,14 +12,12 @@ kotlin {
             implementation(project(":core:designsystem"))
             implementation(libs.composeRuntime)
             implementation(libs.composeUi)
-            implementation(libs.composeComponentsResources)
         }
     }
 }
 
 compose.resources {
     publicResClass = true
-    packageOfResClass = "io.github.droidkaigi.confsched.core.preview.impl.generated.resources"
     generateResClass = always
 }
 

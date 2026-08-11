@@ -29,7 +29,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
+import io.github.droidkaigi.confsched.core.ui.generated.resources.Res
+import io.github.droidkaigi.confsched.core.ui.generated.resources.back
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * The bar at the top of a screen: a title in the display face on one line, with a navigation
@@ -130,7 +134,10 @@ fun KaigiLargeTopAppBar(
 @Composable
 fun KaigiTopAppBarBackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(onClick = onClick, modifier = modifier) {
-        Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+            contentDescription = stringResource(Res.string.back),
+        )
     }
 }
 
@@ -196,7 +203,7 @@ private fun KaigiTopAppBarPreview(
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 private fun KaigiLargeTopAppBarPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

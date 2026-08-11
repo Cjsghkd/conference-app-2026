@@ -1,3 +1,4 @@
 <resources>
     <string name="event_map_title">会場マップ</string>
+    <string name="event_map_content_description">%1$s のマップ</string>
 </resources>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="about_title">About DroidKaigi 2026</string>
+    <string name="version">Version</string>
+    <string name="sponsors">Sponsors</string>
+    <string name="contributors">Contributors</string>
+    <string name="licenses">Licenses</string>
+    <string name="licenses_description">Open source libraries this build depends on</string>
+    <string name="debug_menu">Debug menu</string>
+    <string name="debug_menu_description">Developer tools (debug builds only)</string>
+</resources>

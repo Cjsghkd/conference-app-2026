@@ -21,6 +21,7 @@ import io.github.droidkaigi.confsched.feature.eventmap.component.FloorTabRow
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.Res
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_1f
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_b1f
+import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_content_description
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_title
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -43,7 +44,7 @@ fun EventMapScreen(
             Crossfade(targetState = uiState.selectedFloor) { floor ->
                 Image(
                     painter = painterResource(floor.mapImage()),
-                    contentDescription = "Map of ${floor.label}",
+                    contentDescription = stringResource(Res.string.event_map_content_description, floor.label),
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 )
             }

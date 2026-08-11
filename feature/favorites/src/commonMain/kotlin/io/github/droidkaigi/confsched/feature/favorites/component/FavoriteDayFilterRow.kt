@@ -7,14 +7,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiFilterChip
+import io.github.droidkaigi.confsched.feature.favorites.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.favorites.generated.resources.day_filter_all
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FavoriteDayFilterRow(
@@ -31,7 +34,7 @@ internal fun FavoriteDayFilterRow(
         KaigiFilterChip(
             selected = selectedDayFilter == null,
             onClick = { onDayFilterClick(null) },
-            label = "All",
+            label = stringResource(Res.string.day_filter_all),
             seed = FavoriteDayFilterRowDefaults.FIRST_SEED,
         )
         DroidKaigi2026Day.entries.forEachIndexed { index, day ->
@@ -50,7 +53,7 @@ private object FavoriteDayFilterRowDefaults {
     const val FIRST_SEED = 821
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun FavoriteDayFilterRowPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

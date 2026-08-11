@@ -6,7 +6,7 @@ Build configuration is easily duplicated across modules — the same plugins, ta
 
 The plugins come in two kinds:
 
-- **Primitives** (`droidkaigi/primitive/*.gradle.kts`) — one concern each: `kmp`, `kmp.compose`, [`enforcement`](./enforcement.md), [`buildkonfig`](./build-config-buildkonfig.md), [`screenshot-test`](./testing-preview-screenshot.md), …
+- **Primitives** (`droidkaigi/primitive/*.gradle.kts`) — one concern each: `kmp`, `kmp.compose` (which also derives each module's [Compose Resources](./localization.md) package from its path), [`enforcement`](./enforcement.md), [`buildkonfig`](./build-config-buildkonfig.md), [`screenshot-test`](./testing-preview-screenshot.md), …
 - **Conventions** (`droidkaigi/convention/*.gradle.kts`) — a per-group recipe that **composes primitives**: e.g. `kmp-feature` pulls in `kmp`, `kmp.compose`, `screenshot-test` and `spotless`, and adds serialization, Metro, KSP and the [preview](./preview.md) dependencies every feature shares.
 
 The allowed dependency directions:

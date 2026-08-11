@@ -94,7 +94,7 @@ The `ThemeSensitivePreviewChecker` FIR checker rejects a theme-sensitive preview
 
 ## Multi-locale previews
 
-English is the base resource set and Japanese is the translated one, so a preview whose content resolves a Compose Resources string carries `@LocalePreviews` in place of `@Preview`:
+A preview whose content resolves a Compose Resources string (see [Localization](./localization.md)) carries `@LocalePreviews` in place of `@Preview`:
 
 ```kotlin
 @LocalePreviews
