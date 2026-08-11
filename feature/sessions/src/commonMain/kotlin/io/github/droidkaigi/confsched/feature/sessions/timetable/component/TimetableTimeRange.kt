@@ -60,7 +60,7 @@ private object TimetableTimeRangeDefaults {
 
 @Preview
 @Composable
-fun TimetableTimeRangePreview(
+private fun TimetableTimeRangePreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

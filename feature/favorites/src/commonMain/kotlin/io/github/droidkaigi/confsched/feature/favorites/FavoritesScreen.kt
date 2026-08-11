@@ -56,7 +56,7 @@ fun FavoritesScreen(
 
 @LocalePreviews
 @Composable
-fun FavoritesScreenPreview(
+private fun FavoritesScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
@@ -71,7 +71,7 @@ fun FavoritesScreenPreview(
 
 @LocalePreviews
 @Composable
-fun FavoritesScreenEmptyPreview(
+private fun FavoritesScreenEmptyPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

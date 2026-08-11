@@ -74,7 +74,7 @@ private object DayTabRowDefaults {
 
 @Preview
 @Composable
-fun DayTabRowPreview(
+private fun DayTabRowPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

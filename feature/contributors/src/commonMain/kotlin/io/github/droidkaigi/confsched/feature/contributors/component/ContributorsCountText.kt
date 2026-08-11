@@ -31,7 +31,7 @@ internal fun ContributorsCountText(
 
 @LocalePreviews
 @Composable
-fun ContributorsCountTextPreview(
+private fun ContributorsCountTextPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

@@ -80,7 +80,7 @@ Work through every section. For each item, verify in the actual code, not by fil
 - [ ] Material 3 idioms: `Scaffold` + `TopAppBar` for pushed screens, `ListItem` for settings-style rows, theme colors/typography only (no hardcoded `Color`/sizes where a token exists).
 - [ ] Window insets respected where the entry draws to the edge (`navigationBarsPadding()` on bottom sheets and edge content).
 - [ ] Empty/loading/error states exist where the data can be empty or fail (`SoilDataBoundary` for loads; explicit empty-state UI).
-- [ ] A `@RegisteredPreview` preview exists in the screen file (the `PreviewRequiresWrapper` checker enforces the wrapper, not the preview's existence).
+- [ ] A `private` `@Preview` exists in the screen file (the `PreviewRequiresWrapper` checker enforces the wrapper, not the preview's existence).
 
 ### 8. Tests
 - [ ] Presenter test exists and covers each Action.

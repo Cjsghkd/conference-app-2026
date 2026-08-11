@@ -85,7 +85,7 @@ private fun RoomMark(shape: RoomShape, color: Color) {
 
 @Preview
 @Composable
-fun RoomChipPreview(
+private fun RoomChipPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

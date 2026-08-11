@@ -99,7 +99,7 @@ private object TimetableItemDetailScreenDefaults {
 
 @LocalePreviews
 @Composable
-fun TimetableItemDetailScreenPreview(
+private fun TimetableItemDetailScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

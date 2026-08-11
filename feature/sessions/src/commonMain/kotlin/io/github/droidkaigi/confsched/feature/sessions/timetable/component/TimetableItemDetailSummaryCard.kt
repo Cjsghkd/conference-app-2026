@@ -90,7 +90,7 @@ private fun SummaryRow(
 
 @LocalePreviews
 @Composable
-fun TimetableItemDetailSummaryCardPreview(
+private fun TimetableItemDetailSummaryCardPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

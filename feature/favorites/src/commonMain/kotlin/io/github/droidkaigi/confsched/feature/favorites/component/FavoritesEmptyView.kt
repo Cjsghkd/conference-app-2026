@@ -67,7 +67,7 @@ internal fun FavoritesEmptyView(modifier: Modifier = Modifier) {
 
 @LocalePreviews
 @Composable
-fun FavoritesEmptyViewPreview(
+private fun FavoritesEmptyViewPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

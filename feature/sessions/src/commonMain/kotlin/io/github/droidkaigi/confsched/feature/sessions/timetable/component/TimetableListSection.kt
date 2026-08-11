@@ -81,7 +81,7 @@ private fun SessionRow(
 
 @LocalePreviews
 @Composable
-fun TimetableListSectionPreview(
+private fun TimetableListSectionPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

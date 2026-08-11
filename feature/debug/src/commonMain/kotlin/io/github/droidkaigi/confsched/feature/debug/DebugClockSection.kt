@@ -90,7 +90,7 @@ internal fun DebugClockSection(
 
 @Preview
 @Composable
-fun DebugClockSectionPreview(
+private fun DebugClockSectionPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

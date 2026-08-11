@@ -56,7 +56,7 @@ private object ContributorItemDefaults {
 
 @Preview
 @Composable
-fun ContributorItemPreview(
+private fun ContributorItemPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

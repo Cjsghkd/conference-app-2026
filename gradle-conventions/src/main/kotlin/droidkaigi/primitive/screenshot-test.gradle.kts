@@ -19,49 +19,13 @@ configure<RoborazziExtension> {
     generateComposePreviewRobolectricTests {
         enable.set(true)
         packages.set(listOf(screenshotPackage))
+        // Previews are private: nothing but the tooling and this scan ever calls one.
+        includePrivatePreviews.set(true)
         robolectricConfig.set(
             mapOf(
                 "sdk" to "[36]",
                 "qualifiers" to "\"w360dp-h800dp-xhdpi\"",
             ),
-        )
-    }
-}
-
-// Non-JVM targets cannot scan the classpath for previews, so a KSP-generated PreviewRegistry
-// (tools:ksp-processor) enumerates them; the desktop and iOS screenshot tests below capture
-// every registry entry through Roborazzi's desktop / iOS artifacts.
-pluginManager.withPlugin("com.google.devtools.ksp") {
-    configure<com.google.devtools.ksp.gradle.KspExtension> {
-        arg("droidkaigi.previewRegistryPackage", screenshotPackage)
-    }
-}
-
-// One class in commonTest is enough: capturePreviews is expect/actual in :core:testing (desktop
-// and iOS capture; Android and wasmJs actuals are no-ops).
-val generatePreviewScreenshotTest = tasks.register("generatePreviewScreenshotTest") {
-    val outputDir = layout.buildDirectory.dir("generated/screenshotTest/common/kotlin")
-    val packageName = screenshotPackage
-    inputs.property("packageName", packageName)
-    outputs.dir(outputDir)
-    doLast {
-        val file = outputDir.get().asFile.resolve(packageName.replace('.', '/'))
-            .resolve("PreviewScreenshotTest.kt")
-        file.parentFile.mkdirs()
-        file.writeText(
-            """
-            package $packageName
-
-            import io.github.droidkaigi.confsched.core.testing.capturePreviews
-            import kotlin.test.Test
-
-            class PreviewScreenshotTest {
-                @Test
-                fun captureAllPreviews() {
-                    capturePreviews(PreviewRegistry.previews)
-                }
-            }
-            """.trimIndent(),
         )
     }
 }
@@ -85,10 +49,7 @@ kotlin {
     }
 
     sourceSets.named("commonTest") {
-        kotlin.srcDir(generatePreviewScreenshotTest)
         dependencies {
-            // The generated PreviewScreenshotTest is a kotlin.test class, so the module needs the
-            // dependency whether or not it writes tests of its own.
             implementation(kotlin("test"))
             implementation(project(":core:testing"))
         }

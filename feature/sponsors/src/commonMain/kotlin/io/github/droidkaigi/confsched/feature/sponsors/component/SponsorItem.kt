@@ -43,7 +43,7 @@ internal fun SponsorItem(
 
 @Preview
 @Composable
-fun SponsorItemPreview(
+private fun SponsorItemPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

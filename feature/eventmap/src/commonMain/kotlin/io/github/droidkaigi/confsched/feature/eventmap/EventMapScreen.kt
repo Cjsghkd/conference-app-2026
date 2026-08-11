@@ -59,7 +59,7 @@ private fun EventMapFloor.mapImage(): DrawableResource = when (this) {
 
 @LocalePreviews
 @Composable
-fun EventMapScreenPreview(
+private fun EventMapScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

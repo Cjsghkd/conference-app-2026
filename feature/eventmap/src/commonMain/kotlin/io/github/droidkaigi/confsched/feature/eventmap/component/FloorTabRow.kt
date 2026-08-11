@@ -46,7 +46,7 @@ private object FloorTabRowDefaults {
 
 @Preview
 @Composable
-fun FloorTabRowPreview(
+private fun FloorTabRowPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

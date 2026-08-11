@@ -56,7 +56,7 @@ internal fun FavoriteCard(
 
 @LocalePreviews
 @Composable
-fun FavoriteCardPreview(
+private fun FavoriteCardPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

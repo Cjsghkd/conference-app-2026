@@ -80,7 +80,7 @@ private object TimetableItemDetailHeadlineDefaults {
 
 @Preview
 @Composable
-fun TimetableItemDetailHeadlinePreview(
+private fun TimetableItemDetailHeadlinePreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

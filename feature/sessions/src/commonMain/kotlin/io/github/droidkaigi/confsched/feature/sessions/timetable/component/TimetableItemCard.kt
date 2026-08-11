@@ -151,7 +151,7 @@ private object TimetableItemCardDefaults {
 
 @LocalePreviews
 @Composable
-fun TimetableItemCardPreview(
+private fun TimetableItemCardPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

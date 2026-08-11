@@ -22,10 +22,6 @@ kotlin {
         }
         jvmMain.dependencies {
             api(compose.desktop.currentOs)
-            api(libs.roborazziComposeDesktop)
-        }
-        iosMain.dependencies {
-            api(libs.roborazziComposeIos)
         }
         androidMain.dependencies {
             api(libs.roborazzi)

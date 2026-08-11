@@ -155,6 +155,6 @@ internal fun SoilErrorSheetContent(errors: List<SoilError>) {
 @PreviewWrapper(KaigiPreviewWrapper::class)
 @Preview
 @Composable
-fun SoilErrorSheetContentPreview() {
+private fun SoilErrorSheetContentPreview() {
     SoilErrorSheetContent(errors = listOf(SoilError.fake()))
 }

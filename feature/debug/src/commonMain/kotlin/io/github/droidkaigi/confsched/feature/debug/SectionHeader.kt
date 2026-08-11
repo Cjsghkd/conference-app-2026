@@ -24,7 +24,7 @@ internal fun SectionHeader(title: String) {
 
 @Preview
 @Composable
-fun SectionHeaderPreview(
+private fun SectionHeaderPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

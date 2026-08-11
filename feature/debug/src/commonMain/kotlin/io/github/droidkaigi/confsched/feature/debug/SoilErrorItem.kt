@@ -92,7 +92,7 @@ internal fun SoilErrorItem(error: SoilError) {
 
 @Preview
 @Composable
-fun SoilErrorItemPreview(
+private fun SoilErrorItemPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
