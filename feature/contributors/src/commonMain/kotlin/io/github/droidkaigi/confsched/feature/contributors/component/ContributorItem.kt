@@ -1,19 +1,15 @@
 package io.github.droidkaigi.confsched.feature.contributors.component
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,7 +19,7 @@ import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.RemoteImage
+import io.github.droidkaigi.confsched.core.ui.KaigiAvatar
 
 @Composable
 internal fun ContributorItem(
@@ -40,13 +36,10 @@ internal fun ContributorItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        RemoteImage(
+        KaigiAvatar(
             imageUrl = iconUrl,
             contentDescription = null,
-            modifier = Modifier
-                .size(52.dp)
-                .clip(CircleShape)
-                .border(width = 1.dp, color = MaterialTheme.colorScheme.outline, shape = CircleShape),
+            size = ContributorItemDefaults.avatarSize,
         )
         Text(
             text = username,
@@ -55,6 +48,10 @@ internal fun ContributorItem(
             overflow = TextOverflow.Ellipsis,
         )
     }
+}
+
+private object ContributorItemDefaults {
+    val avatarSize = 52.dp
 }
 
 @Preview
