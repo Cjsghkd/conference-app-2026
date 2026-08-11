@@ -18,12 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
+import io.github.droidkaigi.confsched.feature.favorites.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.favorites.generated.resources.favorites_empty_description
+import io.github.droidkaigi.confsched.feature.favorites.generated.resources.favorites_empty_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun FavoritesEmptyView(modifier: Modifier = Modifier) {
@@ -48,12 +52,12 @@ internal fun FavoritesEmptyView(modifier: Modifier = Modifier) {
                 )
             }
             Text(
-                text = "No favorite sessions found.",
+                text = stringResource(Res.string.favorites_empty_title),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = "Add sessions you're interested in to your favorites.",
+                text = stringResource(Res.string.favorites_empty_description),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
             )
@@ -61,7 +65,7 @@ internal fun FavoritesEmptyView(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun FavoritesEmptyViewPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

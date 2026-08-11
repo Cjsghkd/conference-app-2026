@@ -13,7 +13,7 @@ value class TimetableItemId(val value: String)
 
 data class TimetableItem(
     val id: TimetableItemId,
-    val title: String,
+    val title: MultiLangText,
     val room: Room,
     val speaker: String,
     val language: Language,

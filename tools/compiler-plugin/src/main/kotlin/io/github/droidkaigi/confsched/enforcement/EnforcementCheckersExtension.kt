@@ -45,6 +45,7 @@ class EnforcementCheckersExtension(session: FirSession) : FirAdditionalCheckersE
             PresenterMustNotDeclareScreenContextChecker,
             PreviewRequiresWrapperChecker,
             ThemeSensitivePreviewChecker,
+            LocaleSensitivePreviewChecker,
             ComposableNestingDepthChecker,
             UiComponentTakesWhatItReadsChecker,
             NoCallerSuppliedCallbackArgumentChecker,

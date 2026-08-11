@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -28,9 +27,14 @@ import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.model.Language
 import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.SketchRoundRectShape
 import io.github.droidkaigi.confsched.core.ui.sketchBorder
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.add_favorite
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.remove_favorite
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * One session, outlined by hand: the room and language it runs in, its title, and who gives
@@ -128,7 +132,7 @@ private fun ChipRow(room: Room, language: Language, seed: Int) {
 private fun FavoriteMark(room: Room, isFavorite: Boolean, onBookmarkClick: () -> Unit) {
     Icon(
         imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-        contentDescription = if (isFavorite) "Remove favorite" else "Add favorite",
+        contentDescription = if (isFavorite) stringResource(Res.string.remove_favorite) else stringResource(Res.string.add_favorite),
         tint = roomTheme(room).accent,
         modifier = Modifier
             .size(TimetableItemCardDefaults.favoriteSize)
@@ -145,7 +149,7 @@ private object TimetableItemCardDefaults {
     val referenceSize = DpSize(292.dp, 135.dp)
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun TimetableItemCardPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

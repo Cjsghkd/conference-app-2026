@@ -125,6 +125,7 @@ export default withMermaid(defineConfig({
         items: [
           { text: 'Preview & sample assets', link: '/preview' },
           { text: 'Preview image enum generation', link: '/preview-image-enum' },
+          { text: 'Localization', link: '/localization' },
         ],
       },
       {

@@ -1,0 +1,7 @@
+<resources>
+    <string name="contributors">コントリビューター</string>
+    <string name="contributors_empty">コントリビューターはまだいません。</string>
+    <plurals name="contributors_count">
+        <item quantity="other">%1$d 人のコントリビューター</item>
+    </plurals>
+</resources>

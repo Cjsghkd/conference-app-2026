@@ -7,15 +7,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiLargeTopAppBar
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorItem
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsCountText
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsEmptyView
+import io.github.droidkaigi.confsched.feature.contributors.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.contributors.generated.resources.contributors
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ContributorsScreen(
@@ -25,7 +28,7 @@ fun ContributorsScreen(
 ) {
     Scaffold(
         topBar = {
-            KaigiLargeTopAppBar(title = "Contributors", onBackClick = onBackClick)
+            KaigiLargeTopAppBar(title = stringResource(Res.string.contributors), onBackClick = onBackClick)
         },
     ) { innerPadding ->
         if (uiState.contributors.isEmpty()) {
@@ -47,7 +50,7 @@ fun ContributorsScreen(
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun ContributorsScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

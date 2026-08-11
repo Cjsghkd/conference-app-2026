@@ -14,6 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import io.github.droidkaigi.confsched.core.ui.generated.resources.Res
+import io.github.droidkaigi.confsched.core.ui.generated.resources.failed_to_load
+import org.jetbrains.compose.resources.stringResource
 
 sealed interface SoilFallback {
     val suspenseFallback: @Composable context(SoilSuspenseContext) BoxScope.() -> Unit
@@ -63,7 +66,7 @@ fun DefaultErrorFallbackContent(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text("Failed to load")
+            Text(stringResource(Res.string.failed_to_load))
             Text(
                 errorContext.errorBoundaryContext.err.message ?: "",
                 modifier = Modifier.padding(16.dp),

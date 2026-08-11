@@ -1,0 +1,4 @@
+<resources>
+    <string name="event_map_title">Event Map</string>
+    <string name="event_map_content_description">Map of %1$s</string>
+</resources>

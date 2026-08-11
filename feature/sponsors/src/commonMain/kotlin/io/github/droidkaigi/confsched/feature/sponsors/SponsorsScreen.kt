@@ -8,16 +8,19 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiLargeTopAppBar
 import io.github.droidkaigi.confsched.feature.sponsors.component.SPONSOR_GRID_COLUMNS
 import io.github.droidkaigi.confsched.feature.sponsors.component.SponsorsEmptyView
 import io.github.droidkaigi.confsched.feature.sponsors.component.sponsorPlanSection
+import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.sponsors
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SponsorsScreen(
@@ -27,7 +30,7 @@ fun SponsorsScreen(
 ) {
     Scaffold(
         topBar = {
-            KaigiLargeTopAppBar(title = "Sponsors", onBackClick = onBackClick)
+            KaigiLargeTopAppBar(title = stringResource(Res.string.sponsors), onBackClick = onBackClick)
         },
     ) { innerPadding ->
         if (uiState.groups.isEmpty()) {
@@ -47,7 +50,7 @@ fun SponsorsScreen(
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun SponsorsScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

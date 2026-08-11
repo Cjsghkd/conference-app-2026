@@ -18,16 +18,22 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.LocalListDetailSceneScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBar
 import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBarBackButton
+import io.github.droidkaigi.confsched.core.ui.current
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.add_favorite
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.close
+import io.github.droidkaigi.confsched.feature.sessions.generated.resources.remove_favorite
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableItemDetailHeadline
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableItemDetailSummaryCard
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
@@ -43,7 +49,7 @@ fun TimetableItemDetailScreen(
                 navigationIcon = {
                     if (LocalListDetailSceneScope.current != null) {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.Filled.Close, contentDescription = "Close")
+                            Icon(Icons.Filled.Close, contentDescription = stringResource(Res.string.close))
                         }
                     } else {
                         KaigiTopAppBarBackButton(onClick = onBack)
@@ -58,7 +64,7 @@ fun TimetableItemDetailScreen(
             FloatingActionButton(onClick = onBookmarkClick) {
                 Icon(
                     imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                    contentDescription = if (uiState.isFavorite) "Remove favorite" else "Add favorite",
+                    contentDescription = if (uiState.isFavorite) stringResource(Res.string.remove_favorite) else stringResource(Res.string.add_favorite),
                 )
             }
         },
@@ -70,7 +76,7 @@ fun TimetableItemDetailScreen(
             item {
                 TimetableItemDetailHeadline(
                     room = uiState.item.room.name,
-                    title = uiState.item.title,
+                    title = uiState.item.title.current(),
                     speaker = uiState.item.speaker,
                 )
             }
@@ -91,7 +97,7 @@ private object TimetableItemDetailScreenDefaults {
     val floatingActionButtonClearance = 88.dp
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun TimetableItemDetailScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

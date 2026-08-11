@@ -10,14 +10,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiNavigationBarDefaults
+import io.github.droidkaigi.confsched.core.ui.current
 
 @Composable
 internal fun TimetableListSection(
@@ -64,7 +65,7 @@ private fun SessionRow(
         ) {
             for (item in slot.items) {
                 TimetableItemCard(
-                    title = item.title,
+                    title = item.title.current(),
                     room = item.room,
                     speaker = item.speaker,
                     language = item.language,
@@ -78,7 +79,7 @@ private fun SessionRow(
     }
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun TimetableListSectionPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,

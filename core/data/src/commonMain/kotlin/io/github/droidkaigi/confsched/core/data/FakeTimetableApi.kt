@@ -8,10 +8,32 @@ class FakeTimetableApi : TimetableApi {
         return TimetableResponse(
             status = HttpStatusResponse.OK,
             sessions = listOf(
-                fakeSession("s1", "Sample Session A", 81669L, "sp1", LanguageResponse.JAPANESE, "2026-09-02T10:00:00+09:00", "2026-09-02T10:40:00+09:00"),
-                fakeSession("s2", "Sample Session B, with a placeholder title long enough to wrap onto several lines", 81667L, "sp2", LanguageResponse.ENGLISH, "2026-09-02T11:00:00+09:00", "2026-09-02T11:40:00+09:00"),
-                fakeSession("s3", "Sample Session C", 81669L, "sp3", LanguageResponse.MIXED, "2026-09-03T10:00:00+09:00", "2026-09-03T10:40:00+09:00"),
-                fakeSession("s4", "Sample Session D, with a moderately long placeholder title", 81667L, "sp1", LanguageResponse.ENGLISH, "2026-09-03T11:00:00+09:00", "2026-09-03T11:40:00+09:00"),
+                fakeSession("s1", LocaledResponse(ja = "サンプルセッションA", en = "Sample Session A"), 81669L, "sp1", LanguageResponse.JAPANESE, "2026-09-02T10:00:00+09:00", "2026-09-02T10:40:00+09:00"),
+                fakeSession(
+                    "s2",
+                    LocaledResponse(
+                        ja = "サンプルセッションB、折り返しを確かめるための長いプレースホルダーのタイトル",
+                        en = "Sample Session B, with a placeholder title long enough to wrap onto several lines",
+                    ),
+                    81667L,
+                    "sp2",
+                    LanguageResponse.ENGLISH,
+                    "2026-09-02T11:00:00+09:00",
+                    "2026-09-02T11:40:00+09:00",
+                ),
+                fakeSession("s3", LocaledResponse(ja = "サンプルセッションC", en = "Sample Session C"), 81669L, "sp3", LanguageResponse.MIXED, "2026-09-03T10:00:00+09:00", "2026-09-03T10:40:00+09:00"),
+                fakeSession(
+                    "s4",
+                    LocaledResponse(
+                        ja = "サンプルセッションD、そこそこ長いプレースホルダーのタイトル",
+                        en = "Sample Session D, with a moderately long placeholder title",
+                    ),
+                    81667L,
+                    "sp1",
+                    LanguageResponse.ENGLISH,
+                    "2026-09-03T11:00:00+09:00",
+                    "2026-09-03T11:40:00+09:00",
+                ),
             ),
             rooms = listOf(
                 RoomResponse(name = LocaledResponse(ja = "Narwhal", en = "Narwhal"), id = 81669L, sort = 1),
@@ -28,7 +50,7 @@ class FakeTimetableApi : TimetableApi {
 
     private fun fakeSession(
         id: String,
-        title: String,
+        title: LocaledResponse,
         roomId: Long,
         speakerId: String,
         language: LanguageResponse,
@@ -36,7 +58,7 @@ class FakeTimetableApi : TimetableApi {
         endsAt: String,
     ) = SessionResponse(
         id = id,
-        title = LocaledResponse(ja = title, en = title),
+        title = title,
         speakers = listOf(speakerId),
         startsAt = startsAt,
         endsAt = endsAt,
@@ -45,7 +67,7 @@ class FakeTimetableApi : TimetableApi {
         lengthInMinutes = 40,
         sessionType = SessionTypeResponse.NORMAL,
         noShow = false,
-        targetAudience = LocaledResponse(ja = "All", en = "All"),
+        targetAudience = LocaledResponse(ja = "全員", en = "All"),
         interpretationTarget = false,
         asset = SessionAssetResponse(),
     )

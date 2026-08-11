@@ -16,6 +16,7 @@ class EnforcementCompilerPluginRegistrar : CompilerPluginRegistrar() {
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
         configuration.get(CommonConfigurationKeys.MESSAGE_COLLECTOR_KEY, MessageCollector.NONE)
         IrGenerationExtension.registerExtension(ThemeSensitiveMetadataIrExtension())
+        IrGenerationExtension.registerExtension(LocaleSensitiveMetadataIrExtension())
         FirExtensionRegistrarAdapter.registerExtension(EnforcementFirExtensionRegistrar())
     }
 }
