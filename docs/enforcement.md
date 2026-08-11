@@ -465,7 +465,7 @@ Three further exclusions follow from the rewrite rather than from visibility:
 
 ## Review + tests (fuzzy)
 
-Rules that depend on data volume or semantics stay out of static enforcement: heavy shaping belonging in the data layer, validity of an emitted result, and correctness of mutation-result handling — ensured by AI review rules + Presenter/Screen tests. Naming rules join them, because a name is judged against the domain vocabulary rather than against the types — see [Naming review](./naming-review.md).
+Rules that depend on data volume or semantics stay out of static enforcement: heavy shaping belonging in the data layer, validity of an emitted result, and correctness of mutation-result handling — ensured by AI review rules + Presenter/Screen tests. Naming rules join them, because a name is judged against the domain vocabulary rather than against the types — see [Naming review](./naming-review.md). So does whether a value belongs in a `CompositionLocal`, which turns on intent rather than on types — see [CompositionLocal review](./compositionlocal-review.md).
 
 **Eliminate via types what types can eliminate** (required serializer, context param, `suspend`, `internal`), **use FIR checkers for binaries types can't express**, and **leave fuzzy cases to review**. Even when AI writes the code, the type and FIR layers hold because **compilation fails**.
 

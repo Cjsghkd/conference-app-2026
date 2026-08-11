@@ -97,6 +97,6 @@ fun SoilErrorItemPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
-        SoilErrorItem(error = previewSoilError())
+        SoilErrorItem(error = SoilError.fake())
     }
 }

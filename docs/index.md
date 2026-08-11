@@ -11,6 +11,7 @@ A set of documents covering the architecture and implementation policy of the Dr
 - [Presenter performance](./presenter-performance.md) … dividing responsibilities by pushing heavy computation into the data layer
 - [Enforcement](./enforcement.md) … making invalid code uncompilable via types and FIR checkers
 - [Naming review](./naming-review.md) … the naming rules a reviewer applies where the compiler cannot: a name states what the value is, a type states how it is represented
+- [CompositionLocal review](./compositionlocal-review.md) … the one question that decides whether a value belongs in a `CompositionLocal`, and the seams it reaches through when the answer is no
 - [Building a screen](./building-a-screen.md) … implementing one screen end to end using TimetableScreen as an example (steps and checklist)
 - [ScreenContext design](./screen-context.md) … concrete class + retain, role-context separation (composition, capability gating)
 - [Navigation overview](./navigation.md) … a per-screen Navigator (hand-written) + `@ContributesIntoSet` + KSP-generated [NavKey serializers](./navigation-navkey-serializers.md) for "no central editing, no missed registrations"
@@ -18,4 +19,5 @@ A set of documents covering the architecture and implementation policy of the Dr
 - [BuildKonfig (build-time values)](./build-config-buildkonfig.md) … exposing build-time values (version and other build state) to common code from a single source
 - [iOS overview](./ios.md) … almost full CMP with only the tab bar in Liquid Glass
 - [Logging (Kermit)](./logging.md) … a single AppScope Kermit `Logger` with KMP-native writers per platform (incl. wasmJs=console), no expect/actual
+- [Clock (KaigiClock)](./clock.md) … one injected time seam: the system clock in production, a shiftable clock in dev builds, `FakeClock` in tests
 

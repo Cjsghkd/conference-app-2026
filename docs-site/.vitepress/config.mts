@@ -43,6 +43,7 @@ export default withMermaid(defineConfig({
           { text: 'Presenter performance', link: '/presenter-performance' },
           { text: 'Enforcement', link: '/enforcement' },
           { text: 'Naming review', link: '/naming-review' },
+          { text: 'CompositionLocal review', link: '/compositionlocal-review' },
         ],
       },
       {
@@ -131,6 +132,7 @@ export default withMermaid(defineConfig({
         collapsed: false,
         items: [
           { text: 'Logging (Kermit)', link: '/logging' },
+          { text: 'Clock (KaigiClock)', link: '/clock' },
           { text: 'Debugging', link: '/debugging' },
         ],
       },

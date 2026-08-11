@@ -79,6 +79,7 @@ fun KaigiApp() {
                 }
 
                 uiGraph.soilErrorMonitor.Overlay()
+                uiGraph.clockOverlay.Overlay()
             }
         }
     }

@@ -2,6 +2,8 @@ rootProject.name = "conference-app-2026"
 
 include(":tools:compiler-plugin")
 include(":tools:ksp-processor")
+include(":tools:jetwhale-plugin:protocol")
+include(":tools:jetwhale-plugin:host")
 include(":core:model")
 include(":core:common")
 include(":core:data")

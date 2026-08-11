@@ -14,6 +14,8 @@ kotlin {
         }
         commonMain.dependencies {
             api(libs.kotlinxCollectionsImmutable)
+            // DroidKaigi2026Day exposes the date each day falls on.
+            api(libs.kotlinxDatetime)
             api(libs.soilQueryCore)
             // The licenses screen reads AboutLibraries' own model, so its key contract exposes it.
             api(libs.aboutlibrariesCore)

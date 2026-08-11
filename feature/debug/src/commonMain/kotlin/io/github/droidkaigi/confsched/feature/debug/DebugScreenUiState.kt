@@ -5,4 +5,5 @@ data class DebugScreenUiState(
     val dataCleared: Boolean,
     val soilErrorOverlayEnabled: Boolean,
     val soilErrors: List<SoilError>,
+    val clock: DebugClockUiState,
 )

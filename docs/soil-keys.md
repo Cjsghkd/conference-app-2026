@@ -87,6 +87,27 @@ Queries rarely hit this (each `QueryKey<T>` carries a distinct payload). Mutatio
 
 When two keys genuinely need the same type, disambiguate with a Metro **qualifier** (`@Qualifier` / `@Named`, from `dev.zacsweers.metro`): annotate each `Default*Key` with its own qualifier and `@ContributesBinding` propagates it to the generated binding, so the two become distinct graph slots — the `typealias` and the `… by buildMutationKey(...)` delegation stay intact. (This is separate from the Soil `MutationId`/`QueryId`, which disambiguates the runtime **cache** entry, not the DI binding.)
 
+**Every key in the group carries one, and so does every injection site.** Qualifying only one of a colliding pair compiles and says nothing: the site that asks without a qualifier resolves to whichever binding is unqualified, so a screen reads the key its parameter is not named after. With all of them qualified there is no unqualified binding to land on, and omitting the annotation is a missing-binding error instead:
+
+```kotlin
+@Qualifier annotation class ClockOverlayEnabled
+
+@Inject
+@ClockOverlayEnabled
+@ContributesBinding(DebugScreenScope::class)
+class DefaultClockOverlayEnabledMutationKey(…) : ClockOverlayEnabledMutationKey by buildMutationKey(…)
+
+class DebugPresenterContext(
+    @ClockOverlayEnabled val clockOverlayEnabledMutationKey: ClockOverlayEnabledMutationKey,
+)
+```
+
+**The qualifier is declared in the same file as the key it qualifies**, so the pair is read together rather than looked up. Which module that file sits in follows the key: one belonging to a single feature lives in that feature's module (`ClockOverlayEnabledMutationKey` is `:feature:debug`, and being dev-only it is one that must not sit anywhere a production build can reach), and any other lives in `:core:model` beside the rest of the contracts. `:core:model` carries no DI dependency today, so the first qualifier declared there adds the Metro plugin to its build script.
+
+`:core:common` is the wrong home even though it already has Metro and every feature sees it: a qualifier names one key, and the module holds the scaffolding every screen is built from. It would also put the qualifier a module away from the key, which is what declaring them together avoids.
+
+The qualifier stays a fact about the graph rather than about the value: `MutationKey<Unit, Boolean>` describes both keys correctly, and they are already told apart by name at the declaration, by parameter name at the injection site, and by `MutationId` in the cache. Only binding resolution cannot see the difference, which is the layer the qualifier addresses.
+
 ## Mutation input & result types
 
 `MutationKey<Result, Variable>` takes two type arguments — mind the order: **`Result` first** (what `mutate` returns), **`Variable` second** (the input). What goes in each:

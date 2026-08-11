@@ -32,6 +32,10 @@ fun DebugScreen(
     uiState: DebugScreenUiState,
     // Not named on* so the safeClick checker does not treat it as a navigation callback.
     toggleSoilErrorOverlay: (Boolean) -> Unit,
+    applyClockPreset: (DebugClockPreset) -> Unit,
+    shiftClockTo: (String) -> Unit,
+    resetClock: () -> Unit,
+    toggleClockOverlay: (Boolean) -> Unit,
     onOpenSoilErrors: () -> Unit,
     onClearData: () -> Unit,
     onBack: () -> Unit,
@@ -58,6 +62,16 @@ fun DebugScreen(
             ListItem(
                 headlineContent = { Text("Version") },
                 trailingContent = { Text(uiState.appVersion) },
+            )
+            HorizontalDivider()
+
+            SectionHeader("Clock")
+            DebugClockSection(
+                uiState = uiState.clock,
+                applyClockPreset = applyClockPreset,
+                shiftClockTo = shiftClockTo,
+                resetClock = resetClock,
+                toggleClockOverlay = toggleClockOverlay,
             )
             HorizontalDivider()
 
@@ -109,9 +123,14 @@ fun DebugScreenPreview(
                 appVersion = "0.1.0",
                 dataCleared = false,
                 soilErrorOverlayEnabled = true,
-                soilErrors = listOf(previewSoilError()),
+                soilErrors = listOf(SoilError.fake()),
+                clock = DebugClockUiState.fake(),
             ),
             toggleSoilErrorOverlay = {},
+            applyClockPreset = {},
+            shiftClockTo = {},
+            resetClock = {},
+            toggleClockOverlay = {},
             onOpenSoilErrors = {},
             onClearData = {},
             onBack = {},

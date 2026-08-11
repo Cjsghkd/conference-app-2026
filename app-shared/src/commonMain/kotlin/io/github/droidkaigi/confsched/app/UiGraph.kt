@@ -3,6 +3,7 @@ package io.github.droidkaigi.confsched.app
 import dev.zacsweers.metro.GraphExtension
 import io.github.droidkaigi.confsched.core.common.AppNavigator
 import io.github.droidkaigi.confsched.core.common.BackStackDebuggingEffect
+import io.github.droidkaigi.confsched.core.common.ClockOverlay
 import io.github.droidkaigi.confsched.core.common.InitialNavKeyOverrideProvider
 import io.github.droidkaigi.confsched.core.common.KaigiLogger
 import io.github.droidkaigi.confsched.core.common.MergedNavKeySerializersProvider
@@ -23,6 +24,7 @@ interface UiGraph {
     val logger: KaigiLogger
     val backStackDebuggingEffect: BackStackDebuggingEffect
     val semanticsDebuggingEffect: SemanticsDebuggingEffect
+    val clockOverlay: ClockOverlay
     val soilErrorMonitor: SoilErrorMonitor
     val swrClient: SwrClientPlus
     val themeColorSchemeSubscriptionKey: ThemeColorSchemeSubscriptionKey

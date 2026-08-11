@@ -13,14 +13,20 @@ kotlin {
             implementation(project(":core:model"))
             implementation(project(":core:data"))
             implementation(project(":core:ui"))
+            implementation(libs.kotlinxDatetime)
             implementation(libs.ktorfitLib)
             implementation(libs.ktorClientCore)
+            implementation(project(":tools:jetwhale-plugin:protocol"))
             implementation(libs.jetwhaleAgentRuntime)
+            implementation(libs.jetwhaleAgentSdk)
             implementation(libs.jetwhaleNav3Agent)
             implementation(libs.jetwhaleNetworkInspectorAgentKtor)
             implementation(libs.jetwhaleComposeSemanticsInspectorAgent)
             // Dev-only tooling: exempt from cross-feature isolation (never shipped).
             implementation(project(":feature:sessions"))
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
 }
