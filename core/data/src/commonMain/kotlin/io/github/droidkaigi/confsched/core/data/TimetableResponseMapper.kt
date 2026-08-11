@@ -2,13 +2,13 @@ package io.github.droidkaigi.confsched.core.data
 
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.Language
-import io.github.droidkaigi.confsched.core.model.MultiLangText
 import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.TimetableItem
 import io.github.droidkaigi.confsched.core.model.TimetableItemId
 
 fun TimetableResponse.toTimetableItems(): List<TimetableItem> {
-    val roomNameById = rooms.associateBy({ it.id }, { it.name.ja.ifEmpty { it.name.en } })
+    // Room is named in English, so that is the side Room.of matches.
+    val roomNameById = rooms.associateBy({ it.id }, { it.name.toMultiLangText().en })
     val speakerNameById = speakers.associateBy({ it.id }, { it.fullName })
     // Conference days are not encoded in the payload; the two distinct dates map to Day1/Day2.
     val dayByDate = sessions.map { it.startsAt.date() }.distinct().sorted()
@@ -19,10 +19,7 @@ fun TimetableResponse.toTimetableItems(): List<TimetableItem> {
         .map { session ->
             TimetableItem(
                 id = TimetableItemId(session.id),
-                title = MultiLangText(
-                    ja = session.title.ja.ifEmpty { session.title.en },
-                    en = session.title.en.ifEmpty { session.title.ja },
-                ),
+                title = session.title.toMultiLangText(),
                 room = Room.of(roomNameById[session.roomId].orEmpty()),
                 speaker = session.speakers.mapNotNull { speakerNameById[it] }.joinToString(", "),
                 language = when (session.language) {

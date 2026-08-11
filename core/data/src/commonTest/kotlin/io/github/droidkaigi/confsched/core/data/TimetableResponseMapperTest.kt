@@ -1,6 +1,7 @@
 package io.github.droidkaigi.confsched.core.data
 
 import io.github.droidkaigi.confsched.core.model.Language
+import io.github.droidkaigi.confsched.core.model.MultiLangText
 import io.github.droidkaigi.confsched.core.model.Room
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -52,6 +53,32 @@ class TimetableResponseMapperTest {
             listOf(Language.JAPANESE, Language.ENGLISH, Language.MIXED),
             items.map { it.language },
         )
+    }
+
+    @Test
+    fun a_title_reaches_the_timetable_in_both_languages() {
+        val items = timetableResponse(
+            rooms = listOf(roomResponse(81669L, "Narwhal")),
+            sessions = listOf(
+                sessionResponse("s1", roomId = 81669L, language = LanguageResponse.MIXED)
+                    .copy(title = LocaledResponse(ja = "セッション", en = "Session")),
+            ),
+        ).toTimetableItems()
+
+        assertEquals(MultiLangText(ja = "セッション", en = "Session"), items.single().title)
+    }
+
+    @Test
+    fun a_title_left_untranslated_falls_back_to_the_language_the_payload_carries() {
+        val items = timetableResponse(
+            rooms = listOf(roomResponse(81669L, "Narwhal")),
+            sessions = listOf(
+                sessionResponse("s1", roomId = 81669L, language = LanguageResponse.MIXED)
+                    .copy(title = LocaledResponse(ja = "セッション", en = "")),
+            ),
+        ).toTimetableItems()
+
+        assertEquals(MultiLangText(ja = "セッション", en = "セッション"), items.single().title)
     }
 
     private fun timetableResponse(
