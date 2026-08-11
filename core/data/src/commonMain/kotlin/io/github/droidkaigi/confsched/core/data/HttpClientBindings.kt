@@ -17,5 +17,6 @@ interface HttpClientBindings {
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
+        installAppUserAgent()
     }
 }
