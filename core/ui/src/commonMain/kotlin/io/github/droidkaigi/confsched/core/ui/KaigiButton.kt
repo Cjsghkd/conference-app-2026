@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -113,7 +114,13 @@ private fun SketchButton(
         cornerRadius = KaigiButtonDefaults.height / 2,
         borderThickness = KaigiButtonDefaults.borderThickness,
     )
-    Box(modifier = modifier.height(KaigiButtonDefaults.height)) {
+    // Drawn at the height the design gives it, while the press claims Material's minimum
+    // without pushing neighbouring buttons apart.
+    Box(
+        modifier = modifier
+            .minimumInteractiveComponentSize()
+            .height(KaigiButtonDefaults.height),
+    ) {
         Row(
             modifier = Modifier
                 .matchParentSize()

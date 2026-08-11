@@ -210,7 +210,7 @@ fun SketchVerticalWavyLine(
 
 /**
  * Outlines the content along the very outline [shape] reports, stroked at the
- * [SketchRoundRectShape.borderThickness] the shape reserves its inset for, so content clipped to
+ * [SketchOutlineShape.borderThickness] the shape reserves its inset for, so content clipped to
  * the same instance meets the stroke down its centre.
  *
  * Compose's `Modifier.border` is not a substitute: handed an [Outline.Generic] it strokes

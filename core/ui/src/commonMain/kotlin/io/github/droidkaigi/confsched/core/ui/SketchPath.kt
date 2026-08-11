@@ -654,7 +654,13 @@ internal fun Density.sketchEllipsePath(
 
     val table = ellipseArcLengths(width / 2f, height / 2f)
     val perimeter = table.last()
-    val latticePerimeter = ellipseArcLengths(latticeWidth / 2f, latticeHeight / 2f).last()
+    // Without a reference size the lattice is the drawn size, which is the common case; tabulating
+    // it a second time would repeat the whole sweep for nothing.
+    val latticePerimeter = if (latticeWidth == width && latticeHeight == height) {
+        perimeter
+    } else {
+        ellipseArcLengths(latticeWidth / 2f, latticeHeight / 2f).last()
+    }
 
     val sweepCells = cellsFor(latticePerimeter, sweepWavelength.toPx(), MIN_SWEEP_CELLS)
     val tremorCells = cellsFor(latticePerimeter, tremorWavelength.toPx(), MIN_TREMOR_CELLS)

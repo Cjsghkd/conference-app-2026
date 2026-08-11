@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,6 +13,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,7 +68,7 @@ fun KaigiFilterChip(
     )
     Box(
         modifier = modifier
-            .defaultMinSize(minHeight = KaigiFilterChipDefaults.touchTargetHeight)
+            .minimumInteractiveComponentSize()
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -113,9 +113,6 @@ fun KaigiFilterChip(
 
 object KaigiFilterChipDefaults {
     val height = 36.dp
-
-    /** What the chip claims for the press, over and above the [height] it is drawn at. */
-    val touchTargetHeight = 48.dp
 
     val horizontalPadding = 16.dp
     val iconSpacing = 4.dp
