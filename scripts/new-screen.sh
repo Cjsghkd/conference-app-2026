@@ -157,8 +157,8 @@ import androidx.compose.runtime.setValue
 import $base_pkg.core.common.ActionEffect
 import $base_pkg.core.common.ScreenChannel
 
-context(_: ${screen}PresenterContext)
 @Composable
+context(_: ${screen}PresenterContext)
 fun ${lower}ScreenPresenter(
     screenChannel: ScreenChannel<${screen}ScreenAction, ${screen}ScreenActionResult>,
 ): ${screen}ScreenUiState {
@@ -197,7 +197,6 @@ import androidx.compose.ui.unit.dp
 import $base_pkg.core.model.KaigiColorScheme
 import $base_pkg.core.preview.KaigiSchemeProvider
 import $base_pkg.core.preview.wrapper.KaigiPreviewTheme
-import $base_pkg.core.ui.safeClick
 
 @Composable
 fun ${screen}Screen(
@@ -211,8 +210,8 @@ fun ${screen}Screen(
     ) {
         Text(uiState.title)
         Text("Reloaded \${uiState.reloadCount} times")
-        Button(onClick = safeClick(onReloadClick)) { Text("Reload") }
-        Button(onClick = safeClick(onBackClick)) { Text("Back") }
+        Button(onClick = onReloadClick) { Text("Reload") }
+        Button(onClick = onBackClick) { Text("Back") }
     }
 }
 
@@ -240,8 +239,8 @@ import $base_pkg.core.common.LocalSnackbarHostState
 import $base_pkg.core.common.context
 import $base_pkg.core.common.retainScreenChannel
 
-context(screenContext: ${screen}ScreenContext)
 @Composable
+context(screenContext: ${screen}ScreenContext)
 fun ${screen}ScreenRoot(
     onNavigateBack: () -> Unit,
 ) {
