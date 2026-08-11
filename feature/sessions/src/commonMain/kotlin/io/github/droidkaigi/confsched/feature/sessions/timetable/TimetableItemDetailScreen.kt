@@ -9,14 +9,11 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.navigation3.LocalListDetailSceneScope
 import androidx.compose.runtime.Composable
@@ -27,10 +24,12 @@ import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
+import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBar
+import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBarBackButton
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableItemDetailHeadline
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableItemDetailSummaryCard
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun TimetableItemDetailScreen(
     uiState: TimetableItemDetailScreenUiState,
@@ -39,22 +38,20 @@ fun TimetableItemDetailScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {},
-                // The headline below carries the same background, so the two read as one surface.
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-                ),
+            KaigiTopAppBar(
+                title = "",
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        if (LocalListDetailSceneScope.current != null) {
+                    if (LocalListDetailSceneScope.current != null) {
+                        IconButton(onClick = onBack) {
                             Icon(Icons.Filled.Close, contentDescription = "Close")
-                        } else {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
+                    } else {
+                        KaigiTopAppBarBackButton(onClick = onBack)
                     }
                 },
+                // The headline below carries the same background, so the two read as one surface.
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         },
         floatingActionButton = {

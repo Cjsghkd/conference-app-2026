@@ -54,7 +54,7 @@ fun KaigiSingleChoiceSegmentedButtonRow(
     borderColor: Color = MaterialTheme.colorScheme.inverseOnSurface,
     content: @Composable KaigiSingleChoiceSegmentedButtonRowScope.() -> Unit,
 ) {
-    val shape = SketchShape(
+    val shape = SketchRoundRectShape(
         seed = outlineSeed,
         roughness = KaigiSegmentedButtonDefaults.roughness,
         tremor = KaigiSegmentedButtonDefaults.tremor,

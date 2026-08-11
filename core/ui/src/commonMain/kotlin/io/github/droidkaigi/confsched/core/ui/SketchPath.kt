@@ -620,3 +620,148 @@ private fun coherentNoiseCyclic(seed: Int, t: Float, cells: Int): Float {
     return hashNoise(seed, cell.mod(cells)) * (1f - blend) +
         hashNoise(seed, (cell + 1).mod(cells)) * blend
 }
+
+// How finely the ellipse is sampled when its arc length is tabulated. The table only has to
+// resolve anchor spacing, and an ellipse is smooth, so a few hundred steps put the error far
+// below the tremor it carries.
+private const val ARC_LENGTH_SAMPLES = 1024
+
+/**
+ * A closed ellipse of [width] by [height], wobbling around its outline.
+ *
+ * The rounded rect this sits beside reaches a pill when its radius meets the shorter side,
+ * which is a different figure: a pill keeps the straight run between its two arcs, while an
+ * ellipse curves through the whole turn. [latticeWidth] and [latticeHeight] serve the same
+ * purpose as they do for the rect — see [sketchRoundRectPath].
+ *
+ * Anchors are spaced by arc length rather than by angle. Spacing by angle crowds them at the
+ * ends of the long axis and thins them along the flanks, so the tremor would come out uneven
+ * around one outline.
+ */
+internal fun Density.sketchEllipsePath(
+    width: Float,
+    height: Float,
+    roughness: Dp,
+    tremor: Dp,
+    sweepWavelength: Dp,
+    tremorWavelength: Dp,
+    seed: Int,
+    latticeWidth: Float,
+    latticeHeight: Float,
+): Path {
+    val sweepAmplitude = roughness.toPx()
+    val tremorAmplitude = tremor.toPx()
+
+    val table = ellipseArcLengths(width / 2f, height / 2f)
+    val perimeter = table.last()
+    // Without a reference size the lattice is the drawn size, which is the common case; tabulating
+    // it a second time would repeat the whole sweep for nothing.
+    val latticePerimeter = if (latticeWidth == width && latticeHeight == height) {
+        perimeter
+    } else {
+        ellipseArcLengths(latticeWidth / 2f, latticeHeight / 2f).last()
+    }
+
+    val sweepCells = cellsFor(latticePerimeter, sweepWavelength.toPx(), MIN_SWEEP_CELLS)
+    val tremorCells = cellsFor(latticePerimeter, tremorWavelength.toPx(), MIN_TREMOR_CELLS)
+    val anchorSpacing = min(latticePerimeter / tremorCells / ANCHORS_PER_WAVE, MaxAnchorSpacing.toPx())
+    // Taking the count from the lattice keeps a resizing ellipse stretching one outline rather
+    // than gaining an anchor and redrawing itself, the same rule the rect follows.
+    val count = max(MIN_ELLIPSE_ANCHORS, (latticePerimeter / anchorSpacing).roundToInt())
+
+    val offsets = FloatArray(count) { coherentNoiseCyclic(seed, it.toFloat() / count, sweepCells) }
+    scaleToLatticeRange(offsets, seed, sweepCells, sweepAmplitude)
+    for (index in offsets.indices) {
+        val t = index.toFloat() / count
+        offsets[index] += coherentNoiseCyclic(seed + TREMOR_SEED_OFFSET, t, tremorCells) * tremorAmplitude
+    }
+
+    val semiWidth = width / 2f
+    val semiHeight = height / 2f
+    val xs = FloatArray(count)
+    val ys = FloatArray(count)
+    for (index in 0 until count) {
+        // Start at the top so the closing seam falls where the outline is smoothest, matching
+        // where the rect puts it.
+        val angle = angleAtArcLength(table, perimeter * index / count) - QUARTER_TURN
+        val pointX = semiWidth + semiWidth * cos(angle)
+        val pointY = semiHeight + semiHeight * sin(angle)
+        // The outward normal of an ellipse is not the radius: it comes from the gradient of
+        // (x/a)^2 + (y/b)^2, which swaps the semi-axes.
+        val normalX = semiHeight * cos(angle)
+        val normalY = semiWidth * sin(angle)
+        val length = hypot(normalX, normalY)
+        val scale = if (length > 0f) offsets[index] / length else 0f
+        xs[index] = pointX + normalX * scale
+        ys[index] = pointY + normalY * scale
+    }
+
+    return closedCurveThrough(xs, ys)
+}
+
+/** The fewest anchors an ellipse is drawn from, so a small one keeps its curvature. */
+private const val MIN_ELLIPSE_ANCHORS = 12
+
+/**
+ * Cumulative arc length of a quarter-turn-aligned ellipse with semi-axes [semiWidth] and
+ * [semiHeight], sampled at [ARC_LENGTH_SAMPLES] equal steps of angle and closing on the
+ * perimeter. There is no closed form for it, so it is tabulated and read back by search.
+ */
+private fun ellipseArcLengths(semiWidth: Float, semiHeight: Float): FloatArray {
+    val lengths = FloatArray(ARC_LENGTH_SAMPLES + 1)
+    val step = (2f * PI.toFloat()) / ARC_LENGTH_SAMPLES
+    var total = 0f
+    var previousX = semiWidth
+    var previousY = 0f
+    for (index in 1..ARC_LENGTH_SAMPLES) {
+        val angle = step * index
+        val x = semiWidth * cos(angle)
+        val y = semiHeight * sin(angle)
+        total += hypot(x - previousX, y - previousY)
+        lengths[index] = total
+        previousX = x
+        previousY = y
+    }
+    return lengths
+}
+
+/** The angle at [distance] along the outline [table] describes, interpolated between samples. */
+private fun angleAtArcLength(table: FloatArray, distance: Float): Float {
+    val step = (2f * PI.toFloat()) / ARC_LENGTH_SAMPLES
+    val target = distance.coerceIn(0f, table.last())
+    var low = 0
+    var high = table.lastIndex
+    while (low < high) {
+        val middle = (low + high) / 2
+        if (table[middle] < target) low = middle + 1 else high = middle
+    }
+    if (low == 0) return 0f
+    val before = table[low - 1]
+    val span = table[low] - before
+    val fraction = if (span > 0f) (target - before) / span else 0f
+    return step * (low - 1 + fraction)
+}
+
+/** Emits [xs] and [ys] as one closed curve, the same conversion the rect outline uses. */
+private fun closedCurveThrough(xs: FloatArray, ys: FloatArray): Path {
+    val count = xs.size
+    return Path().apply {
+        moveTo(xs[0], ys[0])
+        val controls = FloatArray(4)
+        for (index in 0 until count) {
+            val previous = (index - 1).mod(count)
+            val next = (index + 1).mod(count)
+            val following = (index + 2).mod(count)
+            controlPointsFor(
+                p0x = xs[previous], p0y = ys[previous],
+                p1x = xs[index], p1y = ys[index],
+                p2x = xs[next], p2y = ys[next],
+                p3x = xs[following], p3y = ys[following],
+                tangentClamp = OUTLINE_TANGENT_CLAMP,
+                out = controls,
+            )
+            cubicTo(controls[0], controls[1], controls[2], controls[3], xs[next], ys[next])
+        }
+        close()
+    }
+}

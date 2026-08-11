@@ -44,7 +44,7 @@ fun KaigiChip(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val shape = SketchShape(
+    val shape = SketchRoundRectShape(
         seed = seed,
         roughness = KaigiChipDefaults.roughness,
         tremor = KaigiChipDefaults.tremor,

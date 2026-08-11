@@ -32,7 +32,8 @@ import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
  * A round icon button on a hand-sketched disc.
  *
  * It sits on the header band, so it fills with the band's contrasting colour and tints its
- * icon back to the band.
+ * icon back to the band. A control the design leaves bare passes a transparent
+ * [containerColor]: the disc stops being drawn, but the press still lands on its outline.
  *
  * @param seed the value the disc is drawn from. The same seed always produces the same disc,
  *   so give neighbouring buttons different ones or a row of them reads as a repeat.
@@ -56,7 +57,7 @@ fun KaigiIconButton(
     Box(
         modifier = modifier
             .size(size)
-            .clip(SketchShape(seed = seed, cornerRadius = size / 2))
+            .clip(SketchRoundRectShape(seed = seed, cornerRadius = size / 2))
             .background(containerColor)
             .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,

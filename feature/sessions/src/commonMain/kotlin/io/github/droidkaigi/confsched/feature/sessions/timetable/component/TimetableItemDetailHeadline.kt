@@ -1,14 +1,12 @@
 package io.github.droidkaigi.confsched.feature.sessions.timetable.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
@@ -18,13 +16,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
+import io.github.droidkaigi.confsched.core.ui.KaigiPlaceholderAvatar
 
 @Composable
 internal fun TimetableItemDetailHeadline(
@@ -56,22 +54,28 @@ internal fun TimetableItemDetailHeadline(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = Icons.Filled.Person,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
-                    .clip(CircleShape)
-                    .size(52.dp)
-                    .padding(14.dp),
-            )
+            KaigiPlaceholderAvatar(
+                seed = TimetableItemDetailHeadlineDefaults.AVATAR_SEED,
+                size = TimetableItemDetailHeadlineDefaults.avatarSize,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Person,
+                    contentDescription = null,
+                    modifier = Modifier.size(TimetableItemDetailHeadlineDefaults.avatarIconSize),
+                )
+            }
             Text(
                 text = speaker,
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
     }
+}
+
+private object TimetableItemDetailHeadlineDefaults {
+    val avatarSize = 52.dp
+    val avatarIconSize = 24.dp
+    const val AVATAR_SEED = 862
 }
 
 @Preview

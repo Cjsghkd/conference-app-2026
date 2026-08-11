@@ -68,7 +68,7 @@ fun KaigiNavigationBar(
                 .fillMaxWidth()
                 .height(KaigiNavigationBarDefaults.height)
                 .clip(
-                    SketchShape(
+                    SketchRoundRectShape(
                         seed = outlineSeed,
                         roughness = KaigiNavigationBarDefaults.roughness,
                         tremor = KaigiNavigationBarDefaults.tremor,
@@ -132,7 +132,7 @@ fun KaigiNavigationBarScope.KaigiNavigationBarItem(
                 Modifier
                     .size(KaigiNavigationBarDefaults.indicatorSize)
                     .clip(
-                        SketchShape(
+                        SketchRoundRectShape(
                             seed = indicatorSeed,
                             roughness = KaigiNavigationBarDefaults.roughness,
                             tremor = KaigiNavigationBarDefaults.tremor,
