@@ -92,6 +92,26 @@ fun TimetableScreenPreview(
 
 The `ThemeSensitivePreviewChecker` FIR checker rejects a theme-sensitive preview that takes no such parameter — see [Enforcement](./enforcement.md).
 
+## Multi-locale previews
+
+English is the base resource set and Japanese is the translated one, so a preview whose content resolves a Compose Resources string carries `@LocalePreviews` in place of `@Preview`:
+
+```kotlin
+@LocalePreviews
+@Composable
+fun EventMapScreenPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        EventMapScreen(uiState = /* sample */, onFloorClick = {})
+    }
+}
+```
+
+`@LocalePreviews` is a multi-preview annotation carrying `@Preview(locale = "en")` and `@Preview(locale = "ja")`, so the tooling renders one tile per locale, and per `@PreviewParameter` value where a preview also takes one. It lives in `:core:preview:api` beside `KaigiSchemeProvider`.
+
+The `LocaleSensitivePreviewChecker` FIR checker rejects a locale-sensitive preview that does not carry it — see [Enforcement](./enforcement.md).
+
 The type-safe preview-image enum is generated separately — see [Preview image enum generation](./preview-image-enum.md).
 
 ## Wiring (production stays asset-free)

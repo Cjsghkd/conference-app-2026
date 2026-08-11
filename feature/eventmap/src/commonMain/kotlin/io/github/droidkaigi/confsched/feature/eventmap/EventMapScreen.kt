@@ -10,19 +10,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBar
 import io.github.droidkaigi.confsched.feature.eventmap.component.FloorTabRow
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.Res
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_1f
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_b1f
+import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_title
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun EventMapScreen(
@@ -31,7 +33,7 @@ fun EventMapScreen(
 ) {
     Scaffold(
         topBar = {
-            KaigiTopAppBar(title = "Event Map")
+            KaigiTopAppBar(title = stringResource(Res.string.event_map_title))
         },
         contentWindowInsets = WindowInsets(),
     ) { innerPadding ->
@@ -54,7 +56,7 @@ private fun EventMapFloor.mapImage(): DrawableResource = when (this) {
     EventMapFloor.Basement -> Res.drawable.event_map_b1f
 }
 
-@Preview
+@LocalePreviews
 @Composable
 fun EventMapScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
