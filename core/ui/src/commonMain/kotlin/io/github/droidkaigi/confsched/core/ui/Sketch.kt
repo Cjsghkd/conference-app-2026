@@ -217,7 +217,7 @@ fun SketchVerticalWavyLine(
  * into an offscreen mask whose clear pass misses fractional path bounds, leaving a stray
  * line along the right and bottom edges of the layout.
  */
-fun Modifier.sketchBorder(shape: SketchShape, color: Color): Modifier {
+fun Modifier.sketchBorder(shape: SketchOutlineShape, color: Color): Modifier {
     require(shape.borderThickness > 0.dp) {
         "sketchBorder needs a shape with a positive borderThickness, was ${shape.borderThickness}"
     }
@@ -232,6 +232,14 @@ fun Modifier.sketchBorder(shape: SketchShape, color: Color): Modifier {
             drawOutline(outline = outline, color = color, style = stroke)
         }
     }
+}
+
+/**
+ * A hand-sketched closed outline that reserves room for the stroke [Modifier.sketchBorder]
+ * draws it at, so content clipped to the same instance meets that stroke down its centre.
+ */
+interface SketchOutlineShape : Shape {
+    val borderThickness: Dp
 }
 
 /**
@@ -260,9 +268,9 @@ data class SketchShape(
     val sweepWavelength: Dp = DefaultSweepWavelength,
     val tremorWavelength: Dp = DefaultTremorWavelength,
     val cornerRadius: Dp = 0.dp,
-    val borderThickness: Dp = 0.dp,
+    override val borderThickness: Dp = 0.dp,
     val referenceSize: DpSize? = null,
-) : Shape {
+) : SketchOutlineShape {
     init {
         requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
         require(cornerRadius >= 0.dp) { "cornerRadius must not be negative, was $cornerRadius" }
@@ -764,5 +772,85 @@ private fun LabelledSample(label: String, content: @Composable () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+    }
+}
+
+/**
+ * The hand-sketched ellipse as a [Shape], for `Modifier.clip`, `Modifier.background`,
+ * any `shape` parameter, and [Modifier.sketchBorder].
+ *
+ * [SketchShape] reaches a pill once its corner radius meets the shorter side, which keeps a
+ * straight run between the two arcs. This curves through the whole turn instead, so a wide
+ * option reads as one drawn loop rather than as a rectangle with rounded ends.
+ *
+ * @param seed the value the outline is drawn from. The same seed always produces the same
+ *   outline.
+ * @param roughness the amplitude of the broad swing away from the true ellipse.
+ * @param tremor the amplitude of the fine waver carried on top of that swing.
+ * @param sweepWavelength the wavelength of the broad swing.
+ * @param tremorWavelength the wavelength of the fine waver.
+ * @param borderThickness the stroke [Modifier.sketchBorder] draws this at. The outline is
+ *   inset by half of it, so the stroke stays inside the bounds.
+ * @param referenceSize the size the noise lattice and the anchor count are taken from. Give
+ *   it to hold the wobble still while the shape resizes; leave it null to fit both to the
+ *   drawn size.
+ */
+@Immutable
+data class SketchEllipseShape(
+    val seed: Int,
+    val roughness: Dp = DefaultRoughness,
+    val tremor: Dp = DefaultTremor,
+    val sweepWavelength: Dp = DefaultSweepWavelength,
+    val tremorWavelength: Dp = DefaultTremorWavelength,
+    override val borderThickness: Dp = 0.dp,
+    val referenceSize: DpSize? = null,
+) : SketchOutlineShape {
+    init {
+        requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
+        require(borderThickness >= 0.dp) { "borderThickness must not be negative, was $borderThickness" }
+        require(referenceSize == null || (referenceSize.width > 0.dp && referenceSize.height > 0.dp)) {
+            "referenceSize must be positive in both dimensions, was $referenceSize"
+        }
+    }
+
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density,
+    ): Outline = with(density) {
+        val ratio = swingCapRatio(size.width, size.height, roughness, tremor, borderThickness)
+        val effectiveRoughness = roughness * ratio
+        val effectiveTremor = tremor * ratio
+        val inset = (effectiveRoughness + effectiveTremor).toPx() + borderThickness.toPx() / 2f
+        val width = size.width - inset * 2f
+        val height = size.height - inset * 2f
+        if (width <= 0f || height <= 0f) return Outline.Rectangle(size.toRect())
+        val lattice = latticeOutline()
+
+        val path = sketchEllipsePath(
+            width = width,
+            height = height,
+            roughness = effectiveRoughness,
+            tremor = effectiveTremor,
+            sweepWavelength = sweepWavelength,
+            tremorWavelength = tremorWavelength,
+            seed = seed,
+            latticeWidth = lattice?.width ?: width,
+            latticeHeight = lattice?.height ?: height,
+        )
+        path.translate(Offset(inset, inset))
+        Outline.Generic(path)
+    }
+
+    /** The inset outline of [referenceSize], or `null` when no reference size was given. */
+    private fun Density.latticeOutline(): Size? {
+        val reference = referenceSize ?: return null
+        val width = reference.width.toPx()
+        val height = reference.height.toPx()
+        val ratio = swingCapRatio(width, height, roughness, tremor, borderThickness)
+        val inset = ((roughness + tremor) * ratio).toPx() + borderThickness.toPx() / 2f
+        val insetWidth = width - inset * 2f
+        val insetHeight = height - inset * 2f
+        return if (insetWidth > 0f && insetHeight > 0f) Size(insetWidth, insetHeight) else null
     }
 }
