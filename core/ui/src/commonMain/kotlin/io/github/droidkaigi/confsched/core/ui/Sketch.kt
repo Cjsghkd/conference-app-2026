@@ -210,7 +210,7 @@ fun SketchVerticalWavyLine(
 
 /**
  * Outlines the content along the very outline [shape] reports, stroked at the
- * [SketchShape.borderThickness] the shape reserves its inset for, so content clipped to
+ * [SketchRoundRectShape.borderThickness] the shape reserves its inset for, so content clipped to
  * the same instance meets the stroke down its centre.
  *
  * Compose's `Modifier.border` is not a substitute: handed an [Outline.Generic] it strokes
@@ -261,7 +261,7 @@ interface SketchOutlineShape : Shape {
  * stretch. What the size actually is barely matters; that it stops changing is the point.
  */
 @Immutable
-data class SketchShape(
+data class SketchRoundRectShape(
     val seed: Int,
     val roughness: Dp = DefaultRoughness,
     val tremor: Dp = DefaultTremor,
@@ -503,7 +503,7 @@ private fun CornerRadiusSamples() {
                     Modifier
                         .size(90.dp, 64.dp)
                         .sketchBorder(
-                            shape = SketchShape(
+                            shape = SketchRoundRectShape(
                                 seed = 20 + index,
                                 cornerRadius = radius,
                                 borderThickness = 2.dp,
@@ -546,7 +546,7 @@ private fun BorderTasteRow(roughness: Dp) {
                     Modifier
                         .size(132.dp, 84.dp)
                         .sketchBorder(
-                            shape = SketchShape(
+                            shape = SketchRoundRectShape(
                                 seed = 9,
                                 roughness = roughness,
                                 tremor = tremor,
@@ -573,12 +573,12 @@ private fun SketchShapePreview(
                     Box(
                         Modifier
                             .size(90.dp, 64.dp)
-                            .clip(SketchShape(seed = 50, cornerRadius = 12.dp))
+                            .clip(SketchRoundRectShape(seed = 50, cornerRadius = 12.dp))
                             .background(MaterialTheme.colorScheme.primaryContainer),
                     )
                 }
                 LabelledSample(label = "clip + border") {
-                    val shape = SketchShape(seed = 51, cornerRadius = 12.dp, borderThickness = 2.dp)
+                    val shape = SketchRoundRectShape(seed = 51, cornerRadius = 12.dp, borderThickness = 2.dp)
                     Box(
                         Modifier
                             .size(90.dp, 64.dp)
@@ -590,7 +590,7 @@ private fun SketchShapePreview(
                 LabelledSample(label = "Surface") {
                     Surface(
                         modifier = Modifier.size(90.dp, 64.dp),
-                        shape = SketchShape(seed = 52, cornerRadius = 20.dp),
+                        shape = SketchRoundRectShape(seed = 52, cornerRadius = 20.dp),
                         color = MaterialTheme.colorScheme.secondaryContainer,
                     ) {}
                 }
@@ -598,7 +598,7 @@ private fun SketchShapePreview(
                     Box(
                         Modifier
                             .size(90.dp, 64.dp)
-                            .clip(SketchShape(seed = 53, tremor = 1.dp, cornerRadius = 12.dp))
+                            .clip(SketchRoundRectShape(seed = 53, tremor = 1.dp, cornerRadius = 12.dp))
                             .background(MaterialTheme.colorScheme.primaryContainer),
                     )
                 }
@@ -624,7 +624,7 @@ private fun SketchSegmentedPreview(
 
 @Composable
 private fun SegmentedSample(selectedFirst: Boolean) {
-    val shape = SketchShape(
+    val shape = SketchRoundRectShape(
         seed = 900,
         roughness = 0.4.dp,
         tremor = 0.15.dp,
@@ -692,7 +692,7 @@ private fun ResizeSample() {
                 Modifier
                     .size(width.dp, height)
                     .sketchBorder(
-                        shape = SketchShape(seed = 5, cornerRadius = 16.dp, borderThickness = 2.dp),
+                        shape = SketchRoundRectShape(seed = 5, cornerRadius = 16.dp, borderThickness = 2.dp),
                         color = MaterialTheme.colorScheme.outline,
                     ),
             )
@@ -702,7 +702,7 @@ private fun ResizeSample() {
                 Modifier
                     .size(width.dp, height)
                     .sketchBorder(
-                        shape = SketchShape(
+                        shape = SketchRoundRectShape(
                             seed = 5,
                             cornerRadius = 16.dp,
                             borderThickness = 2.dp,
@@ -726,7 +726,7 @@ private fun SketchCardPreview(
                 Modifier
                     .width(260.dp)
                     .sketchBorder(
-                        shape = SketchShape(seed = 40, cornerRadius = 16.dp, borderThickness = 2.dp),
+                        shape = SketchRoundRectShape(seed = 40, cornerRadius = 16.dp, borderThickness = 2.dp),
                         color = MaterialTheme.colorScheme.outline,
                     )
                     .padding(16.dp),
@@ -779,7 +779,7 @@ private fun LabelledSample(label: String, content: @Composable () -> Unit) {
  * The hand-sketched ellipse as a [Shape], for `Modifier.clip`, `Modifier.background`,
  * any `shape` parameter, and [Modifier.sketchBorder].
  *
- * [SketchShape] reaches a pill once its corner radius meets the shorter side, which keeps a
+ * [SketchRoundRectShape] reaches a pill once its corner radius meets the shorter side, which keeps a
  * straight run between the two arcs. This curves through the whole turn instead, so a wide
  * option reads as one drawn loop rather than as a rectangle with rounded ends.
  *

@@ -29,7 +29,7 @@ import io.github.droidkaigi.confsched.core.model.Language
 import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.SketchShape
+import io.github.droidkaigi.confsched.core.ui.SketchRoundRectShape
 import io.github.droidkaigi.confsched.core.ui.sketchBorder
 
 /**
@@ -48,7 +48,7 @@ internal fun TimetableItemCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = SketchShape(
+    val shape = SketchRoundRectShape(
         seed = seed,
         cornerRadius = TimetableItemCardDefaults.cornerRadius,
         borderThickness = TimetableItemCardDefaults.borderThickness,

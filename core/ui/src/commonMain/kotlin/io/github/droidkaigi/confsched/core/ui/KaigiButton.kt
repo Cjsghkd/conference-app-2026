@@ -106,7 +106,7 @@ private fun SketchButton(
     contentPadding: PaddingValues,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val shape = SketchShape(
+    val shape = SketchRoundRectShape(
         seed = seed,
         roughness = KaigiButtonDefaults.roughness,
         tremor = KaigiButtonDefaults.tremor,

@@ -57,7 +57,7 @@ fun KaigiIconButton(
     Box(
         modifier = modifier
             .size(size)
-            .clip(SketchShape(seed = seed, cornerRadius = size / 2))
+            .clip(SketchRoundRectShape(seed = seed, cornerRadius = size / 2))
             .background(containerColor)
             .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
