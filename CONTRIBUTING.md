@@ -50,6 +50,8 @@ If you've found a task you'd like to work on, please comment on the Issue with "
 
 If the Issue is already assigned to someone else, or if you already have another open Issue assigned to you, no assignment is made and a comment explains why.
 
+Some Issues are labeled `status:blocked ⛔`, which means they are not ready to be worked on yet. Commenting on one of those puts you on its waiting list instead, and the Issue is assigned to you automatically once the label is removed.
+
 From this year, we assign one Issue to each contributor at a time, so that as many people as possible have a chance to take part in open source. Once your Issue is closed, you are very welcome to pick up the next one.
 
 If an Issue assigned to you stays quiet for a while, we may release the assignment so that someone else can pick it up. We aim to leave a comment on the Issue before doing so. Commenting on the Issue keeps the assignment with you, and so does having an open Pull Request linked to it — a draft is fine too.
