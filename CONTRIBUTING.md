@@ -76,6 +76,8 @@ The command for code formatting is as follows. You can run it by opening this do
 Once you've completed your changes, please create a pull request.
 Commit and push your git changes, then create a pull request from the GitHub UI (https://github.com/[your-account]/conference-app-2026).
 
+A smaller diff is easier to review, so if your changes grow past roughly 1,000 lines, it helps us if you can split them into several pull requests where that feels natural. This is only a suggestion: if the change reads better as a single piece, please leave it as it is.
+
 We use English for Issues, comments, and reviews.
 
 If possible, please use English, but Japanese is also fine.
