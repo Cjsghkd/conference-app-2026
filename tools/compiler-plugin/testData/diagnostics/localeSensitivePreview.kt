@@ -2,6 +2,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import io.github.droidkaigi.confsched.core.model.MultiLangText
 import io.github.droidkaigi.confsched.core.preview.KaigiPreviewWrapper
 import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import org.jetbrains.compose.resources.StringResource
@@ -58,3 +59,23 @@ private fun LocaleIndependentPreview() {
 private fun EveryLocalePreviewWithoutWrapper() {
     SessionTitle()
 }<!>
+
+// Text the server supplies in both languages is resolved in the UI, so it is locale-sensitive too.
+@Composable
+fun SessionSummary(summary: MultiLangText) {
+    Text(summary.en)
+}
+
+<!LOCALE_SENSITIVE_PREVIEW_REQUIRES_EVERY_LOCALE!>@Preview
+@PreviewWrapper(wrapper = KaigiPreviewWrapper::class)
+@Composable
+private fun SingleLocaleServerTextPreview() {
+    SessionSummary(MultiLangText(ja = "", en = ""))
+}<!>
+
+@LocalePreviews
+@PreviewWrapper(wrapper = KaigiPreviewWrapper::class)
+@Composable
+private fun EveryLocaleServerTextPreview() {
+    SessionSummary(MultiLangText(ja = "", en = ""))
+}

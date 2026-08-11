@@ -30,9 +30,19 @@ Text(pluralStringResource(Res.plurals.contributors_count, count, count))
 
 Resolution belongs at the point of display. A presenter is `@Composable` and may read a resource where the string is part of the state it builds, but a string the screen draws unconditionally is UI chrome and is read in the screen.
 
+## Text the server supplies
+
+The conference API returns session titles in both languages. That pair travels to the UI as `MultiLangText` and is resolved where it is drawn:
+
+```kotlin
+TimetableItemCard(title = item.title.current(), /* … */)
+```
+
+Resolving in the data layer would bake a display decision into the [Soil](./soil-keys.md) cache, so a locale change would keep showing the previous language until the cache was invalidated. `MultiLangText.current()` reads `androidx.compose.ui.text.intl.Locale`, which is the same locale Compose Resources resolves its own strings against, so both kinds of localized text always agree.
+
 ## Previews
 
-A composable that reads a string resource is locale-sensitive, and the compiler propagates that to every caller. Such a preview carries `@LocalePreviews` so the tooling renders it under both locales — see [Multi-locale previews](./preview.md#multi-locale-previews) and [Enforcement](./enforcement.md).
+A composable that reads a string resource or a `MultiLangText` is locale-sensitive, and the compiler propagates that to every caller. Such a preview carries `@LocalePreviews` so the tooling renders it under both locales — see [Multi-locale previews](./preview.md#multi-locale-previews) and [Enforcement](./enforcement.md).
 
 ## Text that is not localized
 

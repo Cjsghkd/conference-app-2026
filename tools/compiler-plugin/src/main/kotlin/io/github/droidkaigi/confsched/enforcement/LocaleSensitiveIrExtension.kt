@@ -10,10 +10,10 @@ import org.jetbrains.kotlin.ir.util.classId
 class LocaleSensitiveMetadataIrExtension : SensitivityMetadataIrExtension(LocaleSensitiveNames.LOCALE_SENSITIVE_CLASS_ID) {
 
     // Matching on the expression type rather than on the call covers both a generated `Res.string.…`
-    // accessor and a resource handed to a component as a parameter.
+    // accessor and localized text handed to a component as a parameter.
     override fun isInherentRead(element: IrElement): Boolean {
         if (element !is IrExpression) return false
         val classId = element.type.classOrNull?.owner?.classId ?: return false
-        return classId in LocaleSensitiveNames.LOCALIZED_RESOURCE_CLASS_IDS
+        return classId in LocaleSensitiveNames.LOCALIZED_TEXT_CLASS_IDS
     }
 }

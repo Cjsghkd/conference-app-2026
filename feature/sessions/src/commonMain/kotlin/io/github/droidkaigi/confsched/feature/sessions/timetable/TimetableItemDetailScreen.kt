@@ -26,6 +26,7 @@ import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBar
 import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBarBackButton
+import io.github.droidkaigi.confsched.core.ui.current
 import io.github.droidkaigi.confsched.feature.sessions.generated.resources.Res
 import io.github.droidkaigi.confsched.feature.sessions.generated.resources.add_favorite
 import io.github.droidkaigi.confsched.feature.sessions.generated.resources.close
@@ -75,7 +76,7 @@ fun TimetableItemDetailScreen(
             item {
                 TimetableItemDetailHeadline(
                     room = uiState.item.room.name,
-                    title = uiState.item.title,
+                    title = uiState.item.title.current(),
                     speaker = uiState.item.speaker,
                 )
             }

@@ -2,6 +2,7 @@ package io.github.droidkaigi.confsched.core.preview
 
 import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.Language
+import io.github.droidkaigi.confsched.core.model.MultiLangText
 import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.model.Timetable
 import io.github.droidkaigi.confsched.core.model.TimetableItem
@@ -11,20 +12,56 @@ import kotlinx.collections.immutable.persistentSetOf
 
 fun Timetable.Companion.fake(): Timetable = Timetable(
     items = persistentListOf(
-        fakeItem("d1a", "Sample Session A", Room.NARWHAL, "", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:20"),
+        fakeItem("d1a", MultiLangText(ja = "サンプルセッションA", en = "Sample Session A"), Room.NARWHAL, "", Language.MIXED, DroidKaigi2026Day.Day1, "10:00", "10:20"),
         TimetableItem.fake(),
-        fakeItem("d1c", "サンプルセッションC", Room.PANDA, "Speaker C", Language.ENGLISH, DroidKaigi2026Day.Day1, "11:00", "11:40"),
-        fakeItem("d1d", "Sample Session D, with a placeholder title long enough to wrap onto several lines", Room.QUAIL, "Speaker D", Language.ENGLISH, DroidKaigi2026Day.Day1, "13:00", "13:45"),
-        fakeItem("d1e", "サンプルセッションE、折り返しを確かめるための長いプレースホルダーのタイトル", Room.MEERKAT, "Speaker E", Language.ENGLISH, DroidKaigi2026Day.Day1, "13:00", "13:45"),
-        fakeItem("d2a", "Sample Session F", Room.OTTER, "Speaker F", Language.MIXED, DroidKaigi2026Day.Day2, "10:00", "10:40"),
-        fakeItem("d2b", "Sample Session G, with a moderately long placeholder title", Room.NARWHAL, "Speaker A", Language.MIXED, DroidKaigi2026Day.Day2, "11:00", "11:40"),
+        fakeItem("d1c", MultiLangText(ja = "サンプルセッションC", en = "Sample Session C"), Room.PANDA, "Speaker C", Language.ENGLISH, DroidKaigi2026Day.Day1, "11:00", "11:40"),
+        fakeItem(
+            "d1d",
+            MultiLangText(
+                ja = "サンプルセッションD、折り返しを確かめるための長いプレースホルダーのタイトル",
+                en = "Sample Session D, with a placeholder title long enough to wrap onto several lines",
+            ),
+            Room.QUAIL,
+            "Speaker D",
+            Language.ENGLISH,
+            DroidKaigi2026Day.Day1,
+            "13:00",
+            "13:45",
+        ),
+        fakeItem(
+            "d1e",
+            MultiLangText(
+                ja = "サンプルセッションE、折り返しを確かめるための長いプレースホルダーのタイトル",
+                en = "Sample Session E, with a placeholder title long enough to wrap onto several lines",
+            ),
+            Room.MEERKAT,
+            "Speaker E",
+            Language.ENGLISH,
+            DroidKaigi2026Day.Day1,
+            "13:00",
+            "13:45",
+        ),
+        fakeItem("d2a", MultiLangText(ja = "サンプルセッションF", en = "Sample Session F"), Room.OTTER, "Speaker F", Language.MIXED, DroidKaigi2026Day.Day2, "10:00", "10:40"),
+        fakeItem(
+            "d2b",
+            MultiLangText(
+                ja = "サンプルセッションG、そこそこ長いプレースホルダーのタイトル",
+                en = "Sample Session G, with a moderately long placeholder title",
+            ),
+            Room.NARWHAL,
+            "Speaker A",
+            Language.MIXED,
+            DroidKaigi2026Day.Day2,
+            "11:00",
+            "11:40",
+        ),
     ),
     bookmarks = persistentSetOf(TimetableItemId("d1a"), TimetableItemId("d1b"), TimetableItemId("d2a")),
 )
 
 fun TimetableItem.Companion.fake(): TimetableItem = fakeItem(
     id = "d1b",
-    title = "サンプルセッションB",
+    title = MultiLangText(ja = "サンプルセッションB", en = "Sample Session B"),
     room = Room.OTTER,
     speaker = "Speaker B",
     language = Language.ENGLISH,
@@ -35,7 +72,7 @@ fun TimetableItem.Companion.fake(): TimetableItem = fakeItem(
 
 private fun fakeItem(
     id: String,
-    title: String,
+    title: MultiLangText,
     room: Room,
     speaker: String,
     language: Language,

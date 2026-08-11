@@ -30,14 +30,18 @@ internal object LocaleSensitiveNames {
         Name.identifier("LocalePreviews"),
     )
 
-    // Compose Resources resolves each of these against the active locale, so referencing one makes
-    // a function inherently locale-sensitive. The resource types are the anchor rather than the
-    // reading functions (`stringResource`, `getString`, …) because the generated `Res` accessors are
+    // Every value of these types is resolved against the active locale, so referencing one makes a
+    // function inherently locale-sensitive. The types are the anchor rather than the reading
+    // functions (`stringResource`, `getString`, …) because the generated `Res` accessors are
     // internal and regenerated per module, leaving no stable declaration to match on.
     private val RESOURCES_PACKAGE = FqName("org.jetbrains.compose.resources")
-    val LOCALIZED_RESOURCE_CLASS_IDS: Set<ClassId> =
-        setOf("StringResource", "PluralStringResource", "StringArrayResource")
-            .mapTo(mutableSetOf()) { ClassId(RESOURCES_PACKAGE, Name.identifier(it)) }
+    private val MODEL_PACKAGE = FqName("io.github.droidkaigi.confsched.core.model")
+    val LOCALIZED_TEXT_CLASS_IDS: Set<ClassId> = setOf(
+        ClassId(RESOURCES_PACKAGE, Name.identifier("StringResource")),
+        ClassId(RESOURCES_PACKAGE, Name.identifier("PluralStringResource")),
+        ClassId(RESOURCES_PACKAGE, Name.identifier("StringArrayResource")),
+        ClassId(MODEL_PACKAGE, Name.identifier("MultiLangText")),
+    )
 }
 
 // A preview is locale-sensitive when its body transitively reaches a localized resource; see
@@ -68,7 +72,7 @@ internal object LocaleSensitivePreviewChecker : FirSimpleFunctionChecker(MppChec
     }
 
     private fun readsLocalizedResource(symbol: FirCallableSymbol<*>): Boolean =
-        symbol.resolvedReturnType.classId in LocaleSensitiveNames.LOCALIZED_RESOURCE_CLASS_IDS
+        symbol.resolvedReturnType.classId in LocaleSensitiveNames.LOCALIZED_TEXT_CLASS_IDS
 }
 
 object LocaleSensitiveErrors : KtDiagnosticsContainer() {

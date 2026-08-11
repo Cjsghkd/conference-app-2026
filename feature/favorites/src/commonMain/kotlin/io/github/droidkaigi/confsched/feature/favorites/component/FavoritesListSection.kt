@@ -21,6 +21,7 @@ import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
+import io.github.droidkaigi.confsched.core.ui.current
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -47,7 +48,7 @@ internal fun FavoritesListSection(
             items(slot.items, key = { it.id.value }) { item ->
                 FavoriteCard(
                     day = item.day,
-                    title = item.title,
+                    title = item.title.current(),
                     room = item.room.name,
                     speaker = item.speaker,
                     onBookmarkClick = { onBookmarkClick(item.id) },

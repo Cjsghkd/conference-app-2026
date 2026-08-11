@@ -18,6 +18,7 @@ import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiNavigationBarDefaults
+import io.github.droidkaigi.confsched.core.ui.current
 
 @Composable
 internal fun TimetableListSection(
@@ -64,7 +65,7 @@ private fun SessionRow(
         ) {
             for (item in slot.items) {
                 TimetableItemCard(
-                    title = item.title,
+                    title = item.title.current(),
                     room = item.room,
                     speaker = item.speaker,
                     language = item.language,
