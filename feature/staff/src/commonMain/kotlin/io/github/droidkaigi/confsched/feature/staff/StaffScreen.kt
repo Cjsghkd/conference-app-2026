@@ -25,6 +25,7 @@ import org.jetbrains.compose.resources.stringResource
 fun StaffScreen(
     uiState: StaffScreenUiState,
     onBackClick: () -> Unit,
+    onStaffClick: (String) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -42,7 +43,7 @@ fun StaffScreen(
                 StaffItem(
                     username = staff.username,
                     iconUrl = staff.iconUrl,
-                    onStaffClick = {},
+                    onStaffClick = { onStaffClick(staff.profileUrl) },
                 )
             }
         }
@@ -63,6 +64,7 @@ fun StaffScreenPreview(
         StaffScreen(
             uiState = StaffScreenUiState.fake(),
             onBackClick = {},
+            onStaffClick = {},
         )
     }
 }

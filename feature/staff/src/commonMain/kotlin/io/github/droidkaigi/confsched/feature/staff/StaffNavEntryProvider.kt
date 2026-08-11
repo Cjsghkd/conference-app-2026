@@ -1,6 +1,7 @@
 package io.github.droidkaigi.confsched.feature.staff
 
 import androidx.compose.runtime.retain.retain
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -19,9 +20,11 @@ class StaffNavEntryProvider(
     override fun EntryProviderScope<NavKey>.register() {
         entry<StaffNavKey> {
             val graph = retain(screenGraphFactory::createStaffScreenGraph)
+            val uriHandler = LocalUriHandler.current
             context(graph.screenContext) {
                 StaffScreenRoot(
                     onNavigateBack = appNavigator::back,
+                    onStaffClick = uriHandler::openUri
                 )
             }
         }
