@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +37,7 @@ fun SoilErrorsScreen(
             TopAppBar(
                 title = { Text("Soil errors (${uiState.errors.size})") },
                 navigationIcon = {
-                    IconButton(onClick = safeClick(onBackClick)) {
+                    IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },

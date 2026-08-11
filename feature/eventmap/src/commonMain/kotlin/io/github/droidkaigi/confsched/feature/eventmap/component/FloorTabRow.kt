@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.feature.eventmap.EventMapFloor
 
 @Composable
@@ -33,7 +32,7 @@ internal fun FloorTabRow(
             EventMapFloor.entries.forEachIndexed { index, floor ->
                 SegmentedButton(
                     selected = selectedFloor == floor,
-                    onClick = safeClick { onFloorClick(floor) },
+                    onClick = { onFloorClick(floor) },
                     shape = SegmentedButtonDefaults.itemShape(index = index, count = EventMapFloor.entries.size),
                     modifier = Modifier.width(FloorTabRowDefaults.tabWidth),
                 ) {

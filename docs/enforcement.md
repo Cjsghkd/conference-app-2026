@@ -32,7 +32,6 @@ Violating any rule below fails compilation. Type/boundary rules need no plugin; 
 | Every [`MutationKey`](./soil-mutation.md) carries a `MutationTag` | FIR `MutationKeyMustCarryTag` |
 | Screen does not read Soil directly (role-gated) | FIR `SoilReadConfinement` |
 | `@Preview` requires a sanctioned wrapper | FIR `PreviewRequiresWrapper` |
-| Nav callbacks flow through the UI debounce | FIR `NavLambdaMustFlowToSafeClick` |
 | Nav-only click not routed through the presenter | FIR `NoForwardOnlyAction` |
 | Theme-dependent previews use `@PreviewParameter` | FIR read + IR `@ThemeSensitive` metadata |
 | Argument-forwarding lambdas use callable references | FIR `LambdaCanBeCallableReference` |
@@ -146,20 +145,6 @@ private fun SearchScreenPreview() {
 
 Why: every `@Preview` (JetBrains or AndroidX) must render inside `KaigiTheme` with the preview image resolver, which the wrapper supplies — annotate the function with `@PreviewWrapper(wrapper = KaigiPreviewWrapper::class)`, or make `KaigiPreviewTheme(colorScheme) { … }` the body's top-level statement when the preview picks its own colour scheme. Both checkers read the annotations through one level of meta-annotation, so a multi-preview annotation carrying them counts. See [Preview & sample assets](./preview.md).
 
-### `NavLambdaMustFlowToSafeClick`
-
-```kotlin
-@Composable
-fun SearchScreen(onItemClick: (TimetableItemId) -> Unit) {
-    Button(onClick = { onItemClick(id) }) { … } // ERROR: not debounced
-    // OK: Modifier.safeClickable { onItemClick(id) } or safeClick(onItemClick)
-}
-```
-
-Why: the debounce lives at the UI interaction point, so every `on[A-Z]*` parameter of a feature `*Screen`/`*ScreenRoot` must reach a `safeClick`/`safeClickable` sink. Four routes qualify: passing it to a sink directly, forwarding it to another feature declaration's `on*` parameter, invoking it inside a `safeClick`/`safeClickable`/`ActionResultEffect` lambda, or invoking it inside a lambda that is itself passed to another feature declaration's `on*` parameter — the shape [`NoCallerSuppliedCallbackArgument`](#nocallersuppliedcallbackargument) produces at every list item. See [Safe click](./navigation-navigator.md#safe-click-navigation-debounce).
-
-Conservative: it matches parameter *name*, so non-navigating `on*` callbacks are also forced through a sink.
-
 ### `NoForwardOnlyAction`
 
 ```kotlin
@@ -235,7 +220,7 @@ fun TimetableScreen(...) { … }
 private fun TimetableCard(...) { … }   // ERROR: move it to TimetableCard.kt
 ```
 
-Why: the file path is the component's identity, so an agent locates and edits a component without reading the screen it happens to sit in. A file declaring a top-level `Unit`-returning `@Composable` named `*Screen`/`*ScreenRoot` may declare no other UI component; `@Preview` functions and value-returning composables (presenters, `safeClick`) are exempt. The extracted component becomes `internal` — file-private visibility is not load-bearing here, since the module boundary already confines it to its feature.
+Why: the file path is the component's identity, so an agent locates and edits a component without reading the screen it happens to sit in. A file declaring a top-level `Unit`-returning `@Composable` named `*Screen`/`*ScreenRoot` may declare no other UI component; `@Preview` functions and value-returning composables (presenters) are exempt. The extracted component becomes `internal` — file-private visibility is not load-bearing here, since the module boundary already confines it to its feature.
 
 ### `LambdaCanBeCallableReference`
 
@@ -254,7 +239,7 @@ Why: a lambda whose entire body is one call forwarding the lambda parameters unc
 
 ```kotlin
 Wrapper(content = { content() })                     // ERROR: content = content
-Modifier.safeClickable { onOpenSoilErrors() }        // ERROR: safeClickable(onOpenSoilErrors)
+Modifier.clickable { onOpenSoilErrors() }            // ERROR: clickable(onClick = onOpenSoilErrors)
 flow.collect { block(it) }                           // ERROR: collect(block)
 
 RowScopeConsumer(content = { content() })            // OK: adapts () -> Unit to RowScope.() -> Unit
@@ -393,13 +378,13 @@ internal fun TimetableCard(
     title: String,
     onClick: (TimetableItemId) -> Unit,   // ERROR: reports back `id`
 ) {
-    Card(modifier = Modifier.safeClickable { onClick(id) }) { Text(title) }
+    Card(modifier = Modifier.clickable { onClick(id) }) { Text(title) }
 }
 
 // OK: the caller holds the identifier, so the callback carries nothing
 @Composable
 internal fun TimetableCard(title: String, onClick: () -> Unit) {
-    Card(modifier = Modifier.safeClickable(onClick = onClick)) { Text(title) }
+    Card(modifier = Modifier.clickable(onClick = onClick)) { Text(title) }
 }
 
 // at the call site
@@ -415,11 +400,11 @@ The argument must be a plain read to be rejected: an element bound by a `forEach
 ### `RememberResultMustBeBound`
 
 ```kotlin
-remember { SafeClickInvoker() }.invoke(onClick)          // ERROR
+remember { SnackbarHostState() }.showSnackbar(message)   // ERROR
 retain { mutableStateOf(DroidKaigi2026Day.Day1) }.value  // ERROR
 
-val invoker = remember { SafeClickInvoker() }            // OK
-invoker.invoke(onClick)
+val snackbarHostState = remember { SnackbarHostState() } // OK
+snackbarHostState.showSnackbar(message)
 
 var selectedDay by retain { mutableStateOf(DroidKaigi2026Day.Day1) } // OK: a delegate
 SnackbarHost(retain { SnackbarHostState() })                         // OK: argument position

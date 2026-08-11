@@ -1,5 +1,6 @@
 package io.github.droidkaigi.confsched.feature.favorites.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,8 +23,6 @@ import io.github.droidkaigi.confsched.core.model.DroidKaigi2026Day
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
-import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 internal fun FavoriteCard(
@@ -35,7 +34,7 @@ internal fun FavoriteCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(modifier = modifier.fillMaxWidth().safeClickable(onClick = onClick)) {
+    Card(modifier = modifier.fillMaxWidth().clickable(onClick = onClick)) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -45,7 +44,7 @@ internal fun FavoriteCard(
                 Text(title, fontWeight = FontWeight.Bold)
                 Text("$room · $speaker")
             }
-            IconButton(onClick = safeClick(onBookmarkClick)) {
+            IconButton(onClick = onBookmarkClick) {
                 Icon(imageVector = Icons.Filled.Favorite, contentDescription = "Remove favorite")
             }
         }

@@ -1,6 +1,7 @@
 package io.github.droidkaigi.confsched.feature.contributors.component
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +24,6 @@ import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.RemoteImage
-import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 internal fun ContributorItem(
@@ -35,7 +35,7 @@ internal fun ContributorItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .safeClickable(role = Role.Button, onClick = onContributorClick)
+            .clickable(role = Role.Button, onClick = onContributorClick)
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),

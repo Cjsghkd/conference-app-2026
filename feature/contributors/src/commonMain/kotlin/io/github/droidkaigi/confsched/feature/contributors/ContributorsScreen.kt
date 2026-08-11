@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorItem
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsCountText
 import io.github.droidkaigi.confsched.feature.contributors.component.ContributorsEmptyView
@@ -37,7 +36,7 @@ fun ContributorsScreen(
             TopAppBar(
                 title = { Text("Contributors", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = safeClick(onBackClick)) {
+                    IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },

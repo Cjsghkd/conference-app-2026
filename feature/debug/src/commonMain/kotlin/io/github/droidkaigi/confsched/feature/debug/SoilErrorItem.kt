@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
 import kotlinx.coroutines.launch
 
 @Composable
@@ -71,13 +70,13 @@ internal fun SoilErrorItem(error: SoilError) {
                 }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = safeClick { expanded = !expanded }) {
+                TextButton(onClick = { expanded = !expanded }) {
                     Text(if (expanded) "Hide stack trace" else "Show stack trace")
                 }
                 Spacer(Modifier.weight(1f))
                 if (expanded) {
                     TextButton(
-                        onClick = safeClick {
+                        onClick = {
                             coroutineScope.launch {
                                 clipboard.setClipEntry(
                                     clipEntryOfPlainText(error.exception.stackTraceToString()),

@@ -1,6 +1,7 @@
 package io.github.droidkaigi.confsched.core.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -57,7 +58,7 @@ fun KaigiIconButton(
             .size(size)
             .clip(SketchShape(seed = seed, cornerRadius = size / 2))
             .background(containerColor)
-            .safeClickable(role = Role.Button, onClick = onClick),
+            .clickable(role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         CompositionLocalProvider(LocalContentColor provides contentColor, content = content)

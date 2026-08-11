@@ -7,23 +7,19 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runComposeUiTest
-import io.github.droidkaigi.confsched.core.common.LocalSafeClickInvoker
 import io.github.droidkaigi.confsched.core.common.LocalSnackbarHostState
-import io.github.droidkaigi.confsched.core.common.SafeClickInvoker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import soil.query.SwrCachePlus
 import soil.query.compose.SwrClientProvider
-import kotlin.time.Duration
 
 @OptIn(ExperimentalTestApi::class)
 abstract class Robot(protected val composeUiTest: ComposeUiTest) {
 
-    // Stands in for what a nav entry supplies in production: the Soil client, the snackbar host
-    // from snackbarNavEntryDecorator, and the click debounce — zeroed so consecutive taps in one
-    // scenario are not swallowed. A fresh client per call lets a scenario set up more than once.
+    // Stands in for what a nav entry supplies in production: the Soil client and the snackbar host
+    // from snackbarNavEntryDecorator. A fresh client per call lets a scenario set up more than once.
     protected fun setScreenContent(content: @Composable () -> Unit) {
         val clientScope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val client = SwrCachePlus(clientScope)
@@ -38,7 +34,6 @@ abstract class Robot(protected val composeUiTest: ComposeUiTest) {
             SwrClientProvider(client = client) {
                 CompositionLocalProvider(
                     LocalSnackbarHostState provides snackbarHostState,
-                    LocalSafeClickInvoker provides SafeClickInvoker(interval = Duration.ZERO),
                     content = content,
                 )
             }

@@ -1,5 +1,6 @@
 package io.github.droidkaigi.confsched.feature.debug
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,12 +22,10 @@ import io.github.droidkaigi.confsched.core.data.ServerEnvironment
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 fun ServerEnvironmentScreen(
     skipSelectionNextLaunch: Boolean,
-    // Not named on* so the safeClick checker does not treat it as a navigation callback.
     toggleSkipNextLaunch: (Boolean) -> Unit,
     onSelectServer: (ServerEnvironment) -> Unit,
     modifier: Modifier = Modifier,
@@ -49,7 +48,7 @@ fun ServerEnvironmentScreen(
             OutlinedCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .safeClickable { onSelectServer(environment) },
+                    .clickable { onSelectServer(environment) },
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),

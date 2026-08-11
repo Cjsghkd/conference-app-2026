@@ -39,7 +39,7 @@ fun setupContent() {
 }
 ```
 
-`setScreenContent` is the harness on `Robot`: it stands in for what a nav entry supplies in production — a fresh `SwrClient`, the `LocalSnackbarHostState` that `snackbarNavEntryDecorator` provides, and `LocalSafeClickInvoker` with the debounce zeroed so consecutive taps in one scenario are not swallowed — then waits for idle.
+`setScreenContent` is the harness on `Robot`: it stands in for what a nav entry supplies in production — a fresh `SwrClient` and the `LocalSnackbarHostState` that `snackbarNavEntryDecorator` provides — then waits for idle.
 
 Because the Root owns the [`SoilDataBoundary`](./soil-data-boundary.md), the loading and error fallbacks are a Robot concern rather than a presenter one: `hold()` keeps a query suspended so the loading fallback can be asserted, and `failWith(…)` sends the boundary to its error fallback. See [Test graph](./testing-graph.md).
 

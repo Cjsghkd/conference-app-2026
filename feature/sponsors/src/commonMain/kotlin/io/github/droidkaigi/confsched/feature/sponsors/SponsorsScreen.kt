@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.feature.sponsors.component.SPONSOR_GRID_COLUMNS
 import io.github.droidkaigi.confsched.feature.sponsors.component.SponsorsEmptyView
 import io.github.droidkaigi.confsched.feature.sponsors.component.sponsorPlanSection
@@ -39,7 +38,7 @@ fun SponsorsScreen(
             TopAppBar(
                 title = { Text("Sponsors", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = safeClick(onBackClick)) {
+                    IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },

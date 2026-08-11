@@ -124,7 +124,7 @@ fun KaigiNavigationBarScope.KaigiNavigationBarItem(
         modifier = modifier
             .weight(1f)
             .height(KaigiNavigationBarDefaults.height)
-            .selectable(selected = selected, role = Role.Tab, onClick = safeClick(onClick)),
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         if (selected) {

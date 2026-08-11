@@ -13,8 +13,9 @@ fun NavigatorEffect(navigator: AppNavigator, backStack: NavBackStack<NavKey>, lo
                 is NavCommand.Push -> {
                     if (backStack.lastOrNull() == command.key) {
                         logger.warn { "Duplicate push of the top NavKey: ${command.key} — likely a caller bug" }
+                    } else {
+                        backStack.add(command.key)
                     }
-                    backStack.add(command.key)
                 }
 
                 NavCommand.Pop -> if (backStack.size > 1) backStack.removeLastOrNull()
