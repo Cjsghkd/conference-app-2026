@@ -37,7 +37,6 @@ import dev.zacsweers.metro.SingleIn
 import io.github.droidkaigi.confsched.core.common.NoopSoilErrorMonitor
 import io.github.droidkaigi.confsched.core.common.SoilErrorMonitor
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewWrapper
-import io.github.droidkaigi.confsched.core.ui.safeClick
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -127,11 +126,11 @@ internal fun SoilErrorSheetContent(errors: List<SoilError>) {
             Text("Soil error", fontWeight = FontWeight.Bold)
             Text("${selectedIndex + 1} / ${errors.size}")
             Button(
-                onClick = safeClick { selectedIndex-- },
+                onClick = { selectedIndex-- },
                 enabled = selectedIndex > 0,
             ) { Text("◀") }
             Button(
-                onClick = safeClick { selectedIndex++ },
+                onClick = { selectedIndex++ },
                 enabled = selectedIndex < errors.lastIndex,
             ) { Text("▶") }
         }
@@ -146,7 +145,7 @@ internal fun SoilErrorSheetContent(errors: List<SoilError>) {
                 .horizontalScroll(rememberScrollState()),
         )
         Button(
-            onClick = safeClick {
+            onClick = {
                 coroutineScope.launch { clipboard.setClipEntry(clipEntryOfPlainText(stackTrace)) }
             },
         ) { Text("Copy stack trace") }

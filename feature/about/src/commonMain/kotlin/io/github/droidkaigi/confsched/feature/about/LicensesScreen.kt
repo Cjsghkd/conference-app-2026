@@ -18,7 +18,6 @@ import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +30,7 @@ fun LicensesScreen(
             TopAppBar(
                 title = { Text("Licenses", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = safeClick(onBackClick)) {
+                    IconButton(onClick = onBackClick) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },

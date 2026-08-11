@@ -25,7 +25,7 @@ Scaffolds a complete screen following docs/building-a-screen.md.
 
 ## Notes
 
-- Generated code already complies with the FIR checkers (`safeClick` around click callbacks, role-context gating, `@Serializable` NavKey).
+- Generated code already complies with the FIR checkers (role-context gating, `@Serializable` NavKey).
 - The generated screen is intentionally minimal (title + back). Data reads are added by hand: Soil keys in core:model/core:data, SoilDataBoundary in the Root — see docs/building-a-screen.md.
 
 ## Completion checklist

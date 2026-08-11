@@ -59,7 +59,7 @@ A read-only screen with no action and no one-off needs no `ScreenChannel`.
 
 ## Navigation-only clicks
 
-A click that only navigates (tap → open a screen, nothing else) does not travel through the presenter. The Root forwards its `on*` navigation lambda straight into the Screen's matching parameter, and the Screen debounces it through `safeClick` / `safeClickable`. Routing such a click through the channel only to emit it back unchanged is rejected by the `NoForwardOnlyActionChecker` FIR checker; the requirement that a navigation lambda reach a `safeClick` is enforced by `NavLambdaMustFlowToSafeClickChecker`.
+A click that only navigates (tap → open a screen, nothing else) does not travel through the presenter. The Root forwards its `on*` navigation lambda straight into the Screen's matching parameter, and the Screen invokes it from the control the user taps. Routing such a click through the channel only to emit it back unchanged is rejected by the `NoForwardOnlyActionChecker` FIR checker.
 
 Navigation that a presenter originates does flow back as a result: a mutation succeeds → `emit(NavigateToCard)` → `ActionResultEffect` → the Root's navigation lambda.
 
@@ -69,6 +69,6 @@ A successful navigation is protected against duplicate firing at three layers:
 
 1. The channel consumes each result exactly once.
 2. `MutationSuccessEffect` fires once per successful mutation, so a single navigation emits a single result.
-3. Navigation3 operations are idempotent — a no-op when the target already sits on top, plus a guard during a transition.
+3. `NavigatorEffect` skips a `Push` whose key already sits on top of the back stack — see [back stack guards](./navigation-navigator.md#back-stack-guards).
 
 Related: [Architecture overview](./architecture-overview.md) · [Soil mutation](./soil-mutation.md) · [SoilDataBoundary](./soil-data-boundary.md) · [Building a screen](./building-a-screen.md)

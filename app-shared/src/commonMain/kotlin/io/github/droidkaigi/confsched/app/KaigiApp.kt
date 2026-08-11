@@ -12,7 +12,6 @@ import androidx.navigation3.ui.NavDisplay
 import io.github.droidkaigi.confsched.core.common.NavigatorEffect
 import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.common.rememberRootSceneStrategy
-import io.github.droidkaigi.confsched.core.common.rememberSafeClickInvokerNavEntryDecorator
 import io.github.droidkaigi.confsched.core.common.rememberSnackbarNavEntryDecorator
 import io.github.droidkaigi.confsched.core.common.retainNavEntryDecorator
 import io.github.droidkaigi.confsched.core.designsystem.KaigiTheme
@@ -61,7 +60,6 @@ fun KaigiApp() {
                             rememberSaveableStateHolderNavEntryDecorator(),
                             retainNavEntryDecorator(),
                             rememberSnackbarNavEntryDecorator(),
-                            rememberSafeClickInvokerNavEntryDecorator(),
                         ),
                         sceneStrategies = listOf(
                             rememberRootSceneStrategy(),

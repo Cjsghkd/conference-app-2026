@@ -63,7 +63,7 @@ fun KaigiApp() {
             NavDisplay(
                 backStack = backStack,
                 entryDecorators = …,             // per-entry: saveable state, retain store,
-                                                 //   snackbar host, safe-click debounce
+                                                 //   snackbar host
                 sceneStrategies = …,             // root / list-detail / single pane
             )
         }
@@ -71,7 +71,7 @@ fun KaigiApp() {
 }
 ```
 
-The entry decorators are what make per-screen services feel ambient: each entry gets its own retained store (screen graphs survive transient destruction), its own `SnackbarHostState`, and debounced click dispatch, all exposed through CompositionLocals. For the scene, decorator, and predictive-back mechanics in detail, see the [navigation pages](./navigation.md).
+The entry decorators are what make per-screen services feel ambient: each entry gets its own retained store (screen graphs survive transient destruction) and its own `SnackbarHostState`, both exposed through CompositionLocals. For the scene, decorator, and predictive-back mechanics in detail, see the [navigation pages](./navigation.md).
 
 ## 3. Reaching a screen
 
@@ -150,7 +150,7 @@ fun TimetableScreenRoot(onNavigateToDetail: (TimetableItemId) -> Unit) {
 
 The `ScreenChannel` carries both directions, and each end is gated by a context parameter: `send` and `ActionResultEffect` need `ScreenContext`, `ActionEffect` and `emit` need `PresenterContext` — using the wrong end from the wrong layer is an ordinary compile error.
 
-The two callbacks above route differently: **a navigation-only click goes straight through to the navigation lambda** (debounced with `safeClick`); only actions that do real work travel through the channel. A forward-only action handler is rejected by the `NoForwardOnlyActionChecker` FIR checker. Full contract and tests: [building a screen](./building-a-screen.md), [error handling](./error-handling.md).
+The two callbacks above route differently: **a navigation-only click goes straight through to the navigation lambda**; only actions that do real work travel through the channel. A forward-only action handler is rejected by the `NoForwardOnlyActionChecker` FIR checker. Full contract and tests: [building a screen](./building-a-screen.md), [error handling](./error-handling.md).
 
 The ScreenChannel round trip, in one small picture:
 

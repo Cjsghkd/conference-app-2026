@@ -13,7 +13,6 @@ Each is calibration for that question.
 | `LocalSnackbarHostState` | a nav entry owns its host, so a message shows on the screen that raised it |
 | `LocalPreviewImageResolver` | resolves images in a preview, absent in production — that absence is the point |
 | `LocalSchemeIsDark` | the theme provides it, so a subtree themed differently reads differently |
-| `LocalSafeClickInvoker` | the entry decorator installs the sink that debounces the clicks under it |
 
 ## When the answer is no
 
@@ -35,7 +34,7 @@ The default decides what a read with no provider installed means, so it states w
 | --- | --- |
 | `error("…")` | a provider is required; reading without one is a wiring mistake, and `LocalSnackbarHostState` names the decorator that installs it |
 | `null` | absence is a real case — production has no `LocalPreviewImageResolver` |
-| a usable value | reading without a provider works, and a provider only narrows the scope: `LocalSafeClickInvoker` debounces against a shared invoker until a nav entry gives the subtree its own |
+| a usable value | reading without a provider works, and a provider only narrows the scope: `LocalSchemeIsDark` reads as the light scheme until `KaigiTheme` states otherwise |
 
 The one to justify is the third. A working default turns a forgotten provider into a silently different answer rather than a crash, so it is right only where the un-provided behaviour is one you would choose.
 

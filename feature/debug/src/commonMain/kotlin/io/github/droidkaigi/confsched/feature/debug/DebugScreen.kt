@@ -1,5 +1,6 @@
 package io.github.droidkaigi.confsched.feature.debug
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,14 +24,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
-import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DebugScreen(
     uiState: DebugScreenUiState,
-    // Not named on* so the safeClick checker does not treat it as a navigation callback.
     toggleSoilErrorOverlay: (Boolean) -> Unit,
     applyClockPreset: (DebugClockPreset) -> Unit,
     shiftClockTo: (String) -> Unit,
@@ -45,7 +43,7 @@ fun DebugScreen(
             TopAppBar(
                 title = { Text("Debug menu") },
                 navigationIcon = {
-                    IconButton(onClick = safeClick(onBack)) {
+                    IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -87,7 +85,7 @@ fun DebugScreen(
                 },
             )
             ListItem(
-                modifier = Modifier.safeClickable(onClick = onOpenSoilErrors),
+                modifier = Modifier.clickable(onClick = onOpenSoilErrors),
                 headlineContent = { Text("Soil errors") },
                 supportingContent = { Text("Errors relayed during this session") },
                 trailingContent = { Text("${uiState.soilErrors.size}") },
@@ -96,7 +94,7 @@ fun DebugScreen(
 
             SectionHeader("Data")
             ListItem(
-                modifier = Modifier.safeClickable(onClick = onClearData),
+                modifier = Modifier.clickable(onClick = onClearData),
                 headlineContent = { Text("Clear persisted data") },
                 supportingContent = {
                     Text(

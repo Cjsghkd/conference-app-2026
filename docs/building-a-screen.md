@@ -175,7 +175,7 @@ fun timetableScreenPresenter(
 **Diagram: the `Screen` node.** A pure `@Composable` of `UiState` plus callbacks; it never touches Soil or the channel.
 
 Do here:
-- Render `uiState`; invoke each callback through `safeClick` / `safeClickable`.
+- Render `uiState`; invoke each callback from the control the user interacts with.
 - Keep the two callback kinds distinct: real-work clicks and the navigation-only click are both just lambdas here — the Root decides where each goes.
 
 ```kotlin
@@ -186,7 +186,7 @@ fun TimetableScreen(
     onDayClick: (DroidKaigi2026Day) -> Unit,
     onItemClick: (TimetableItemId) -> Unit,          // navigation-only click
 ) {
-    // Render uiState; a click just invokes the passed callback through safeClick/safeClickable.
+    // Render uiState; a click just invokes the passed callback.
 }
 ```
 

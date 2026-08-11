@@ -107,7 +107,7 @@ fun KaigiSingleChoiceSegmentedButtonRowScope.KaigiSegmentedButton(
             .weight(1f)
             .fillMaxHeight()
             .background(if (selected) selectedContainerColor else Color.Transparent)
-            .selectable(selected = selected, role = Role.RadioButton, onClick = safeClick(onClick)),
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         CompositionLocalProvider(

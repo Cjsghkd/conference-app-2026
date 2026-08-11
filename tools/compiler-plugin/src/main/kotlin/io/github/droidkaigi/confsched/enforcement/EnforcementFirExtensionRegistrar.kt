@@ -12,7 +12,6 @@ class EnforcementFirExtensionRegistrar : FirExtensionRegistrar() {
             MutationKeyErrors,
             PersistedKeyErrors,
             RememberSerializableErrors,
-            SafeClickErrors,
             NoForwardOnlyActionErrors,
             SoilReadConfinementErrors,
             PreviewRequiresWrapperErrors,

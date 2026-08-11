@@ -1,6 +1,7 @@
 package io.github.droidkaigi.confsched.feature.sessions.timetable.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +30,6 @@ import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.SketchShape
-import io.github.droidkaigi.confsched.core.ui.safeClickable
 import io.github.droidkaigi.confsched.core.ui.sketchBorder
 
 /**
@@ -69,7 +69,7 @@ internal fun TimetableItemCard(
             isFavorite = isFavorite,
             seed = seed,
             onBookmarkClick = onBookmarkClick,
-            modifier = Modifier.safeClickable(onClick = onClick),
+            modifier = Modifier.clickable(onClick = onClick),
         )
         Box(
             Modifier
@@ -132,7 +132,7 @@ private fun FavoriteMark(room: Room, isFavorite: Boolean, onBookmarkClick: () ->
         tint = roomTheme(room).accent,
         modifier = Modifier
             .size(TimetableItemCardDefaults.favoriteSize)
-            .safeClickable(onClick = onBookmarkClick),
+            .clickable(onClick = onBookmarkClick),
     )
 }
 

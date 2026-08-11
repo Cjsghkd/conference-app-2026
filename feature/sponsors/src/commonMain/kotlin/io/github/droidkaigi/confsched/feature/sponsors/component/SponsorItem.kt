@@ -1,5 +1,6 @@
 package io.github.droidkaigi.confsched.feature.sponsors.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
@@ -17,7 +18,6 @@ import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.RemoteImage
-import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @Composable
 internal fun SponsorItem(
@@ -27,7 +27,7 @@ internal fun SponsorItem(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.safeClickable(role = Role.Button, onClick = onSponsorClick),
+        modifier = modifier.clickable(role = Role.Button, onClick = onSponsorClick),
         // Sponsor logos are supplied for a white background, so the card does not follow the theme.
         colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {

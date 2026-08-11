@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.safeClick
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableItemDetailHeadline
 import io.github.droidkaigi.confsched.feature.sessions.timetable.component.TimetableItemDetailSummaryCard
 
@@ -48,7 +47,7 @@ fun TimetableItemDetailScreen(
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 ),
                 navigationIcon = {
-                    IconButton(onClick = safeClick(onBack)) {
+                    IconButton(onClick = onBack) {
                         if (LocalListDetailSceneScope.current != null) {
                             Icon(Icons.Filled.Close, contentDescription = "Close")
                         } else {
@@ -59,7 +58,7 @@ fun TimetableItemDetailScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = safeClick(onBookmarkClick)) {
+            FloatingActionButton(onClick = onBookmarkClick) {
                 Icon(
                     imageVector = if (uiState.isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                     contentDescription = if (uiState.isFavorite) "Remove favorite" else "Add favorite",

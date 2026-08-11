@@ -1,5 +1,6 @@
 package io.github.droidkaigi.confsched.feature.about
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -18,7 +19,6 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import io.github.droidkaigi.confsched.core.preview.PreviewImage
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewWrapper
 import io.github.droidkaigi.confsched.core.ui.RemoteImage
-import io.github.droidkaigi.confsched.core.ui.safeClickable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,24 +49,24 @@ fun AboutScreen(
             )
             HorizontalDivider()
             ListItem(
-                modifier = Modifier.safeClickable(onClick = onOpenSponsors),
+                modifier = Modifier.clickable(onClick = onOpenSponsors),
                 headlineContent = { Text("Sponsors") },
             )
             HorizontalDivider()
             ListItem(
-                modifier = Modifier.safeClickable(onClick = onOpenContributors),
+                modifier = Modifier.clickable(onClick = onOpenContributors),
                 headlineContent = { Text("Contributors") },
             )
             HorizontalDivider()
             ListItem(
-                modifier = Modifier.safeClickable(onClick = onOpenLicenses),
+                modifier = Modifier.clickable(onClick = onOpenLicenses),
                 headlineContent = { Text("Licenses") },
                 supportingContent = { Text("Open source libraries this build depends on") },
             )
             if (isDebugMenuAvailable) {
                 HorizontalDivider()
                 ListItem(
-                    modifier = Modifier.safeClickable(onClick = onOpenDebug),
+                    modifier = Modifier.clickable(onClick = onOpenDebug),
                     headlineContent = { Text("Debug menu") },
                     supportingContent = { Text("Developer tools (debug builds only)") },
                 )
