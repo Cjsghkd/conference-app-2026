@@ -115,8 +115,14 @@ jobs:
                   core.info(`#${issue.number}: ${login} has an open linked pull request, skipping`)
                   continue
                 }
-                const lastActivity =
-                  lastCommentAt(comments, login) ?? lastAssignedAt(timeline, login) ?? new Date(issue.created_at)
+                // An assignment can land long after the comment that requested it, so take whichever is later.
+                const lastActivity = new Date(
+                  Math.max(
+                    lastCommentAt(comments, login)?.getTime() ?? 0,
+                    lastAssignedAt(timeline, login)?.getTime() ?? 0,
+                    new Date(issue.created_at).getTime()
+                  )
+                )
                 const daysSince = (now - lastActivity.getTime()) / MS_PER_DAY
 
                 if (daysSince >= UNASSIGN_AFTER_DAYS) {
