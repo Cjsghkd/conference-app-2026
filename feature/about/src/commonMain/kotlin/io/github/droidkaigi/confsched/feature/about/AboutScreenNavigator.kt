@@ -7,6 +7,8 @@ interface AboutScreenNavigator : Navigator {
 
     fun openContributors()
 
+    fun openStaff()
+
     fun openLicenses()
 
     /** False when the build does not include the debug feature. */

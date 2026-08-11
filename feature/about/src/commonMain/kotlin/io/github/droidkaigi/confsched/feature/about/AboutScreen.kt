@@ -27,6 +27,7 @@ import io.github.droidkaigi.confsched.feature.about.generated.resources.debug_me
 import io.github.droidkaigi.confsched.feature.about.generated.resources.licenses
 import io.github.droidkaigi.confsched.feature.about.generated.resources.licenses_description
 import io.github.droidkaigi.confsched.feature.about.generated.resources.sponsors
+import io.github.droidkaigi.confsched.feature.about.generated.resources.staff
 import io.github.droidkaigi.confsched.feature.about.generated.resources.version
 import org.jetbrains.compose.resources.stringResource
 
@@ -35,6 +36,7 @@ fun AboutScreen(
     uiState: AboutScreenUiState,
     onOpenSponsors: () -> Unit,
     onOpenContributors: () -> Unit,
+    onOpenStaff: () -> Unit,
     onOpenLicenses: () -> Unit,
     isDebugMenuAvailable: Boolean,
     onOpenDebug: () -> Unit,
@@ -68,6 +70,11 @@ fun AboutScreen(
             )
             HorizontalDivider()
             ListItem(
+                modifier = Modifier.clickable(onClick = onOpenStaff),
+                headlineContent = { Text(stringResource(Res.string.staff)) },
+            )
+            HorizontalDivider()
+            ListItem(
                 modifier = Modifier.clickable(onClick = onOpenLicenses),
                 headlineContent = { Text(stringResource(Res.string.licenses)) },
                 supportingContent = { Text(stringResource(Res.string.licenses_description)) },
@@ -97,6 +104,7 @@ private fun AboutScreenPreview(
             ),
             onOpenSponsors = {},
             onOpenContributors = {},
+            onOpenStaff = {},
             onOpenLicenses = {},
             isDebugMenuAvailable = true,
             onOpenDebug = {},
@@ -117,6 +125,7 @@ private fun AboutScreenWithoutDebugMenuPreview(
             ),
             onOpenSponsors = {},
             onOpenContributors = {},
+            onOpenStaff = {},
             onOpenLicenses = {},
             isDebugMenuAvailable = false,
             onOpenDebug = {},
