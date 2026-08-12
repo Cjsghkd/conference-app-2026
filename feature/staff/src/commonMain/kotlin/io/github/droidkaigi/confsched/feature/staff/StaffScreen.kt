@@ -36,7 +36,7 @@ fun StaffScreen(
             columns = GridCells.Fixed(StaffScreenDefaults.COLUMNS),
             horizontalArrangement = Arrangement.spacedBy(StaffScreenDefaults.cellSpacing),
             verticalArrangement = Arrangement.spacedBy(StaffScreenDefaults.cellSpacing),
-            contentPadding = PaddingValues(24.dp),
+            contentPadding = PaddingValues(StaffScreenDefaults.gridPadding),
             modifier = Modifier.fillMaxSize().padding(innerPadding),
         ) {
             items(items = uiState.staff, key = { it.id.value }) { staff ->
@@ -53,11 +53,12 @@ fun StaffScreen(
 private object StaffScreenDefaults {
     const val COLUMNS = 3
     val cellSpacing = 32.dp
+    val gridPadding = 24.dp
 }
 
 @LocalePreviews
 @Composable
-fun StaffScreenPreview(
+private fun StaffScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {

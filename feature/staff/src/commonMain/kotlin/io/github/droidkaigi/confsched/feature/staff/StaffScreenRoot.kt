@@ -1,7 +1,6 @@
 package io.github.droidkaigi.confsched.feature.staff
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalUriHandler
 import io.github.droidkaigi.confsched.core.common.context
 import io.github.droidkaigi.confsched.core.ui.SoilDataBoundary
 import soil.query.compose.rememberQuery
@@ -10,7 +9,7 @@ import soil.query.compose.rememberQuery
 context(screenContext: StaffScreenContext)
 fun StaffScreenRoot(
     onNavigateBack: () -> Unit,
-    onStaffClick: (String) -> Unit
+    onStaffClick: (String) -> Unit,
 ) {
     SoilDataBoundary(state = rememberQuery(screenContext.staffQueryKey)) { staff ->
         val uiState = context(screenContext.presenterContext) {
