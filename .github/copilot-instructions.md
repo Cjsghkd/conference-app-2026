@@ -46,6 +46,15 @@ Read that page before suggesting a restructure. Several suggestions that read as
 
 A rule a checker decides needs no manual re-check: a violation fails the build before the pull request is readable. Do not spend a comment restating one. Link to the relevant section of that page rather than restating the rule.
 
+## Scope of a review
+
+A pull request answers the issue it closes, and that change is what the review judges. A contributor here holds one issue at a time ([`CONTRIBUTING.md`](../CONTRIBUTING.md)), so a comment asking for work the issue does not name asks someone to exceed their assignment.
+
+- Judge the diff. A defect in code the change does not touch stays out of the review even where the diff brings it into view, and a line shown as context is not under review.
+- Do not ask for work the change did not set out to do: an adjacent screen, a rewrite of the surrounding file, a rename reaching past the lines being changed, or a capability the issue does not name.
+- What the change itself breaks is in scope wherever it lives — a call site the new signature invalidates, a test the new behaviour should have updated, a documentation page a rename leaves wrong. Reporting that is what the review is for.
+- Something out of scope but worth fixing is worth one sentence that says so, left for a separate issue rather than raised as a change to this pull request.
+
 ## Review perspectives
 
 What the type system and the checkers cannot decide is what a review is for — data volume, domain vocabulary, intent, and test coverage ([`docs/enforcement.md`](../docs/enforcement.md#review--tests-fuzzy)). Work through the perspectives the diff touches, in the order below.
