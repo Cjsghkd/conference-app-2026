@@ -1,6 +1,6 @@
 # List-detail scenes (ListDetailSceneStrategy)
 
-On MEDIUM/EXPANDED windows the session screens render as **list-detail**: the timetable stays visible as the list pane while the session detail opens beside it. This is the standard Material3 adaptive strategy, `org.jetbrains.compose.material3.adaptive:adaptive-navigation3`, passed to `NavDisplay`'s `sceneStrategies`:
+On EXPANDED windows — 840dp wide and up — the session screens render as **list-detail**: the timetable stays visible as the list pane while the session detail opens beside it. A MEDIUM window is one pane, because the Material-recommended directive splits the layout horizontally only from the expanded width breakpoint. This is the standard Material3 adaptive strategy, `org.jetbrains.compose.material3.adaptive:adaptive-navigation3`, passed to `NavDisplay`'s `sceneStrategies`:
 
 ```kotlin
 val listDetailSceneStrategy = rememberListDetailSceneStrategy<NavKey>()

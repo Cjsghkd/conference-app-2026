@@ -68,7 +68,7 @@ fun KaigiApp() {
                         ),
                         sceneDecoratorStrategies = listOfNotNull(
                             rememberRootTabSceneDecorator(
-                                currentKey = backStack::lastOrNull,
+                                backStack = backStack,
                                 onSelectTab = { tab -> uiGraph.appNavigator.moveToTop(tab.key) },
                             ),
                         ),
