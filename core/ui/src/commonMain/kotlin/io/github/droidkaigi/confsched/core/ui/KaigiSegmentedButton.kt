@@ -89,7 +89,7 @@ private class KaigiSingleChoiceSegmentedButtonRowScopeImpl(scope: RowScope) :
  *   from. Pass `null` on the last option, the way Material asks the caller for an item's
  *   position in the row.
  * @param leadingDividerSeed the [dividerSeed] of the option immediately before this one, or
- *   `null` for the first option. Required so the fill can be clipped to meet that rule.
+ *   `null` for the first option. Pass it so the selected fill can be clipped to meet that rule.
  * @param modifier the [Modifier] applied to the option.
  * @param selectedContainerColor the colour filling the option while [selected].
  * @param selectedContentColor the colour [label] draws in while [selected].
