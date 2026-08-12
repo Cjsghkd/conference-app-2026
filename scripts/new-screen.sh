@@ -217,7 +217,7 @@ fun ${screen}Screen(
 
 @Preview
 @Composable
-fun ${screen}ScreenPreview(
+private fun ${screen}ScreenPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
 ) {
     KaigiPreviewTheme(colorScheme) {
