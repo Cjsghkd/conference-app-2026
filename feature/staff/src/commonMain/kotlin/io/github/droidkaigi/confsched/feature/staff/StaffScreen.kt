@@ -17,6 +17,7 @@ import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiLargeTopAppBar
+import io.github.droidkaigi.confsched.feature.staff.component.StaffItem
 import io.github.droidkaigi.confsched.feature.staff.generated.resources.Res
 import io.github.droidkaigi.confsched.feature.staff.generated.resources.staff
 import org.jetbrains.compose.resources.stringResource
