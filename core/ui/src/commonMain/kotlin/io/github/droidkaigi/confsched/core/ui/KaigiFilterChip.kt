@@ -69,43 +69,37 @@ fun KaigiFilterChip(
     Box(
         modifier = modifier
             .minimumInteractiveComponentSize()
+            .sketchBorder(shape, if (selected) selectedContentColor else borderColor)
             .clip(shape)
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Box {
-            Row(
-                modifier = Modifier
-                    .height(KaigiFilterChipDefaults.height)
-                    .background(if (selected) selectedContainerColor else Color.Transparent)
-                    .padding(horizontal = KaigiFilterChipDefaults.horizontalPadding),
-                horizontalArrangement = Arrangement.spacedBy(KaigiFilterChipDefaults.iconSpacing),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (selected) {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = null,
-                        tint = selectedContentColor,
-                        modifier = Modifier.size(KaigiFilterChipDefaults.iconSize),
-                    )
-                }
-                Text(
-                    text = label,
-                    // The option in effect is set a weight heavier, so a row of them reads
-                    // even where the fill alone is hard to tell apart.
-                    style = if (selected) {
-                        KaigiFilterChipDefaults.labelStyle.copy(fontWeight = FontWeight.SemiBold)
-                    } else {
-                        KaigiFilterChipDefaults.labelStyle
-                    },
-                    color = if (selected) selectedContentColor else contentColor,
+        Row(
+            modifier = Modifier
+                .height(KaigiFilterChipDefaults.height)
+                .background(if (selected) selectedContainerColor else Color.Transparent)
+                .padding(horizontal = KaigiFilterChipDefaults.horizontalPadding),
+            horizontalArrangement = Arrangement.spacedBy(KaigiFilterChipDefaults.iconSpacing),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (selected) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = null,
+                    tint = selectedContentColor,
+                    modifier = Modifier.size(KaigiFilterChipDefaults.iconSize),
                 )
             }
-            Box(
-                Modifier
-                    .matchParentSize()
-                    .sketchBorder(shape, if (selected) selectedContentColor else borderColor),
+            Text(
+                text = label,
+                // The option in effect is set a weight heavier, so a row of them reads
+                // even where the fill alone is hard to tell apart.
+                style = if (selected) {
+                    KaigiFilterChipDefaults.labelStyle.copy(fontWeight = FontWeight.SemiBold)
+                } else {
+                    KaigiFilterChipDefaults.labelStyle
+                },
+                color = if (selected) selectedContentColor else contentColor,
             )
         }
     }
