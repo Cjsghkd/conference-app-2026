@@ -48,7 +48,7 @@ internal fun StaffItem(
     }
 }
 
-private object StaffItemDefaults {
+internal object StaffItemDefaults {
     val avatarSize = 100.dp
 }
 
