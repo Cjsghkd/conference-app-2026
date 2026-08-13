@@ -3,12 +3,17 @@ package io.github.droidkaigi.confsched.core.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -101,6 +106,69 @@ private class KaigiNavigationBarScopeImpl(scope: RowScope) :
     RowScope by scope
 
 /**
+ * The destinations of the app, gathered into the same hand-drawn pill as [KaigiNavigationBar]
+ * turned vertical, running down the leading edge of an expanded window.
+ *
+ * The rail occupies a column of [KaigiNavigationRailDefaults.columnWidth] and is centred in it,
+ * both horizontally and on the height the column is given.
+ *
+ * @param outlineSeed the value the pill enclosing the destinations is drawn from. The disc
+ *   marking the destination in view is seeded separately, by each [KaigiNavigationRailItem].
+ * @param modifier the [Modifier] applied to the rail's column.
+ * @param content the destinations, each a [KaigiNavigationRailItem].
+ */
+@Composable
+fun KaigiNavigationRail(
+    outlineSeed: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable KaigiNavigationRailScope.() -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxHeight()
+            .width(KaigiNavigationRailDefaults.columnWidth)
+            .padding(vertical = KaigiNavigationRailDefaults.verticalMargin),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier
+                .heightIn(max = KaigiNavigationRailDefaults.maxHeight)
+                .fillMaxHeight()
+                .width(KaigiNavigationRailDefaults.width)
+                .clip(
+                    SketchRoundRectShape(
+                        seed = outlineSeed,
+                        roughness = KaigiNavigationBarDefaults.roughness,
+                        tremor = KaigiNavigationBarDefaults.tremor,
+                        cornerRadius = KaigiNavigationBarDefaults.cornerRadius,
+                        // Pinned so a shorter window stretches the one outline rather than
+                        // drawing a different rail.
+                        referenceSize = DpSize(
+                            KaigiNavigationRailDefaults.width,
+                            KaigiNavigationRailDefaults.maxHeight,
+                        ),
+                    ),
+                )
+                .background(MaterialTheme.colorScheme.inverseSurface)
+                .padding(vertical = 8.dp)
+                .selectableGroup(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            val navigationRailScope = remember { KaigiNavigationRailScopeImpl(this) }
+            navigationRailScope.content()
+        }
+    }
+}
+
+/** Handed to the content of a [KaigiNavigationRail], and obtainable nowhere else. */
+interface KaigiNavigationRailScope : ColumnScope
+
+private class KaigiNavigationRailScopeImpl(scope: ColumnScope) :
+    KaigiNavigationRailScope,
+    ColumnScope by scope
+
+/**
  * One destination of a [KaigiNavigationBar].
  *
  * The one in view is marked by a filled disc behind its icon rather than by a label.
@@ -124,6 +192,37 @@ fun KaigiNavigationBarScope.KaigiNavigationBarItem(
         modifier = modifier
             .weight(1f)
             .height(KaigiNavigationBarDefaults.height)
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        KaigiNavigationItemIcon(selected = selected, indicatorSeed = indicatorSeed, icon = icon)
+    }
+}
+
+/**
+ * One destination of a [KaigiNavigationRail].
+ *
+ * The one in view is marked by a filled disc behind its icon rather than by a label.
+ *
+ * @param selected whether this destination is the one in view.
+ * @param onClick called when the destination is clicked.
+ * @param indicatorSeed the value that disc is drawn from. It takes effect only while [selected].
+ * @param modifier the [Modifier] applied to the destination.
+ * @param icon the icon naming the destination. Give it a content description, since the
+ *   destination carries no label of its own.
+ */
+@Composable
+fun KaigiNavigationRailScope.KaigiNavigationRailItem(
+    selected: Boolean,
+    onClick: () -> Unit,
+    indicatorSeed: Int,
+    modifier: Modifier = Modifier,
+    icon: @Composable () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .weight(1f)
+            .width(KaigiNavigationRailDefaults.width)
             .selectable(selected = selected, role = Role.Tab, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
@@ -186,6 +285,18 @@ object KaigiNavigationBarDefaults {
     val tremor = 0.15.dp
 }
 
+object KaigiNavigationRailDefaults {
+    /** The rail keeps to the bar's reach turned vertical; a taller window leaves it centered rather than stretching it. */
+    val maxHeight = 300.dp
+    val width = 56.dp
+
+    /** The column the rail occupies along the window's leading edge. */
+    val columnWidth = 80.dp
+
+    /** Keeps the pill off the window edges where the window is shorter than the pill. */
+    val verticalMargin = 12.dp
+}
+
 @Preview
 @Composable
 private fun KaigiNavigationBarPreview(
@@ -201,6 +312,32 @@ private fun KaigiNavigationBarPreview(
                     Icon(Icons.Filled.Favorite, contentDescription = "Favorites")
                 }
                 KaigiNavigationBarItem(selected = false, onClick = {}, indicatorSeed = 958) {
+                    Icon(Icons.Filled.Info, contentDescription = "About")
+                }
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun KaigiNavigationRailPreview(
+    @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
+) {
+    KaigiPreviewTheme(colorScheme) {
+        Box(
+            Modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .height(400.dp),
+        ) {
+            KaigiNavigationRail(outlineSeed = 955) {
+                KaigiNavigationRailItem(selected = true, onClick = {}, indicatorSeed = 956) {
+                    Icon(Icons.Filled.DateRange, contentDescription = "Timetable")
+                }
+                KaigiNavigationRailItem(selected = false, onClick = {}, indicatorSeed = 957) {
+                    Icon(Icons.Filled.Favorite, contentDescription = "Favorites")
+                }
+                KaigiNavigationRailItem(selected = false, onClick = {}, indicatorSeed = 958) {
                     Icon(Icons.Filled.Info, contentDescription = "About")
                 }
             }
