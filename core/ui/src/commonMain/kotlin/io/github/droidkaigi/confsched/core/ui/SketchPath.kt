@@ -742,6 +742,46 @@ private fun angleAtArcLength(table: FloatArray, distance: Float): Float {
     return step * (low - 1 + fraction)
 }
 
+/**
+ * A closed path enclosing the region to one side of a hand-drawn vertical line.
+ *
+ * Produces the same curve [sketchVerticalLinePath] strokes at [centerX], then closes it
+ * against the left (x = 0) or right (x = [width]) boundary. Pass to a canvas clip so the
+ * fill of a selected segment meets the divider down its centre instead of at a straight
+ * layout edge.
+ *
+ * @param fillLeft when true the region extends from the divider to x = 0;
+ *   when false it extends from the divider to x = [width].
+ */
+internal fun Density.sketchVerticalFillPath(
+    width: Float,
+    height: Float,
+    centerX: Float,
+    roughness: Dp,
+    tremor: Dp,
+    sweepWavelength: Dp,
+    tremorWavelength: Dp,
+    seed: Int,
+    fillLeft: Boolean,
+): Path {
+    val positions = sketchLinePositions(height, tremorWavelength)
+    val offsets = sketchLineOffsets(
+        positions = positions,
+        center = centerX,
+        roughness = roughness,
+        tremor = tremor,
+        sweepWavelength = sweepWavelength,
+        tremorWavelength = tremorWavelength,
+        seed = seed,
+    )
+    val boundaryX = if (fillLeft) 0f else width
+    return openCurveThrough(offsets, positions, OUTLINE_TANGENT_CLAMP).apply {
+        lineTo(boundaryX, height)
+        lineTo(boundaryX, 0f)
+        close()
+    }
+}
+
 /** Emits [xs] and [ys] as one closed curve, the same conversion the rect outline uses. */
 private fun closedCurveThrough(xs: FloatArray, ys: FloatArray): Path {
     val count = xs.size
