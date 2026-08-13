@@ -42,6 +42,7 @@ internal fun DayTabRow(
                     dividerSeed = DayTabRowDefaults.DIVIDER_SEED.takeIf {
                         index < DroidKaigi2026Day.entries.lastIndex
                     },
+                    leadingDividerSeed = DayTabRowDefaults.DIVIDER_SEED.takeIf { index > 0 },
                 ) {
                     DayLabel(day = day, selected = selectedDay == day)
                 }
