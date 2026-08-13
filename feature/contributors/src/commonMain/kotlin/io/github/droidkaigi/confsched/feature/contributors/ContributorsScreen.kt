@@ -90,6 +90,7 @@ private object ContributorsScreenDefaults {
     val headerSpacing = 20.dp
     val gridHorizontalPadding = 24.dp
     val gridTopPadding = 20.dp
+    val gridBottomRun = 72.dp
     val dividerThickness = 1.3.dp
 
     // A grid spaces every row alike, so the arrangement carries the narrower gap the divider sits
@@ -98,7 +99,7 @@ private object ContributorsScreenDefaults {
 
     // The last row keeps its own trailing space, which counts towards the run the design leaves
     // below the grid.
-    val gridBottomPadding = 72.dp - cellTrailingSpacing
+    val gridBottomPadding = gridBottomRun - cellTrailingSpacing
 }
 
 @LocalePreviews
