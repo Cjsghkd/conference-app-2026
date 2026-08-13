@@ -3,6 +3,7 @@
     <string name="version">バージョン</string>
     <string name="sponsors">スポンサー</string>
     <string name="contributors">コントリビューター</string>
+    <string name="staff">スタッフ</string>
     <string name="licenses">ライセンス</string>
     <string name="licenses_description">このビルドが依存しているオープンソースライブラリ</string>
     <string name="debug_menu">デバッグメニュー</string>

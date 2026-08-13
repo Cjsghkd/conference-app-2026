@@ -8,6 +8,7 @@ context(screenContext: AboutScreenContext)
 fun AboutScreenRoot(
     onNavigateToSponsors: () -> Unit,
     onNavigateToContributors: () -> Unit,
+    onNavigateToStaff: () -> Unit,
     onNavigateToLicenses: () -> Unit,
     isDebugMenuAvailable: Boolean,
     onNavigateToDebug: () -> Unit,
@@ -19,6 +20,7 @@ fun AboutScreenRoot(
         uiState = uiState,
         onOpenSponsors = onNavigateToSponsors,
         onOpenContributors = onNavigateToContributors,
+        onOpenStaff = onNavigateToStaff,
         onOpenLicenses = onNavigateToLicenses,
         isDebugMenuAvailable = isDebugMenuAvailable,
         onOpenDebug = onNavigateToDebug,

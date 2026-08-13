@@ -10,6 +10,7 @@ import io.github.droidkaigi.confsched.feature.about.AboutScreenNavigator
 import io.github.droidkaigi.confsched.feature.about.LicensesNavKey
 import io.github.droidkaigi.confsched.feature.contributors.ContributorsNavKey
 import io.github.droidkaigi.confsched.feature.sponsors.SponsorsNavKey
+import io.github.droidkaigi.confsched.feature.staff.StaffNavKey
 
 @Inject
 @SingleIn(AboutScreenScope::class)
@@ -24,6 +25,10 @@ class DefaultAboutScreenNavigator(
 
     override fun openContributors() {
         appNavigator.goTo(ContributorsNavKey)
+    }
+
+    override fun openStaff() {
+        appNavigator.goTo(StaffNavKey)
     }
 
     override fun openLicenses() {
