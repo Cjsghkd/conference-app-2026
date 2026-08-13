@@ -69,6 +69,10 @@ fun KaigiFilterChip(
     Box(
         modifier = modifier
             .minimumInteractiveComponentSize()
+            .background(
+                color = if (selected) selectedContainerColor else Color.Transparent,
+                shape = shape,
+            )
             .sketchBorder(shape, if (selected) selectedContentColor else borderColor)
             .clip(shape)
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick),
@@ -77,7 +81,6 @@ fun KaigiFilterChip(
         Row(
             modifier = Modifier
                 .height(KaigiFilterChipDefaults.height)
-                .background(if (selected) selectedContainerColor else Color.Transparent)
                 .padding(horizontal = KaigiFilterChipDefaults.horizontalPadding),
             horizontalArrangement = Arrangement.spacedBy(KaigiFilterChipDefaults.iconSpacing),
             verticalAlignment = Alignment.CenterVertically,
