@@ -127,28 +127,37 @@ fun KaigiNavigationBarScope.KaigiNavigationBarItem(
             .selectable(selected = selected, role = Role.Tab, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        if (selected) {
-            Box(
-                Modifier
-                    .size(KaigiNavigationBarDefaults.indicatorSize)
-                    .clip(
-                        SketchRoundRectShape(
-                            seed = indicatorSeed,
-                            roughness = KaigiNavigationBarDefaults.roughness,
-                            tremor = KaigiNavigationBarDefaults.tremor,
-                            cornerRadius = KaigiNavigationBarDefaults.indicatorSize / 2,
-                        ),
-                    )
-                    .background(MaterialTheme.colorScheme.inverseOnSurface),
-            )
-        }
-        val tint = if (selected) {
-            MaterialTheme.colorScheme.inverseSurface
-        } else {
-            MaterialTheme.colorScheme.inverseOnSurface
-        }
-        CompositionLocalProvider(LocalContentColor provides tint, content = icon)
+        KaigiNavigationItemIcon(selected = selected, indicatorSeed = indicatorSeed, icon = icon)
     }
+}
+
+@Composable
+private fun KaigiNavigationItemIcon(
+    selected: Boolean,
+    indicatorSeed: Int,
+    icon: @Composable () -> Unit,
+) {
+    if (selected) {
+        Box(
+            Modifier
+                .size(KaigiNavigationBarDefaults.indicatorSize)
+                .clip(
+                    SketchRoundRectShape(
+                        seed = indicatorSeed,
+                        roughness = KaigiNavigationBarDefaults.roughness,
+                        tremor = KaigiNavigationBarDefaults.tremor,
+                        cornerRadius = KaigiNavigationBarDefaults.indicatorSize / 2,
+                    ),
+                )
+                .background(MaterialTheme.colorScheme.inverseOnSurface),
+        )
+    }
+    val tint = if (selected) {
+        MaterialTheme.colorScheme.inverseSurface
+    } else {
+        MaterialTheme.colorScheme.inverseOnSurface
+    }
+    CompositionLocalProvider(LocalContentColor provides tint, content = icon)
 }
 
 object KaigiNavigationBarDefaults {
