@@ -4,18 +4,18 @@ The top bar on iOS is drawn by Compose Multiplatform — `KaigiTopAppBar` and `K
 
 ## Why the tab bar's technique does not carry over
 
-The tab bar is native because its state is small and shared: one `RootTab?` enum plus a `RootTabBarPalette` (the accent colour and whether the scheme is dark), identical for every screen and bridged once through `RootTabNavigator` — see the [state bridge](./ios-liquid-glass.md#state-bridge). A top bar's state is per-screen, and it is neither small nor uniform.
+The tab bar is native because its state is small and shared: one `RootTab?` enum, identical for every screen and bridged once through `RootTabNavigator` — see the [state bridge](./ios-liquid-glass.md#state-bridge). What the theme still decides reaches it as a separate `RootTabBarPalette` (the accent colour and whether the scheme is dark), published by `RootTabBarAppearance` — see the [theme bridge](./ios-liquid-glass.md#theme-bridge) — and it too is one value for the whole app. A top bar's state is per-screen, and it is neither small nor uniform.
 
 ## Per-screen top bar state
 
-The bars in the app render this today:
+The production screens render this today; the dev-only `DebugScreen` and `SoilErrorsScreen` use a Material3 `TopAppBar` directly.
 
 | Screen | Bar | Title | Leading control | Actions | Chrome sharing the band |
 | --- | --- | --- | --- | --- | --- |
 | Timetable | `KaigiTopAppBar` | static | none | search (navigates), grid toggle (to the presenter) | the day picker (`DayTabRow`) |
 | Favorites, Event map | `KaigiTopAppBar` | static | none | none | none |
 | About | `KaigiTopAppBar` | from `UiState` | none | none | none |
-| Contributors, Sponsors, Staff, Licenses | `KaigiLargeTopAppBar` | static | back | none | none, but the title collapses on scroll |
+| Contributors, Sponsors, Staff, Licenses | `KaigiLargeTopAppBar` | static | back | none | none; the bar accepts a `scrollBehavior`, no screen passes one |
 | Session detail | `KaigiTopAppBar` | empty | back or close | none | the headline continues the bar's surface |
 
 ## What a native bar would have to receive
@@ -37,6 +37,6 @@ The top bar stays Compose. Its state is per-screen and grows with the screen gra
 
 ## When to revisit
 
-This changes if iOS moves to per-tab stacks, the route costed out under [one Compose instance per tab](./ios-liquid-glass.md#alternative-one-compose-instance-per-tab). A `UINavigationController` owning each tab's stack draws the top bar as a side effect, so the question becomes which bar content to hand that controller, not whether to build the bridge from nothing. The decision belongs there, and not before.
+This changes if iOS moves to per-tab stacks, the route costed out under [one Compose instance per tab](./ios-liquid-glass.md#alternative-one-compose-instance-per-tab) and settled alongside the tab-switching semantics in [Root tab bar](./navigation-root-tab-bar.md). A `UINavigationController` owning each tab's stack draws the top bar as a side effect, so the question becomes which bar content to hand that controller, not whether to build the bridge from nothing. The decision belongs there, and not before.
 
-Related: [iOS overview](./ios.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [Swift ↔ Kotlin interop](./ios-interop.md)
+Related: [iOS overview](./ios.md) · [Liquid Glass tab bar](./ios-liquid-glass.md) · [Root tab bar](./navigation-root-tab-bar.md) · [Swift ↔ Kotlin interop](./ios-interop.md)
