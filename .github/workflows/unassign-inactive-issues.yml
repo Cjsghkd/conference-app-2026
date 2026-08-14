@@ -2,7 +2,7 @@ name: Unassign inactive issues
 
 on:
   schedule:
-    - cron: '0 * * * *' # Deadlines are announced as absolute times; an hourly check keeps removals close to them.
+    - cron: '0 */3 * * *' # Deadlines are announced as absolute times; a 3-hour cadence keeps removals close to them.
   workflow_dispatch:
     inputs:
       dry_run:
