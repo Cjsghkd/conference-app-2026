@@ -1,6 +1,7 @@
 package io.github.droidkaigi.confsched.app
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -9,20 +10,27 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.Icon
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.scene.SceneDecoratorStrategy
 import androidx.navigation3.scene.SceneDecoratorStrategyScope
+import androidx.window.core.layout.WindowSizeClass
 import io.github.droidkaigi.confsched.core.common.TargetPlatform
 import io.github.droidkaigi.confsched.core.common.currentPlatform
 import io.github.droidkaigi.confsched.core.ui.KaigiNavigationBar
 import io.github.droidkaigi.confsched.core.ui.KaigiNavigationBarItem
+import io.github.droidkaigi.confsched.core.ui.KaigiNavigationRail
+import io.github.droidkaigi.confsched.core.ui.KaigiNavigationRailItem
+import io.github.droidkaigi.confsched.core.ui.LocalNavigationBarOccupiedHeight
 import io.github.droidkaigi.confsched.feature.about.AboutNavKey
 import io.github.droidkaigi.confsched.feature.eventmap.EventMapNavKey
 import io.github.droidkaigi.confsched.feature.favorites.FavoritesNavKey
@@ -82,16 +90,27 @@ private class RootTabScene(
     override val entries get() = delegate.entries
     override val previousEntries get() = delegate.previousEntries
 
-    // The bar takes no layout space, so a scrollable destination must add
-    // KaigiNavigationBarDefaults.occupiedHeight to its bottom content padding.
     override val content: @Composable () -> Unit = {
-        Box(Modifier.fillMaxSize()) {
-            delegate.content()
-            RootTabBar(
-                currentTab = currentTab,
-                onSelectTab = onSelectTab,
-                modifier = Modifier.align(Alignment.BottomCenter),
-            )
+        val isExpanded = currentWindowAdaptiveInfoV2().windowSizeClass
+            .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+        if (isExpanded) {
+            Row(Modifier.fillMaxSize()) {
+                RootTabRail(currentTab = currentTab, onSelectTab = onSelectTab)
+                Box(Modifier.weight(1f)) {
+                    CompositionLocalProvider(LocalNavigationBarOccupiedHeight provides 0.dp) {
+                        delegate.content()
+                    }
+                }
+            }
+        } else {
+            Box(Modifier.fillMaxSize()) {
+                delegate.content()
+                RootTabBar(
+                    currentTab = currentTab,
+                    onSelectTab = onSelectTab,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                )
+            }
         }
     }
 
@@ -101,7 +120,7 @@ private class RootTabScene(
     override fun hashCode(): Int = delegate.hashCode() * 31 + currentTab.hashCode()
 }
 
-/** The tab bar the shell shows under every root destination. */
+/** The tab bar the shell shows under every root destination on windows narrower than expanded. */
 @Composable
 private fun RootTabBar(
     currentTab: RootTab,
@@ -111,6 +130,26 @@ private fun RootTabBar(
     KaigiNavigationBar(outlineSeed = RootTabBarSeeds.OUTLINE, modifier = modifier) {
         RootTab.entries.forEachIndexed { index, tab ->
             KaigiNavigationBarItem(
+                selected = tab == currentTab,
+                onClick = { onSelectTab(tab) },
+                indicatorSeed = RootTabBarSeeds.FIRST_INDICATOR + index,
+            ) {
+                Icon(tab.icon, contentDescription = tab.label)
+            }
+        }
+    }
+}
+
+/** The tab rail the shell shows beside every root destination on expanded windows. */
+@Composable
+private fun RootTabRail(
+    currentTab: RootTab,
+    onSelectTab: (RootTab) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    KaigiNavigationRail(outlineSeed = RootTabBarSeeds.OUTLINE, modifier = modifier) {
+        RootTab.entries.forEachIndexed { index, tab ->
+            KaigiNavigationRailItem(
                 selected = tab == currentTab,
                 onClick = { onSelectTab(tab) },
                 indicatorSeed = RootTabBarSeeds.FIRST_INDICATOR + index,
