@@ -35,9 +35,9 @@ jobs:
               const matched = PRIORITY_DAYS.filter((tier) => names.has(tier.label))
               // Issues awaiting triage carry no priority label; they must not idle on a looser
               // schedule than triaged ones, so unlabeled (and conflicting) issues take the
-              // strictest matching tier.
-              if (matched.length === 0) return PRIORITY_DAYS[0]
-              return matched.reduce((a, b) => (a.unassign <= b.unassign ? a : b))
+              // strictest applicable tier.
+              const candidates = matched.length > 0 ? matched : PRIORITY_DAYS
+              return candidates.reduce((a, b) => (a.unassign <= b.unassign ? a : b))
             }
 
             const input = context.payload.inputs?.dry_run
