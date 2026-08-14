@@ -13,7 +13,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -93,18 +96,21 @@ private class RootTabScene(
     override val content: @Composable () -> Unit = {
         val isExpanded = currentWindowAdaptiveInfoV2().windowSizeClass
             .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
+        val currentDelegate by rememberUpdatedState(delegate)
+        val movableContent = remember { movableContentOf { currentDelegate.content() } }
         if (isExpanded) {
             Row(Modifier.fillMaxSize()) {
                 RootTabRail(currentTab = currentTab, onSelectTab = onSelectTab)
                 Box(Modifier.weight(1f)) {
-                    CompositionLocalProvider(LocalNavigationBarOccupiedHeight provides 0.dp) {
-                        delegate.content()
-                    }
+                    CompositionLocalProvider(
+                        LocalNavigationBarOccupiedHeight provides 0.dp,
+                        content = movableContent,
+                    )
                 }
             }
         } else {
             Box(Modifier.fillMaxSize()) {
-                delegate.content()
+                movableContent()
                 RootTabBar(
                     currentTab = currentTab,
                     onSelectTab = onSelectTab,
