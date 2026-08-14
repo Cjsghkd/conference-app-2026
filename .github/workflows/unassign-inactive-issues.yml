@@ -174,7 +174,7 @@ jobs:
                       owner,
                       repo,
                       issue_number: issue.number,
-                      body: `@${login} The inactivity window of this issue is now ${unassignAfterDays} days for its current priority. Without further activity, the assignment will be removed after ${formatUtc(removalAt)}. If you're still working on it, please leave a comment (opening a draft pull request also counts).\n${reminderMarker(login, unassignAfterDays)}`,
+                      body: `@${login} This issue now has a ${unassignAfterDays}-day inactivity window based on its priority. Unless there is further activity, the assignment will be removed after **${formatUtc(removalAt)}**. If you're still working on it, please leave a comment (opening a draft pull request also counts).\n${reminderMarker(login, unassignAfterDays)}`,
                     })
                   }
                 }
