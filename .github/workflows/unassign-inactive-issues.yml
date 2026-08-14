@@ -23,8 +23,8 @@ jobs:
           script: |
             const PRIORITY_DAYS = [
               { label: 'priority:high 🔥', remind: 2, unassign: 3 },
-              { label: 'priority:medium ⏳', remind: 3, unassign: 5 },
-              { label: 'priority:low 🐢', remind: 5, unassign: 7 },
+              { label: 'priority:medium ⏳', remind: 3, unassign: 4 },
+              { label: 'priority:low 🐢', remind: 4, unassign: 5 },
             ]
             const MS_PER_DAY = 24 * 60 * 60 * 1000
 
