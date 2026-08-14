@@ -239,27 +239,34 @@ private fun KaigiNavigationItemIcon(
     indicatorSeed: Int,
     icon: @Composable () -> Unit,
 ) {
-    if (selected) {
-        Box(
-            Modifier
-                .size(KaigiNavigationBarDefaults.indicatorSize)
-                .clip(
-                    SketchRoundRectShape(
-                        seed = indicatorSeed,
-                        roughness = KaigiNavigationBarDefaults.roughness,
-                        tremor = KaigiNavigationBarDefaults.tremor,
-                        cornerRadius = KaigiNavigationBarDefaults.indicatorSize / 2,
-                    ),
-                )
-                .background(MaterialTheme.colorScheme.inverseOnSurface),
-        )
+    Box(
+        modifier = Modifier
+            .size(KaigiNavigationBarDefaults.indicatorSize)
+            .then(
+                if (selected) {
+                    Modifier
+                        .clip(
+                            SketchRoundRectShape(
+                                seed = indicatorSeed,
+                                roughness = KaigiNavigationBarDefaults.roughness,
+                                tremor = KaigiNavigationBarDefaults.tremor,
+                                cornerRadius = KaigiNavigationBarDefaults.indicatorSize / 2,
+                            ),
+                        )
+                        .background(MaterialTheme.colorScheme.inverseOnSurface)
+                } else {
+                    Modifier
+                },
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        val tint = if (selected) {
+            MaterialTheme.colorScheme.inverseSurface
+        } else {
+            MaterialTheme.colorScheme.inverseOnSurface
+        }
+        CompositionLocalProvider(LocalContentColor provides tint, content = icon)
     }
-    val tint = if (selected) {
-        MaterialTheme.colorScheme.inverseSurface
-    } else {
-        MaterialTheme.colorScheme.inverseOnSurface
-    }
-    CompositionLocalProvider(LocalContentColor provides tint, content = icon)
 }
 
 object KaigiNavigationBarDefaults {
