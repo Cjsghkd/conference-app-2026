@@ -205,10 +205,12 @@ jobs:
                     })
                   }
                 } else if (daysSince >= remindAfterDays) {
-                  if (warned) {
+                  if (reminder && reminder.promisedDays === unassignAfterDays) {
                     core.info(`#${issue.number}: ${login} already reminded, skipping`)
                     continue
                   }
+                  // The window changed in either direction since the last reminder; announce
+                  // the new deadline once the current remind threshold is reached.
                   if (reminder) {
                     await postDeadline()
                     continue
