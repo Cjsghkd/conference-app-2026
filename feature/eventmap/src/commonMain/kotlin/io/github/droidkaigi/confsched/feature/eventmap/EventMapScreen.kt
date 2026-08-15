@@ -2,12 +2,15 @@ package io.github.droidkaigi.confsched.feature.eventmap
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -22,6 +25,7 @@ import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.Res
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_1f
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_b1f
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_content_description
+import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_introducing
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_title
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -38,14 +42,28 @@ fun EventMapScreen(
         },
         contentWindowInsets = WindowInsets(),
     ) { innerPadding ->
-        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            FloorTabRow(selectedFloor = uiState.selectedFloor, onFloorClick = onFloorClick)
-
+        Column(
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+        ) {
+            Text(
+                text = stringResource(Res.string.event_map_introducing),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            FloorTabRow(
+                selectedFloor = uiState.selectedFloor,
+                onFloorClick = onFloorClick,
+            )
             Crossfade(targetState = uiState.selectedFloor) { floor ->
                 Image(
                     painter = painterResource(floor.mapImage()),
                     contentDescription = stringResource(Res.string.event_map_content_description, floor.label),
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(),
                 )
             }
         }

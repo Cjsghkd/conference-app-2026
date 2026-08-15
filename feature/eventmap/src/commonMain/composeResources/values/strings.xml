@@ -1,4 +1,5 @@
 <resources>
     <string name="event_map_title">Event Map</string>
     <string name="event_map_content_description">Map of %1$s</string>
+    <string name="event_map_introducing">At DroidKaigi, we also host events beyond the sessions for participants to enjoy. Take the opportunity to connect, share ideas, and fully experience the conference!</string>
 </resources>
