@@ -22,6 +22,7 @@ import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiTopAppBar
 import io.github.droidkaigi.confsched.feature.eventmap.component.FloorTabRow
 import io.github.droidkaigi.confsched.feature.eventmap.component.SketchCard
+import io.github.droidkaigi.confsched.feature.eventmap.component.StampRallyCard
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.Res
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_1f
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_b1f
@@ -70,6 +71,9 @@ fun EventMapScreen(
                     )
                 }
             }
+            StampRallyCard(
+                onLearnMoreClick = { /*TODO*/ },
+            )
         }
     }
 }
