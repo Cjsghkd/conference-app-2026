@@ -63,7 +63,7 @@ internal fun StampRallyCard(
                 }
                 KaigiButton(
                     onClick = onLearnMoreClick,
-                    seed = 872,
+                    seed = 871,
                     modifier = Modifier
                         .fillMaxWidth(),
                 ) {

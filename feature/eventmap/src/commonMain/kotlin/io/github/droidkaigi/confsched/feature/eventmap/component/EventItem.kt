@@ -29,6 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun EventItem(
     event: EventMapItem,
+    seed: Int,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -41,7 +42,7 @@ internal fun EventItem(
             modifier = Modifier
                 .fillMaxWidth(),
         ) {
-            RoomChip(room = event.room, seed = 1)
+            RoomChip(room = event.room, seed = seed)
             Text(
                 text = stringResource(event.title),
                 style = MaterialTheme.typography.titleMedium,
@@ -63,7 +64,7 @@ internal fun EventItem(
         event.detailPage?.let {
             KaigiOutlinedButton(
                 onClick = { /* TODO */ },
-                seed = 872,
+                seed = 872 + seed,
                 modifier = Modifier
                     .fillMaxWidth(),
             ) {
@@ -90,6 +91,7 @@ private fun EventItemPreview(
                 note = Res.string.event_map_meetup_message,
                 detailPage = "https://droidkaigi.jp/2026/",
             ),
+            seed = 1,
         )
     }
 }
