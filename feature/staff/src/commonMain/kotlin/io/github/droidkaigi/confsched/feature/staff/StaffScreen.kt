@@ -18,6 +18,7 @@ import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiLargeTopAppBar
 import io.github.droidkaigi.confsched.feature.staff.component.StaffItem
+import io.github.droidkaigi.confsched.feature.staff.component.StaffItemDefaults
 import io.github.droidkaigi.confsched.feature.staff.generated.resources.Res
 import io.github.droidkaigi.confsched.feature.staff.generated.resources.staff
 import org.jetbrains.compose.resources.stringResource
@@ -34,7 +35,7 @@ fun StaffScreen(
         },
     ) { innerPadding ->
         LazyVerticalGrid(
-            columns = GridCells.Fixed(StaffScreenDefaults.COLUMNS),
+            columns = GridCells.Adaptive(StaffItemDefaults.avatarSize),
             horizontalArrangement = Arrangement.spacedBy(StaffScreenDefaults.cellSpacing),
             verticalArrangement = Arrangement.spacedBy(StaffScreenDefaults.cellSpacing),
             contentPadding = PaddingValues(StaffScreenDefaults.gridPadding),
@@ -52,7 +53,6 @@ fun StaffScreen(
 }
 
 private object StaffScreenDefaults {
-    const val COLUMNS = 3
     val cellSpacing = 32.dp
     val gridPadding = 24.dp
 }
