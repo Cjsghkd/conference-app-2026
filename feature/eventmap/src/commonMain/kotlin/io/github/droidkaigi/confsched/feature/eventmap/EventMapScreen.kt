@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.plus
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,7 +39,7 @@ fun EventMapScreen(
         contentWindowInsets = WindowInsets(),
     ) { innerPadding ->
         LazyColumn(
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(16.dp).plus(PaddingValues(bottom = 122.dp)),
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier
                 .fillMaxSize()
