@@ -69,7 +69,7 @@ internal fun StampRallyCard(
                 ) {
                     Text(
                         text = stringResource(Res.string.event_map_learn_more_button_label),
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleSmallEmphasized,
                     )
                 }
             }

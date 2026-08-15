@@ -16,7 +16,6 @@ import io.github.droidkaigi.confsched.core.model.Room
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.KaigiButtonDefaults
 import io.github.droidkaigi.confsched.core.ui.KaigiOutlinedButton
 import io.github.droidkaigi.confsched.feature.eventmap.EventMapItem
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.Res
@@ -70,7 +69,7 @@ internal fun EventItem(
             ) {
                 Text(
                     text = stringResource(Res.string.event_map_learn_more_button_label),
-                    style = KaigiButtonDefaults.labelStyle,
+                    style = MaterialTheme.typography.titleSmall,
                 )
             }
         }
