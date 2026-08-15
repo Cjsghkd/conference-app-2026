@@ -35,9 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 
 internal const val SPONSOR_GRID_COLUMNS = 6
 
-// The grid's 12dp vertical arrangement is the baseline gap between any two rows; this closes the
-// remainder to reach the 32dp a heading needs, both above (from the previous section) and below
-// (to its own item container).
+// Extra spacing to meet the design's required heading-to-content vertical gap.
 private val HEADING_EXTRA_SPACING = 20.dp
 
 // The frame all three plans' decorations share, per design: a fixed box so the title's vertical
@@ -70,8 +68,8 @@ internal fun LazyGridScope.sponsorPlanSection(
             Text(
                 text = stringResource(group.plan.headingTitle),
                 maxLines = 1,
-                overflow = TextOverflow.Visible,
-                softWrap = false,
+                overflow = TextOverflow.Ellipsis,
+                softWrap = true,
                 textAlign = TextAlign.Center,
                 style = TextStyle(
                     fontWeight = FontWeight.Normal,
@@ -174,9 +172,7 @@ private val SponsorPlan.headingTitleHorizontalPadding: Dp
         SponsorPlan.Supporter -> 124.16.dp
     }
 
-// Platinum's heading sits right after the top bar, spaced by the grid's top content padding
-// instead, so only Gold and Supporter need extra top spacing to reach the 32dp gap between
-// sections.
+// Extra top spacing applied before Gold and Supporter headings.
 private val SponsorPlan.headingExtraTopSpacing: Dp
     get() = when (this) {
         SponsorPlan.Platinum -> 0.dp

@@ -10,6 +10,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
@@ -35,7 +36,8 @@ internal fun SponsorItem(
         modifier = modifier.clickable(role = Role.Button, onClick = onSponsorClick),
         shape = shape,
         border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.outline),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+        // Sponsor logos ship with an opaque white background, so the card matches it regardless of theme.
+        colors = CardDefaults.cardColors(containerColor = Color.White),
     ) {
         RemoteImage(
             imageUrl = logoUrl,
