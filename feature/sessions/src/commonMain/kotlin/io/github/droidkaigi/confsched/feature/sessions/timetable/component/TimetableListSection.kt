@@ -17,7 +17,7 @@ import io.github.droidkaigi.confsched.core.model.TimetableItemId
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
-import io.github.droidkaigi.confsched.core.ui.KaigiNavigationBarDefaults
+import io.github.droidkaigi.confsched.core.ui.LocalNavigationBarOccupiedHeight
 import io.github.droidkaigi.confsched.core.ui.current
 
 @Composable
@@ -31,7 +31,7 @@ internal fun TimetableListSection(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         contentPadding = PaddingValues(
             top = 24.dp,
-            bottom = 24.dp + KaigiNavigationBarDefaults.occupiedHeight,
+            bottom = 24.dp + LocalNavigationBarOccupiedHeight.current,
         ),
     ) {
         items(uiState.timeSlots, key = { "${it.startsAt}-${it.endsAt}" }) { slot ->
