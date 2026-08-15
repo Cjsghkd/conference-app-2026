@@ -21,9 +21,6 @@ runs:
     # Better than caching and/or extensions of actions/setup-java
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
-      with:
-        # 検証後に消す
-        cache-read-only: false
 
     - name: set konan cache key
       id: konan-cache-key
