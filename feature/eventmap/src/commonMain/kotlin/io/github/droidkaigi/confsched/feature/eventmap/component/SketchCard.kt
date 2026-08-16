@@ -22,11 +22,12 @@ internal fun SketchCard(
     modifier: Modifier = Modifier,
     shape: SketchRoundRectShape = SketchRoundRectShape(seed = 40, cornerRadius = 16.dp, borderThickness = 2.dp),
     borderColor: Color = MaterialTheme.colorScheme.outlineVariant,
+    color: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     content: @Composable (() -> Unit) = {},
 ) {
     Surface(
         shape = shape,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        color = color,
         modifier = modifier
             .sketchBorder(
                 shape = shape,

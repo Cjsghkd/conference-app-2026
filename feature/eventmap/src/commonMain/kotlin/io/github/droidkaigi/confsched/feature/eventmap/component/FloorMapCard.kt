@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
@@ -30,12 +31,14 @@ internal fun FloorMapCard(
         targetState = selectedFloor,
         modifier = modifier,
     ) { targetFloor ->
-        SketchCard {
+        SketchCard(
+            color = Color.White,
+        ) {
             Image(
                 painter = painterResource(targetFloor.mapImage()),
                 contentDescription = stringResource(Res.string.event_map_content_description, targetFloor.label),
                 modifier = Modifier
-                    .padding(12.dp)
+                    .padding(16.dp)
                     .fillMaxWidth(),
             )
         }
