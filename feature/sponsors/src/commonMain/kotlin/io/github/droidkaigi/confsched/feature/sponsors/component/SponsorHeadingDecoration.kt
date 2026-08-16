@@ -8,19 +8,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.model.SponsorPlan
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
+import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.Res
+import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.sponsor_plan_gold
+import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.sponsor_plan_platinum
+import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.sponsor_plan_supporter
 import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.sponsors_gold_heading
 import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.sponsors_platinum_heading
 import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.sponsors_supporters_heading
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun SponsorHeadingDecoration(
@@ -29,7 +34,7 @@ internal fun SponsorHeadingDecoration(
 ) {
     Image(
         painter = painterResource(plan.headingDrawable),
-        contentDescription = null,
+        contentDescription = stringResource(plan.headingTitle),
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
         modifier = modifier,
     )
@@ -42,7 +47,14 @@ private val SponsorPlan.headingDrawable: DrawableResource
         SponsorPlan.Platinum -> Res.drawable.sponsors_platinum_heading
     }
 
-@Preview(showBackground = true)
+private val SponsorPlan.headingTitle: StringResource
+    get() = when (this) {
+        SponsorPlan.Supporter -> Res.string.sponsor_plan_supporter
+        SponsorPlan.Gold -> Res.string.sponsor_plan_gold
+        SponsorPlan.Platinum -> Res.string.sponsor_plan_platinum
+    }
+
+@LocalePreviews
 @Composable
 private fun SponsorHeadingDecorationPreview(
     @PreviewParameter(KaigiSchemeProvider::class) colorScheme: KaigiColorScheme,
