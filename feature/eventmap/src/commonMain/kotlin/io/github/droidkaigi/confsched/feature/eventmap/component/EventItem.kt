@@ -17,6 +17,7 @@ import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.LocalePreviews
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import io.github.droidkaigi.confsched.core.ui.KaigiOutlinedButton
+import io.github.droidkaigi.confsched.core.ui.RoomChip
 import io.github.droidkaigi.confsched.feature.eventmap.EventMapItem
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.Res
 import io.github.droidkaigi.confsched.feature.eventmap.generated.resources.event_map_learn_more_button_label
