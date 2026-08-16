@@ -9,21 +9,13 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.droidkaigi.confsched.core.model.SponsorGroup
 import io.github.droidkaigi.confsched.core.model.SponsorPlan
-import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.Res
-import io.github.droidkaigi.confsched.feature.sponsors.generated.resources.sponsor_supporters_label
-import org.jetbrains.compose.resources.stringResource
 
 internal const val SPONSOR_GRID_COLUMNS = 6
 
@@ -44,21 +36,6 @@ internal fun LazyGridScope.sponsorPlanSection(
             contentAlignment = Alignment.Center,
         ) {
             SponsorHeadingDecoration(plan = group.plan)
-        }
-    }
-    if (group.plan == SponsorPlan.Supporter) {
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            Text(
-                text = stringResource(Res.string.sponsor_supporters_label),
-                maxLines = 1,
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp,
-                    letterSpacing = 0.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                ),
-            )
         }
     }
     items(
