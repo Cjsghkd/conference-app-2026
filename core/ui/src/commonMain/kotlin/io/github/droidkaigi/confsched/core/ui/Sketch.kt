@@ -43,10 +43,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import io.github.droidkaigi.confsched.core.designsystem.LocalSketchBaseSeed
 import io.github.droidkaigi.confsched.core.model.KaigiColorScheme
 import io.github.droidkaigi.confsched.core.preview.KaigiSchemeProvider
 import io.github.droidkaigi.confsched.core.preview.wrapper.KaigiPreviewTheme
 import kotlin.math.roundToInt
+
+/** Combines the app-wide sketch seed with an element's stable seed. */
+@Composable
+fun combineSketchSeed(seed: Int): Int = LocalSketchBaseSeed.current + seed
 
 /** How finely the tremor octave ripples: shorter is a faster, tighter shake. */
 private val DefaultTremorWavelength = 42.dp
@@ -103,6 +108,7 @@ fun SketchHorizontalDivider(
 ) {
     requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
     require(thickness >= 0.dp) { "thickness must not be negative, was $thickness" }
+    val combinedSeed = combineSketchSeed(seed)
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -115,7 +121,7 @@ fun SketchHorizontalDivider(
                     tremor = tremor,
                     sweepWavelength = sweepWavelength,
                     tremorWavelength = tremorWavelength,
-                    seed = seed,
+                    seed = combinedSeed,
                 )
                 val stroke = Stroke(width = thickness.toPx(), cap = StrokeCap.Round)
                 onDrawBehind {
@@ -144,6 +150,7 @@ fun SketchVerticalDivider(
 ) {
     requireWobble(roughness, tremor, sweepWavelength, tremorWavelength)
     require(thickness >= 0.dp) { "thickness must not be negative, was $thickness" }
+    val combinedSeed = combineSketchSeed(seed)
     Box(
         modifier = modifier
             .fillMaxHeight()
@@ -156,7 +163,7 @@ fun SketchVerticalDivider(
                     tremor = tremor,
                     sweepWavelength = sweepWavelength,
                     tremorWavelength = tremorWavelength,
-                    seed = seed,
+                    seed = combinedSeed,
                 )
                 val stroke = Stroke(width = thickness.toPx(), cap = StrokeCap.Round)
                 onDrawBehind {
@@ -188,6 +195,7 @@ fun SketchVerticalWavyLine(
     require(amplitude >= 0.dp) { "amplitude must not be negative, was $amplitude" }
     require(wavelength > 0.dp) { "wavelength must be positive, was $wavelength" }
     require(noiseAmount >= 0f) { "noiseAmount must not be negative, was $noiseAmount" }
+    val combinedSeed = combineSketchSeed(seed)
     Box(
         modifier = modifier
             .width(amplitude * (1f + noiseAmount) * 2 + thickness)
@@ -198,7 +206,7 @@ fun SketchVerticalWavyLine(
                     amplitude = amplitude,
                     wavelength = wavelength,
                     noiseAmount = noiseAmount,
-                    seed = seed,
+                    seed = combinedSeed,
                 )
                 val stroke = Stroke(width = thickness.toPx(), cap = StrokeCap.Round)
                 onDrawBehind {
