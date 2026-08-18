@@ -512,7 +512,7 @@ private fun CornerRadiusSamples() {
                         .size(90.dp, 64.dp)
                         .sketchBorder(
                             shape = SketchRoundRectShape(
-                                seed = 20 + index,
+                                seed = combineSketchSeed(20 + index),
                                 cornerRadius = radius,
                                 borderThickness = 2.dp,
                             ),
@@ -555,7 +555,7 @@ private fun BorderTasteRow(roughness: Dp) {
                         .size(132.dp, 84.dp)
                         .sketchBorder(
                             shape = SketchRoundRectShape(
-                                seed = 9,
+                                seed = combineSketchSeed(9),
                                 roughness = roughness,
                                 tremor = tremor,
                                 cornerRadius = 10.dp,
@@ -581,12 +581,16 @@ private fun SketchShapePreview(
                     Box(
                         Modifier
                             .size(90.dp, 64.dp)
-                            .clip(SketchRoundRectShape(seed = 50, cornerRadius = 12.dp))
+                            .clip(SketchRoundRectShape(seed = combineSketchSeed(50), cornerRadius = 12.dp))
                             .background(MaterialTheme.colorScheme.primaryContainer),
                     )
                 }
                 LabelledSample(label = "clip + border") {
-                    val shape = SketchRoundRectShape(seed = 51, cornerRadius = 12.dp, borderThickness = 2.dp)
+                    val shape = SketchRoundRectShape(
+                        seed = combineSketchSeed(51),
+                        cornerRadius = 12.dp,
+                        borderThickness = 2.dp,
+                    )
                     Box(
                         Modifier
                             .size(90.dp, 64.dp)
@@ -598,7 +602,7 @@ private fun SketchShapePreview(
                 LabelledSample(label = "Surface") {
                     Surface(
                         modifier = Modifier.size(90.dp, 64.dp),
-                        shape = SketchRoundRectShape(seed = 52, cornerRadius = 20.dp),
+                        shape = SketchRoundRectShape(seed = combineSketchSeed(52), cornerRadius = 20.dp),
                         color = MaterialTheme.colorScheme.secondaryContainer,
                     ) {}
                 }
@@ -606,7 +610,13 @@ private fun SketchShapePreview(
                     Box(
                         Modifier
                             .size(90.dp, 64.dp)
-                            .clip(SketchRoundRectShape(seed = 53, tremor = 1.dp, cornerRadius = 12.dp))
+                            .clip(
+                                SketchRoundRectShape(
+                                    seed = combineSketchSeed(53),
+                                    tremor = 1.dp,
+                                    cornerRadius = 12.dp,
+                                ),
+                            )
                             .background(MaterialTheme.colorScheme.primaryContainer),
                     )
                 }
@@ -633,7 +643,7 @@ private fun SketchSegmentedPreview(
 @Composable
 private fun SegmentedSample(selectedFirst: Boolean) {
     val shape = SketchRoundRectShape(
-        seed = 900,
+        seed = combineSketchSeed(900),
         roughness = 0.4.dp,
         tremor = 0.15.dp,
         cornerRadius = 16.dp,
@@ -700,7 +710,11 @@ private fun ResizeSample() {
                 Modifier
                     .size(width.dp, height)
                     .sketchBorder(
-                        shape = SketchRoundRectShape(seed = 5, cornerRadius = 16.dp, borderThickness = 2.dp),
+                        shape = SketchRoundRectShape(
+                            seed = combineSketchSeed(5),
+                            cornerRadius = 16.dp,
+                            borderThickness = 2.dp,
+                        ),
                         color = MaterialTheme.colorScheme.outline,
                     ),
             )
@@ -711,7 +725,7 @@ private fun ResizeSample() {
                     .size(width.dp, height)
                     .sketchBorder(
                         shape = SketchRoundRectShape(
-                            seed = 5,
+                            seed = combineSketchSeed(5),
                             cornerRadius = 16.dp,
                             borderThickness = 2.dp,
                             referenceSize = DpSize(292.dp, height),
@@ -734,7 +748,11 @@ private fun SketchCardPreview(
                 Modifier
                     .width(260.dp)
                     .sketchBorder(
-                        shape = SketchRoundRectShape(seed = 40, cornerRadius = 16.dp, borderThickness = 2.dp),
+                        shape = SketchRoundRectShape(
+                            seed = combineSketchSeed(40),
+                            cornerRadius = 16.dp,
+                            borderThickness = 2.dp,
+                        ),
                         color = MaterialTheme.colorScheme.outline,
                     )
                     .padding(16.dp),
